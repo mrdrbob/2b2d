@@ -1,0 +1,4 @@
+export default {
+  BACKGROUND: 'BACKGROUND',
+  FOREGROUND: 'FOREGROUND',
+}

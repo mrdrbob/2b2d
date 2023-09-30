@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Game</title>
+    <meta charset="utf-8" />
+    <style>
+      body {
+        margin: 0;
+      }
+      canvas {
+        width: 800px;
+        height: 600px;
+
+        image-rendering: crisp-edges;
+        image-rendering: pixelated;
+
+        /* Fix Chrome bug https://stackoverflow.com/questions/69867152/how-to-disable-filtering-on-canvas-with-webgpu-context */
+        animation: fix-image-rendering-bug .0001s; 
+      }
+
+      @keyframes fix-image-rendering-bug {   from { opacity: 0.9999; }   to { opacity: 1; } 
+    </style>
+    <script type="module" src="/src/index.ts"></script>
+  </head>
+  <body>
+    <div id="game"></div>
+  </body>
+</html>
