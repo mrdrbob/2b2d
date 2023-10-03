@@ -1,5 +1,3 @@
-export type ComponentName = string;
-
-export interface Component {
-  name():ComponentName
+export default interface Component {
+  name():string
 }

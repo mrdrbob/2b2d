@@ -1,42 +1,64 @@
-import { Component, ComponentName } from "./Component";
+import Component from "./Component";
+import Camera from "./Components/Camera";
+import Position from "./Components/Position";
 import { Entity } from "./Entity";
 import { UpdateData } from "./GameEngine";
 
-export type Command = SpawnEntityCommand;
+export type Command = SpawnEntityCommand | DespawnEntityCommand;
 
 export type SpawnEntityCommand = {
   type: 'spawn',
   components: Component[]
 }
 
-export default class Update {
-  private data:UpdateData;
+export type DespawnEntityCommand = {
+  type: 'despawn',
+  entity: number;
+}
 
-  constructor(data:UpdateData) {
+export default class Update {
+  private data: UpdateData;
+
+  constructor(data: UpdateData) {
     this.data = data;
   }
 
   deltaTime() { return this.data.deltaTime; }
-  exitState(state:string) { this.data.exitingStates.add(state); }
-  enterState(state:string) { this.data.enteringStates.add(state); }
+  exitState(state: string) { this.data.exitingStates.add(state); }
+  enterState(state: string) { this.data.enteringStates.add(state); }
 
-  query(componentNames:ComponentName[]) : Array<{entity:Entity, components:Array<Component>}>  {
+  query(componentNames: string[]): Array<{ entity: Entity, components: Array<Component> }> {
     return this.data.world.query(componentNames);
   }
 
-  queryCached(name:string, componentNames:ComponentName[]) : Array<{entity:Entity, components:Array<Component>}>  {
+  queryCached(name: string, componentNames: string[]): Array<{ entity: Entity, components: Array<Component> }> {
     return this.data.world.queryCached(name, componentNames);
   }
 
+  getCamera() {
+    const query = this.data.world.queryCached('globalCameraQuery', [Camera.NAME, Position.NAME]);
+    if (query.length == 0)
+      return undefined;
+    const entity = query[0];
+    const [_camera, position] = entity.components as [Camera, Position];
+    return position;
+  }
 
-  spawn(components:Component[]) {
+  spawn(components: Component[]) {
     this.data.commands.push({
       type: 'spawn',
       components: components
     });
   }
 
-  resource<T>(name:string) {
+  despawn(entity: number) {
+    this.data.commands.push({
+      type: 'despawn',
+      entity: entity
+    });
+  }
+
+  resource<T>(name: string) {
     return this.data.resources.assume<T>(name);
   }
 

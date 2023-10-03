@@ -1,13 +1,17 @@
+import EventManager from "./Events/EventManager";
+import Vec2 from "./Math/Vec2";
+import GradientRenderer from "./Rendering/GradientRenderer";
 import { RenderingBuilder, RenderingSystem } from "./Rendering/Renderer";
 import SpriteRenderer from "./Rendering/SpriteRenderer";
 import TilemapRenderer from "./Rendering/TilemapRenderer";
 import { ResourceBuilder, Resources } from "./Resource";
 import AssetsResource from "./Resources/AssetsResource";
-import CameraResource from "./Resources/CameraResource";
 import KeysResource from "./Resources/KeysResource";
 import LayersResource from "./Resources/LayersResource";
+import ScreenResource from "./Resources/ScreenResource";
 import { SystemsBuilder, SystemsRunner } from "./System";
 import { updateAnimatedSprites } from "./Systems/Animated";
+import { applyPhysics } from "./Systems/Physics";
 import Update, { Command } from "./Update";
 import World from "./World";
 
@@ -18,6 +22,7 @@ export type UpdateData = {
   enteringStates:Set<string>, 
   exitingStates:Set<string>,
   resources:Resources,
+  events:EventManager,
 };
 
 export default class GameEngineBuilder {
@@ -25,25 +30,31 @@ export default class GameEngineBuilder {
   public readonly resources:ResourceBuilder = new ResourceBuilder();
   public readonly renderers:RenderingBuilder = new RenderingBuilder();
   public readonly layers:LayersResource = new LayersResource();
+  public readonly events:EventManager = new EventManager();
 
   constructor() {
     // Add some defaults
     this.resources.addResource(new KeysResource());
     this.resources.addResource(new AssetsResource());
-    this.resources.addResource(new CameraResource());
     this.renderers.add(new SpriteRenderer());
     this.renderers.add(new TilemapRenderer());
+    this.renderers.add(new GradientRenderer());
+    //this.renderers.add(new DebugRenderer());
     this.systems.update(SystemsRunner.ALWAYS_STATE, updateAnimatedSprites);
+    this.systems.update(SystemsRunner.ALWAYS_STATE, applyPhysics);
   }
 
   public async finish(width:number, height:number, zoom:number) {
+    const devicePixelRatio = window.devicePixelRatio || 1;
+    this.resources.addResource(new ScreenResource(new Vec2(width, height), devicePixelRatio));
+    
     const runner = this.systems.finish();
     const resources = this.resources.finish();
     const renderingSystem = await this.renderers.finish(width, height, zoom);
 
     resources.add(LayersResource.NAME, this.layers);
 
-    return new GameEngine(runner, resources, renderingSystem);
+    return new GameEngine(runner, resources, renderingSystem, this.events);
   }
 }
 
@@ -57,15 +68,17 @@ export class GameEngine {
   private systems:SystemsRunner;
   private resources:Resources;
   private rendering:RenderingSystem;
+  private events: EventManager;
   private keys:KeysResource | null;
   
   private enters:Set<string> = new Set<string>();
   private exits:Set<string> = new Set<string>();
 
-  constructor(systems:SystemsRunner, resources:Resources, rendering:RenderingSystem) {
+  constructor(systems:SystemsRunner, resources:Resources, rendering:RenderingSystem, events:EventManager) {
     this.systems = systems;
     this.resources = resources;
     this.rendering = rendering;
+    this.events = events;
 
     this.world = new World();
     this.lastTick = performance.now();
@@ -108,15 +121,16 @@ export class GameEngine {
       enteringStates: this.enters,
       exitingStates: this.exits,
       resources: this.resources,
+      events: this.events,
     };
     const updateContext = new Update(updateData);
     const systems = this.systems.getRunning();
 
-    this.rendering.draw(updateContext);
-
     for (const system of systems) {
       system(updateContext);
     }
+
+    this.rendering.draw(updateContext);
 
     this.systems.update(this.enters, this.exits);
     this.enters.clear();
@@ -124,6 +138,7 @@ export class GameEngine {
     if (this.keys) {
       this.keys.tick();
     }
+    this.events.tick();
 
     for (const command of commands) {
       switch (command.type) {
@@ -132,6 +147,9 @@ export class GameEngine {
           for (const component of command.components) {
             this.world.addComponent(entity, component);
           }
+          break;
+        case 'despawn':
+          this.world.removeEntity(command.entity);
           break;
       }
     }

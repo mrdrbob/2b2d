@@ -10,6 +10,15 @@ export default class AssetsResource implements Resource {
 
   add<T>(asset:Asset<T>) { this.assets.set(asset.name(), asset); }
 
+  isAllLoaded(names:string[]) {
+    for (const name of names) {
+      if (!this.isLoaded(name))
+        return false;
+    }
+
+    return true;
+  }
+
   isLoaded(name:string) { 
     const asset = this.assets.get(name);
     if (!asset)

@@ -1,16 +1,16 @@
-import { Component, ComponentName } from "./Component";
+import Component from "./Component";
 import { Entity } from "./Entity";
 
 export default class World {
   private entityId:number;
   private entities:Map<Entity, Component[]>;
-  private entityQueryCache:Map<ComponentName, Set<Entity>>;
+  private entityQueryCache:Map<string, Set<Entity>>;
   private queryCache:Map<string, Array<{entity:Entity, components:Array<Component>}>> = new Map<string, Array<{entity:Entity, components:Array<Component>}>>();
 
   constructor () {
     this.entityId = 0;
     this.entities = new Map<Entity, Component[]>();
-    this.entityQueryCache = new Map<ComponentName, Set<Entity>>();
+    this.entityQueryCache = new Map<string, Set<Entity>>();
   }
 
   newEntity():Entity {
@@ -34,7 +34,7 @@ export default class World {
     cache.add(entity);
   }
 
-  removeComponent(entity:Entity, componentName:ComponentName) {
+  removeComponent(entity:Entity, componentName:string) {
     const entityComponents = this.entities.get(entity)!;
     const componentIndex = entityComponents.findIndex((v) => v.name() == componentName);
     if (componentIndex < 0)
@@ -47,8 +47,21 @@ export default class World {
       return;
     cache.delete(entity);
   }
+
+  removeEntity(entity:Entity) {
+    const entityComponents = this.entities.get(entity)!;
+    for (const component of entityComponents) {
+      const set = this.entityQueryCache.get(component.name());
+      if (set)
+        set.delete(entity);
+    }
+
+    this.entities.delete(entity);
+
+    this.queryCache.clear();
+  }
   
-  queryCached(uniqueName:string, componentNames:ComponentName[]) : Array<{entity:Entity, components:Array<Component>}> {
+  queryCached(uniqueName:string, componentNames:string[]) : Array<{entity:Entity, components:Array<Component>}> {
     const cached = this.queryCache.get(uniqueName);
     if (cached) {
       return cached;
@@ -59,7 +72,12 @@ export default class World {
     return live;
   }
 
-  query(componentNames:ComponentName[]) : Array<{entity:Entity, components:Array<Component>}> {
+  getEntityComponents(entity:Entity, componentNames:string[]) {
+    const components = this.entities.get(entity)!;
+    return componentNames.map(x => components.find(c => c.name() == x)!);
+  }
+
+  query(componentNames:string[]) : Array<{entity:Entity, components:Array<Component>}> {
     // TODO: Memoize this?
     let entities = new Set<Entity>(this.entities.keys());
 

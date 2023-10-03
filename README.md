@@ -17,6 +17,7 @@ Probably no one. You're welcome to toy with it, but you may run into bugs and pe
 * Limited Aseprite support (via exported atlas JSON files)
 * Basic LDTK support (currently only loads tilemaps with some caveats)
 * Engine states (which determine which systems run)
+* A *very* rudimentary AABB-based "phsyics" engine.
 
 ## Caveats and limitations
 
@@ -24,10 +25,11 @@ Probably no one. You're welcome to toy with it, but you may run into bugs and pe
 * Currently, tilemaps require your tile source sprite to be a grid of square tiles with no spacing or padding between tiles. Annoying maybe, but makes rendering fast and easy.
 * The ECS system relies heavily on caching the results of queries, so if you're frequently adding/remove components or entities, performance may degrade. Or it might not? I haven't benchmarked anything.
 * Because of how tilemaps are drawn, you can't have maps bigger than 255 X 255 tiles. 65,025 tiles aught to be enough for anyone!  (If you need bigger, you could maybe stitch together several sub-tilemaps. Or use a proper engine.)
+* The physics engine only has two body types: `StaticBody` which does not move, and `KenticBody` which does move but can't pass through any `StaticBody`. `KineticBody` entities, however, do not interact with each other and can pass through.
 
 ## How would I use this?
 
-Clone this repo. Replace everything in the `Game` and `Loading` folders and the `index.ts` file. Then:
+Clone this repo. Update anything that is not in the `Engine` directory. Then:
 
 `yarn dev`
 
@@ -44,7 +46,7 @@ The concepts are roughly:
 * Plugins are not exactly a first-class citizen, but you can bundle up registering your systems into separate methods and call those plugins (see: `GamePlugin.ts` or `LoadingPlugin.ts`).
 * A Renderer is a class that knows how to render something. The engine comes with two: one to render entities that have `Sprite` and `Position` components, and another that renders entities that have both `Tilemap` and `Position` components.
 
-Your best bet is to look through the `Game` and `Loading` folders (and `index.ts`) for examples of usage. Everything in the `Engine` folder is part of the core engine and should not container any game-specific code.
+Your best bet is to look through the files and folders (except `Engine`) for examples of usage. Everything in the `Engine` folder is part of the core engine and should not container any game-specific code.
 
 ## Anything notable?
 
@@ -55,7 +57,7 @@ Your best bet is to look through the `Game` and `Loading` folders (and `index.ts
 
 * Abandonment when I get bored of this
 * Maybe some kind of rudimentary sound system
-* A simple frame-based event system
+* Post-processing?
 
 ## But... why?
 
@@ -66,4 +68,4 @@ Plus I was just curious about how graphics are actually drawn on a GPU. Now I ha
 ## Acknowledgements
 
 * Special thanks to [Nhawdge](https://github.com/Nhawdge) for coming up with the 2B2D name. Quote: "cause there are two b's in your first name. AND TWO DS IN YOUR LAST NAME. I'M GENIUS"
-* Graphic assets (`city-texture.png` and `guy.png`) are from the `RPG Urban Pack v1.0` by [Kenny](https://www.kenney.nl/). License: [Creative Commons Zero, CC0](http://creativecommons.org/publicdomain/zero/1.0/).
+* Graphic assets used in the example game (`platform-bg-tiles.png`, `platform-characters.png`, and `platform-tiles.png`) are from the `Pixel Platformer` asset collection by [Kenny](https://www.kenney.nl/). License: [Creative Commons Zero, CC0](http://creativecommons.org/publicdomain/zero/1.0/).

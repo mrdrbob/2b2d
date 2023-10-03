@@ -1,107 +1,212 @@
-import { SpriteAtlas } from "../Assets/SpriteAtlasAsset";
 import { TilemapData } from "../Assets/TilemapAsset";
 import Position from "../Components/Position";
 import Tilemap from "../Components/Tilemap";
+import { Entity } from "../Entity";
 import Vec2 from "../Math/Vec2";
 import AssetsResource from "../Resources/AssetsResource";
-import CameraResource from "../Resources/CameraResource";
 import Update from "../Update";
 import { Renderer, RenderingSystem } from "./Renderer";
-import TilemapRendererPipeline from "./TilemapRendererPipeline";
+import wgsl from './Shaders/Tilemap.wgsl?raw';
 
-const quadTriangles = new Float32Array(
-  [-0.5, -0.5,
-    0.5,  0.5,
-    0.5, -0.5,
-  
-   -0.5,  -0.5,
-   -0.5,   0.5,
-    0.5,   0.5]
-);
+interface LoadedTilemap {
+  sourceTexture: GPUTexture,
+  atlasTexture: GPUTexture,
+  tileSize: Vec2,
+  fullSize: Vec2,
+}
+
+interface TilemapInstance {
+  name: string,
+  pos: Vec2,
+  tilemap: LoadedTilemap,
+  bufferValues: Float32Array,
+  buffer: GPUBuffer,
+}
 
 export default class TilemapRenderer implements Renderer {
-  public vertexBufferLayout!: GPUVertexBufferLayout;
-  public vertexBuffer!: GPUBuffer;
-  public parent!: RenderingSystem;
-  private pipelines:Map<number, TilemapRendererPipeline> = new Map<number, TilemapRendererPipeline>();
-  private batches:Set<number> = new Set<number>();
+  parent!: RenderingSystem;
+  sharedBindGroup!: GPUBindGroup;
+  specificBindGroupLayout!: GPUBindGroupLayout;
+  pipeline!: GPURenderPipeline;
 
   async initialize(parent: RenderingSystem) {
     this.parent = parent;
     
-    this.vertexBufferLayout = {
-      arrayStride: 2 * Float32Array.BYTES_PER_ELEMENT,
-      attributes: [
-        {
-          shaderLocation: 0,
-          offset: 0,
-          format: 'float32x2'
-        }
-      ]
-    };
-
-    this.vertexBuffer = parent.device.createBuffer({
-      size: quadTriangles.byteLength,
-      usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
-      mappedAtCreation: true
+    const module = parent.device.createShaderModule({
+      label: 'tilemap module',
+      code: wgsl
     });
-    new Float32Array(this.vertexBuffer.getMappedRange()).set(quadTriangles);
-    this.vertexBuffer.unmap();
+
+    const sharedBindGroupLayout = parent.device.createBindGroupLayout({
+      label: 'tilemap shared bind group layout',
+      entries: [
+        { binding: 0, visibility: GPUShaderStage.VERTEX, buffer: { type: 'uniform' } }, // world
+        { binding: 1, visibility: GPUShaderStage.VERTEX, buffer: { type: 'uniform' } }, // frame
+        { binding: 2, visibility: GPUShaderStage.FRAGMENT, sampler: {} }, // sampler
+      ]
+    });
+
+    this.sharedBindGroup = parent.device.createBindGroup({
+      label: 'tilemap shared bind group',
+      layout: sharedBindGroupLayout,
+      entries: [
+        { binding: 0, resource: { buffer: parent.worldUniformBuffer } },
+        { binding: 1, resource: { buffer: this.parent.frameUniformBuffer } },
+        { binding: 2, resource: this.parent.sampler },
+      ]
+    });
+
+    // Texture specific bind group
+    this.specificBindGroupLayout = parent.device.createBindGroupLayout({
+      label: 'tilemap specific bind group layout',
+      entries: [
+        { binding: 0, visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT, buffer: { type: 'uniform' } }, // quad
+        { binding: 1, visibility: GPUShaderStage.FRAGMENT, texture: { sampleType: 'uint' } }, // atlas texture
+        { binding: 2, visibility: GPUShaderStage.FRAGMENT, texture: {} }, // source texture
+      ]
+    });
+
+    const pipelineLayout = parent.device.createPipelineLayout({
+      label: 'tilemap pipeline',
+      bindGroupLayouts: [
+        sharedBindGroupLayout,
+        this.specificBindGroupLayout
+      ]
+    });
+
+    this.pipeline = parent.device.createRenderPipeline({
+      label: 'tilemap pipeline',
+      layout: pipelineLayout,
+      vertex: {
+        module: module,
+        entryPoint: 'vs',
+        buffers: [ this.parent.vertexBufferLayout ]
+      },
+      fragment: {
+        module: module,
+        entryPoint: 'fs',
+        targets: [
+          { 
+            format: parent.presentationFormat,
+            blend: {
+              color: {
+                srcFactor: "src-alpha",
+                dstFactor: 'one-minus-src-alpha',
+                operation: 'add'
+              },
+              alpha:{
+                srcFactor: 'one',
+                dstFactor: 'one-minus-src-alpha',
+                operation: 'add'
+              }
+            },
+            writeMask: GPUColorWrite.ALL
+          }
+        ],
+      },
+      primitive: { topology: 'triangle-list' }
+    });
+
   }
 
-  beginFrame(passEncoder: GPURenderPassEncoder): void {
-    this.batches.clear();
-  }
-
-  getOrCreatePipeline(entity:number, textureName:string, tilemapName:string, atlasName:string, assets:AssetsResource) {
-    let pipeline = this.pipelines.get(entity);
-    if (pipeline)
-      return pipeline;
-
-    pipeline = new TilemapRendererPipeline(this, `tm: ${entity}`);
-    const tilemap = assets.assume<TilemapData>(tilemapName);
-    const atlas = assets.assume<SpriteAtlas>(atlasName);
-    const gpuTexture = this.parent.ensureTextureLoaded(textureName, assets);
-    pipeline.initialize(gpuTexture, tilemap, atlas);
-    this.pipelines.set(entity, pipeline);
-    return pipeline;
+  private loadedTilemaps:Map<string, LoadedTilemap> = new Map<string, LoadedTilemap>();
+  private instances:Map<Entity, TilemapInstance> = new Map<Entity, TilemapInstance>;
+  beginFrame(): void {
+    this.instances.clear();
   }
 
   draw(update: Update, layer: string): void {
-    var query = update.query([ Tilemap.NAME, Position.NAME ]);
+    var query = update.queryCached('TilemapRendererDraw', [ Tilemap.NAME, Position.NAME ]);
     var assets = update.resource<AssetsResource>(AssetsResource.NAME);
-    var camera = update.resource<CameraResource>(CameraResource.NAME);
 
     for (const entity of query) {
       const [sprite, position] = entity.components as [Tilemap, Position];
       if (sprite.layer != layer)
         continue;
 
-      this.batches.add(entity.entity);
-      const pipeline = this.getOrCreatePipeline(entity.entity, sprite.texture, sprite.tilemap, sprite.atlas, assets)!;
-      const texture = assets.assume<ImageBitmap>(sprite.texture);
-      const tilemap = assets.assume<TilemapData>(sprite.tilemap);
+      let tilemap = this.loadedTilemaps.get(sprite.tilemap);
+      if (!tilemap) {
+        const data = assets.assume<TilemapData>(sprite.tilemap);
+        const atlasTexture = this.createAtlasTexture(sprite.tilemap, data);
+        const sourceTexture = this.parent.ensureTextureLoaded(sprite.texture, assets);
 
-      const texel = new Vec2(
-        (this.parent.devicePixelRatio * this.parent.zoom) / (this.parent.width * 0.5),
-        (this.parent.devicePixelRatio * this.parent.zoom) / (this.parent.height * 0.5)
-      );
-      pipeline.draw(
-        position.pos, 
-        tilemap.mapTileCount.multiply(tilemap.tileSize), 
-        camera.position, 
-        texel
-      );
+        tilemap = {
+          atlasTexture,
+          sourceTexture,
+          tileSize: data.tileSize,
+          fullSize: data.mapTileCount.multiply(data.tileSize)
+        };
+
+        this.loadedTilemaps.set(sprite.tilemap, tilemap);
+      }
+
+      let instance = this.instances.get(entity.entity);
+      if (!instance) {
+        const quadBufferValues = new Float32Array(6); // 2 values each: pos, fullSize, tileSize
+        const quadBuffer = this.parent.device.createBuffer({
+          label: `tilemap quad buffer ${sprite.tilemap}`,
+          size: quadBufferValues.byteLength,
+          usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+        });
+
+        instance = {
+          name: sprite.tilemap,
+          pos: position.globalPosition(),
+          tilemap,
+          buffer: quadBuffer,
+          bufferValues: quadBufferValues
+        };
+
+        this.instances.set(entity.entity, instance);
+      }
+
+      const pos = position.globalPosition();
+      instance.bufferValues.set([
+        pos.x, pos.y,
+        tilemap.fullSize.x, tilemap.fullSize.y,
+        tilemap.tileSize.x, tilemap.tileSize.y,
+      ], 0);
+      this.parent.device.queue.writeBuffer(instance.buffer, 0, instance.bufferValues, 0);
     }
   }
 
-  endFrame(passEncoder: GPURenderPassEncoder, camera: CameraResource): void {
-    for (const batch of this.batches) {
-      const pipeline = this.pipelines.get(batch)!;
+  endFrame(passEncoder: GPURenderPassEncoder): void {
+    if (this.instances.size == 0)
+      return;
+    
+    passEncoder.setPipeline(this.pipeline);
+    passEncoder.setVertexBuffer(0, this.parent.vertexBuffer);
+    passEncoder.setBindGroup(0, this.sharedBindGroup);
+  
+    for (const instance of this.instances.values()) {
+      const batchBindGroup = this.parent.device.createBindGroup({
+        label: `tilemap batch bind group ${instance.name}`,
+        layout: this.specificBindGroupLayout,
+        entries: [
+          { binding: 0, resource: { buffer: instance.buffer } }, // Quad
+          { binding: 1, resource: instance.tilemap.atlasTexture.createView() }, // Atlas
+          { binding: 2, resource: instance.tilemap.sourceTexture.createView() }, // Source 
+        ]
+      });
 
-      pipeline.endFrame(passEncoder, camera);
+      passEncoder.setBindGroup(1, batchBindGroup);
+      passEncoder.draw(6);
     }
   }
 
-
+  createAtlasTexture(name:string, tilemap:TilemapData) {
+    const atlasTexture = this.parent.device.createTexture({
+      label: `atlas texture ${name}`,
+      format: 'rg32uint',
+      size: [tilemap.mapTileCount.x, tilemap.mapTileCount.y],
+      usage: GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_DST | GPUTextureUsage.RENDER_ATTACHMENT,
+    });
+    this.parent.device.queue.writeTexture(
+      { texture: atlasTexture },
+      tilemap.data,
+      { bytesPerRow: tilemap.mapTileCount.x * 4 * 2, rowsPerImage: tilemap.mapTileCount.y },
+      { width: tilemap.mapTileCount.x, height: tilemap.mapTileCount.y }
+    );
+    return atlasTexture;
+  }
 }

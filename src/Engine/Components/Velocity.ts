@@ -1,4 +1,4 @@
-import { Component } from "../Component";
+import Component from "../Component";
 import Vec2 from "../Math/Vec2";
 
 export default class Velocity implements Component {

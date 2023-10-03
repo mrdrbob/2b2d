@@ -1,33 +1,7 @@
 import Asset from "../Asset";
 import Vec2 from "../Math/Vec2";
+import LdtkData from "./Ldtk";
 
-// A minimum definition of Ldtk's JSON structure
-export interface LdtkData {
-  defs: {
-    tilesets: {
-      uid: number,
-      __cWid: number,
-      __cHei: number,
-      tileGridSize: number,
-      spacing: number
-    }[]
-  },
-  levels: {
-    identifier: string,
-    pxWid: number,
-    pxHei: number,
-    layerInstances: {
-      __identifier: string,
-      __tilesetDefUid: number,
-      __cWid: number,
-      __cHei: number,
-      gridTiles: {
-        px: [number, number], 
-        src: [number, number], 
-      }[]
-    }[]
-  }[]
-}
 
 export interface TilemapData {
   tileSize:Vec2, 
@@ -55,7 +29,13 @@ export default function createTilemapFromLdtkJson(name:string, ldtkJson:any, lev
   let offset = 0;
   for (let y = 0; y < mapTileCount.y; y++) {
     for (let x = 0; x < mapTileCount.x; x++) {
-      const tile = layer.gridTiles.find(i => i.px[0] == x * tileSize.x && i.px[1] == y * tileSize.y)!;
+      const tile = layer.gridTiles.find(i => i.px[0] == x * tileSize.x && i.px[1] == y * tileSize.y);
+      if (!tile) { 
+        data.set([256, 256], offset);
+        offset += 2;
+        continue; 
+      }
+
       const srcX = tile.src[0] / tileSize.x;
       const srcY = tile.src[1] / tileSize.y;
       

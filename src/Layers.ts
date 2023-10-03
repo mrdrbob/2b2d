@@ -1,4 +1,8 @@
 export default {
-  BACKGROUND: 'BACKGROUND',
-  FOREGROUND: 'FOREGROUND',
+  ENTITIES: 'Entities',
+  TILES: 'Tiles',
+  BG: 'Background',
+  FG: 'Foregroud',
+  HUD: 'Hud',
+  OVERLAYS: 'Overlays',
 }

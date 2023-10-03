@@ -1,14 +1,25 @@
-import TextureAsset from "../Assets/TextureAsset";
+// https://github.com/gfx-rs/wgpu-rs/issues/18
+
 import AssetsResource from "../Resources/AssetsResource";
-import CameraResource from "../Resources/CameraResource";
 import LayersResource from "../Resources/LayersResource";
 import Update from "../Update";
 
+const quadTriangles = new Float32Array(
+  [-0.5, -0.5,
+    0.5, 0.5,
+    0.5, -0.5,
+
+   -0.5, -0.5,
+   -0.5, 0.5,
+    0.5, 0.5]
+);
+
 export interface Renderer {
-  endFrame(passEncoder: GPURenderPassEncoder, camera:CameraResource): void;
-  draw(update: Update, layer: string): void;
-  beginFrame(passEncoder: GPURenderPassEncoder): void;
   initialize(parent: RenderingSystem): Promise<void>;
+
+  beginFrame(): void;
+  draw(update: Update, layer: string): void;
+  endFrame(passEncoder: GPURenderPassEncoder): void;
 }
 
 export class RenderingBuilder {
@@ -28,17 +39,21 @@ export class RenderingBuilder {
 }
 
 export class RenderingSystem {
-  public device!: GPUDevice;
-  public context!: GPUCanvasContext;
-  public presentationFormat!: GPUTextureFormat;
-  public devicePixelRatio: number = 1;
+  loadedTextures: Map<string, GPUTexture> = new Map<string, GPUTexture>();
 
-  private renderers: Renderer[];
-  public readonly loadedTextures: Map<string, GPUTexture> = new Map<string, GPUTexture>();
+  devicePixelRatio!: number;
+  device!: GPUDevice;
+  context!: GPUCanvasContext;
+  presentationFormat!: GPUTextureFormat;
+  vertexBufferLayout!: GPUVertexBufferLayout;
+  vertexBuffer!: GPUBuffer;
+  worldUniformBuffer!: GPUBuffer;
+  worldUniformBufferValues!: Float32Array;
+  frameUniformBufferValues!: Float32Array;
+  frameUniformBuffer!: GPUBuffer;
+  sampler!: GPUSampler;
 
-  constructor(renderers: Renderer[], public readonly width:number, public readonly height:number, public readonly zoom:number) {
-    this.renderers = renderers;
-  }
+  constructor(private renderers: Renderer[], public readonly width:number, public readonly height:number, public readonly zoom:number) {}
 
   async initialize() {
     const gameDiv = document.getElementById('game');
@@ -58,15 +73,77 @@ export class RenderingSystem {
       format: this.presentationFormat,
     });
 
+    // Set up some common resources.
+    this.createQuadVertexBuffer();
+    this.createWorldUniformBuffer();
+    this.createFrameUniformBuffer();
+    this.createSampler();
 
     for (const renderer of this.renderers) {
       await renderer.initialize(this);
     }
   }
 
+  private createWorldUniformBuffer() {
+    this.worldUniformBufferValues = new Float32Array([
+      (this.devicePixelRatio * this.zoom) / (this.width * 0.5), (this.devicePixelRatio * this.zoom) / (this.height * 0.5)
+    ]);
+    this.worldUniformBuffer = this.device.createBuffer({
+      label: 'world uniform buffer',
+      size: this.worldUniformBufferValues.byteLength,
+      usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
+    });
+    this.device.queue.writeBuffer(this.worldUniformBuffer, 0, this.worldUniformBufferValues);
+  }
+
+  private createFrameUniformBuffer() {
+    // Frame uniform buffer
+    this.frameUniformBufferValues = new Float32Array([
+      0, 0 // Camera position
+    ]);
+    this.frameUniformBuffer = this.device.createBuffer({
+      label: 'frame uniform buffer',
+      size: this.frameUniformBufferValues.byteLength,
+      usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
+    });
+  }
+
+  private createQuadVertexBuffer() {
+    this.vertexBufferLayout = {
+      arrayStride: 2 * Float32Array.BYTES_PER_ELEMENT, // vec2f * 4 bytes
+      attributes: [
+        {
+          shaderLocation: 0,
+          offset: 0,
+          format: "float32x2" // vec2f
+        }
+      ],
+      stepMode: 'vertex'
+    };
+  
+    this.vertexBuffer = this.device.createBuffer({
+      size: quadTriangles.byteLength,
+      usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
+      mappedAtCreation: true
+    });
+  
+    new Float32Array(this.vertexBuffer.getMappedRange()).set(quadTriangles);
+    this.vertexBuffer.unmap();
+  }
+
+  private createSampler() {
+    this.sampler = this.device.createSampler({
+      magFilter: 'nearest',
+      minFilter: 'nearest',
+    })
+  }
+
   draw(update: Update) {
     const layers = update.resource<LayersResource>(LayersResource.NAME);
-    const camera = update.resource<CameraResource>(CameraResource.NAME);
+    const camera = update.getCamera();
+    if (!camera)
+      return;
+    const cameraPos = camera.globalPosition();
 
     const commandEncoder = this.device.createCommandEncoder();
     const renderPassDescriptor: GPURenderPassDescriptor = {
@@ -82,17 +159,23 @@ export class RenderingSystem {
     };
 
     const passEncoder = commandEncoder.beginRenderPass(renderPassDescriptor);
+
+    this.frameUniformBufferValues.set([cameraPos.x, cameraPos.y]);
+    this.device.queue.writeBuffer(this.frameUniformBuffer, 0, this.frameUniformBufferValues, 0);
+
     for (const layer of layers.listAll()) {
       for (const renderer of this.renderers) {
-        renderer.beginFrame(passEncoder);
+        renderer.beginFrame();
         renderer.draw(update, layer);
-        renderer.endFrame(passEncoder, camera);
+        renderer.endFrame(passEncoder);
       }
     }
+
 
     passEncoder.end();
     this.device.queue.submit([commandEncoder.finish()]);
   }
+
 
   public ensureTextureLoaded(textureName:string, assets:AssetsResource) {
     let gpuTexture = this.loadedTextures.get(textureName);
@@ -113,5 +196,4 @@ export class RenderingSystem {
 
     return gpuTexture;
   }
-
 }
