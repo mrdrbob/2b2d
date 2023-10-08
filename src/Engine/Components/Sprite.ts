@@ -10,4 +10,9 @@ export default class Sprite implements Component {
   public color:[number, number, number, number] = [1, 1, 1, 1];
 
   constructor(public texture:string, public atlas:string, public layer:string, public frame:string) { }
+
+  withColor(r:number, g:number, b:number, a:number ) {
+    this.color = [r, g, b, a];
+    return this;
+  }
 }

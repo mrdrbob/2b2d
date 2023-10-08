@@ -24,6 +24,13 @@ export default class AABB {
       return val < 0 ? -1 : 1;
   }
 
+  contains(pos:Vec2) {
+    return pos.x >= this.pos.x - this.size.x
+      &&   pos.x <= this.pos.x + this.size.x
+      &&   pos.y >= this.pos.y - this.size.y
+      &&   pos.y <= this.pos.y + this.size.y;
+  }
+
   detectRayCollision(pos:Vec2, ray:Vec2) {
       const raySign = new Vec2(AABB.signum(ray.x), AABB.signum(ray.y));
       const negRaySign = raySign.scalarMultiply(-1);

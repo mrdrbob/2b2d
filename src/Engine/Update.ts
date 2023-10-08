@@ -35,6 +35,8 @@ export default class Update {
     return this.data.world.queryCached(name, componentNames);
   }
 
+  getEntityComponents(entity:Entity, components:string[]) { return this.data.world.getEntityComponents(entity, components); }
+
   getCamera() {
     const query = this.data.world.queryCached('globalCameraQuery', [Camera.NAME, Position.NAME]);
     if (query.length == 0)
@@ -61,5 +63,8 @@ export default class Update {
   resource<T>(name: string) {
     return this.data.resources.assume<T>(name);
   }
+
+  event<T>(name:string) { return this.data.events.assume<T>(name); }
+  getEvent<T>(name:string) { return this.data.events.get<T>(name); }
 
 }

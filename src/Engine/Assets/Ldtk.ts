@@ -5,7 +5,11 @@ export default interface LdtkData {
       __cWid: number,
       __cHei: number,
       tileGridSize: number,
-      spacing: number
+      spacing: number,
+      customData: {
+        tileId: number,
+        data: string
+      }[]
     }[]
   },
   levels: {
@@ -27,6 +31,7 @@ export default interface LdtkData {
       gridTiles: {
         px: [number, number], 
         src: [number, number], 
+        t: number
       }[],
     }[]
   }[]

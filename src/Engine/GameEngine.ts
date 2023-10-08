@@ -11,7 +11,10 @@ import LayersResource from "./Resources/LayersResource";
 import ScreenResource from "./Resources/ScreenResource";
 import { SystemsBuilder, SystemsRunner } from "./System";
 import { updateAnimatedSprites } from "./Systems/Animated";
+import updateAnimatedTilemaps from "./Systems/AnimatedTilemap";
 import { applyPhysics } from "./Systems/Physics";
+import updateTweens from "./Systems/Tweening";
+import updateDelays from "./Systems/UpdateDelays";
 import Update, { Command } from "./Update";
 import World from "./World";
 
@@ -40,7 +43,10 @@ export default class GameEngineBuilder {
     this.renderers.add(new TilemapRenderer());
     this.renderers.add(new GradientRenderer());
     //this.renderers.add(new DebugRenderer());
+    this.systems.update(SystemsRunner.ALWAYS_STATE, updateTweens);
+    this.systems.update(SystemsRunner.ALWAYS_STATE, updateDelays);
     this.systems.update(SystemsRunner.ALWAYS_STATE, updateAnimatedSprites);
+    this.systems.update(SystemsRunner.ALWAYS_STATE, updateAnimatedTilemaps);
     this.systems.update(SystemsRunner.ALWAYS_STATE, applyPhysics);
   }
 

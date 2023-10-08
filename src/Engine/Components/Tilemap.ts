@@ -1,4 +1,4 @@
-import { Component } from "../Component";
+import Component from "../Component";
 
 export default class Tilemap implements Component {
   public static readonly NAME:string = 'Tilemap';
@@ -8,5 +8,4 @@ export default class Tilemap implements Component {
   constructor(public layer:string, public texture:string, public tilemap:string, public atlas:string) {
     
   }
-
 }

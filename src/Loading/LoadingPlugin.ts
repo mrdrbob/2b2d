@@ -1,19 +1,27 @@
 import Assets from "../Assets";
 import { Curtain } from "../Curtain/Plugin";
+import spawnCurtains from "../Curtain/SpawnCurtains";
 import loadJsonAsset from "../Engine/Assets/JsonAsset";
 import LdtkData from "../Engine/Assets/Ldtk";
 import { generateSingleSpriteAtlas, generateTiledSpriteAtlas, loadSpriteAtlasAsset } from "../Engine/Assets/SpriteAtlasAsset";
 import loadTextureAsset from "../Engine/Assets/TextureAsset";
 import createTilemapFromLdtkJson from "../Engine/Assets/TilemapAsset";
-import Gradient from "../Engine/Components/Gradient";
-import Position from "../Engine/Components/Position";
+import Delay from "../Engine/Components/Delay";
 import GameEngineBuilder from "../Engine/GameEngine";
-import Color from "../Engine/Math/Color";
 import Vec2 from "../Engine/Math/Vec2";
 import AssetsResource from "../Engine/Resources/AssetsResource";
 import Update from "../Engine/Update";
-import Layers from "../Layers";
 import States from "../States";
+
+function spawnLoading(update:Update) {
+    // Spawn a black screen while things load.
+    spawnCurtains(update, (args) => {
+      args.update.exitState(States.PRELOAD);
+      args.update.enterState(States.LOADING);
+      args.update.despawn(args.entity);
+    });
+  
+}
 
 function loadAssets(update:Update) {
   const assets = update.resource<AssetsResource>(AssetsResource.NAME);
@@ -29,7 +37,13 @@ function loadAssets(update:Update) {
   assets.add(loadTextureAsset(Assets.CHARACTERS_TEXTURE, 'assets/characters.png'));
   assets.add(loadSpriteAtlasAsset(Assets.CHARACTERS_ATLAS, 'assets/characters.json'));
 
-  // Spawn a black screen while things load.
+  // Misc
+  assets.add(loadTextureAsset(Assets.DEAD_PLAYER_TEXTURE, 'assets/dead-guy.png'));
+  assets.add(loadTextureAsset(Assets.DEATH_SCREEN_TEXTURE, 'assets/dead-bg.png'));
+  assets.add(loadTextureAsset(Assets.YOU_DIED_TEXTURE, 'assets/you-died.png'));
+  assets.add(loadTextureAsset(Assets.YOU_WIN_TEXTURE, 'assets/you-win.png'));
+
+  /*
   update.spawn([
     new Gradient(Layers.OVERLAYS, 
       Color.Black(1), Color.Black(1), 
@@ -48,6 +62,7 @@ function loadAssets(update:Update) {
     Position.fromXY(0, 150),
     new Curtain(new Vec2(0, 150), new Vec2(0, -150), 2000, Curtain.DespawnAfter ),
   ]);
+  */
 }
 
 function checkLoadingProgress(update:Update) {
@@ -60,17 +75,32 @@ function checkLoadingProgress(update:Update) {
     Assets.PLATFORM_TILES_TEXTURE,
     Assets.CHARACTERS_TEXTURE,
     Assets.CHARACTERS_ATLAS,
+    Assets.DEAD_PLAYER_TEXTURE,
+    Assets.DEATH_SCREEN_TEXTURE,
+    Assets.YOU_DIED_TEXTURE,
+    Assets.YOU_WIN_TEXTURE,
   ]);
 
   if (isLoaded) {
     assets.add(generateSingleSpriteAtlas(Assets.MENU_ATLAS, new Vec2(200, 150)));
+    assets.add(generateSingleSpriteAtlas(Assets.DEAD_PLAYER_ATLAS, new Vec2(24, 24)));
+    assets.add(generateSingleSpriteAtlas(Assets.DEATH_SCREEN_ATLAS, new Vec2(200, 150)));
+    assets.add(generateSingleSpriteAtlas(Assets.YOU_WIN_ATLAS, new Vec2(200, 150)));
+    assets.add(generateSingleSpriteAtlas(Assets.YOU_DIED_ATLAS, new Vec2(106, 21)));
 
     const ldtk = assets.assume<LdtkData>(Assets.PLATFORM_JSON);
-    assets.add(createTilemapFromLdtkJson(Assets.PLATFORM_TILEMAPS[0].BG_TILES, ldtk, 'Level_0', 'Background'));
     assets.add(generateTiledSpriteAtlas(Assets.PLATFORM_ATLAS.BG, new Vec2(24, 24), new Vec2(6, 2), new Vec2(0, 0)));
-
-    assets.add(createTilemapFromLdtkJson(Assets.PLATFORM_TILEMAPS[0].TILES, ldtk, 'Level_0', 'Tiles'));
     assets.add(generateTiledSpriteAtlas(Assets.PLATFORM_ATLAS.TILES, new Vec2(18, 18), new Vec2(20, 9), new Vec2(0, 0)));
+
+    assets.add(createTilemapFromLdtkJson(Assets.PLATFORM_TILEMAPS[0].BG_TILES, ldtk, 'Level_0', 'Background', 0));
+    assets.add(createTilemapFromLdtkJson(Assets.PLATFORM_TILEMAPS[0].TILES[0], ldtk, 'Level_0', 'Tiles', 0));
+    assets.add(createTilemapFromLdtkJson(Assets.PLATFORM_TILEMAPS[0].TILES[1], ldtk, 'Level_0', 'Tiles', 1));
+    assets.add(createTilemapFromLdtkJson(Assets.PLATFORM_TILEMAPS[0].FG_TILES, ldtk, 'Level_0', 'Foreground', 0));
+
+    assets.add(createTilemapFromLdtkJson(Assets.PLATFORM_TILEMAPS[1].BG_TILES, ldtk, 'Level_1', 'Background', 0));
+    assets.add(createTilemapFromLdtkJson(Assets.PLATFORM_TILEMAPS[1].TILES[0], ldtk, 'Level_1', 'Tiles', 0));
+    assets.add(createTilemapFromLdtkJson(Assets.PLATFORM_TILEMAPS[1].TILES[1], ldtk, 'Level_1', 'Tiles', 1));
+    assets.add(createTilemapFromLdtkJson(Assets.PLATFORM_TILEMAPS[1].FG_TILES, ldtk, 'Level_1', 'Foreground', 0));
 
     update.exitState(States.LOADING);
     update.enterState(States.MAIN_MENU);
@@ -79,6 +109,7 @@ function checkLoadingProgress(update:Update) {
 
 
 export default function addLoading(builder:GameEngineBuilder) {
+  builder.systems.enter(States.PRELOAD, spawnLoading);
   builder.systems.enter(States.LOADING, loadAssets);
   builder.systems.update(States.LOADING, checkLoadingProgress);
 }

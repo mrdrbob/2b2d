@@ -16,7 +16,7 @@ export class Event<T> implements UntypedEvent {
 
   read() { return this.events; }
 
-  push(value:T) { this.events.push(value); }
+  push(value:T) { this.pending.push(value); }
 }
 
 export default class EventManager {

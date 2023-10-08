@@ -1,3 +1,4 @@
+import Config from "../Config";
 import Resource from "../Engine/Resource";
 
 export class GameStateResource implements Resource {
@@ -5,7 +6,7 @@ export class GameStateResource implements Resource {
 
   name(): string { return GameStateResource.NAME }
 
-  public health:number = 100;
+  public health:number = Config.MaxHealth;
   public level:number = 0;
 }
 

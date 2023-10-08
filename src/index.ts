@@ -26,8 +26,7 @@ async function main() {
   
   const engine = await builder.finish(800, 600, 2);
 
-
-  engine.execute([States.LOADING]);
+  engine.execute([States.SPAWN_CAM]);
   
 };
 

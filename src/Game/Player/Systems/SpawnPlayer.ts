@@ -40,7 +40,7 @@ export default function spawnPlayer(update:Update) {
     new Position(position.add(new Vec2(0, 20))),
     sprite,
     new Animated('Idle'),
-    new CleanupOnGameLoopExit(),
+    CleanupOnGameLoopExit.TAG,
     new Velocity(Vec2.ZERO),
     KineticBody.fromWH(8, 12),
     new Weight(-0.6),

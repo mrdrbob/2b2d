@@ -53,6 +53,10 @@ export default function movePlayer(update:Update) {
       anim.tag = body.isGrounded ? 'Idle' : 'Jump';
     }
 
+    //if (keys.keyJustReleased('q')) {
+    //  player.invincibleTimeRemaining = 2000;
+    //}
+
     // pos.pos = pos.pos.add(vel.velocity.scalarMultiply(update.deltaTime()));
   }
 }

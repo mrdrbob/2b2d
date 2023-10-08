@@ -1,6 +1,8 @@
 import Assets from "../Assets";
 import { Curtain } from "../Curtain/Plugin";
+import spawnCurtains from "../Curtain/SpawnCurtains";
 import Component from "../Engine/Component";
+import Camera from "../Engine/Components/Camera";
 import Gradient from "../Engine/Components/Gradient";
 import Position from "../Engine/Components/Position";
 import Sprite from "../Engine/Components/Sprite";
@@ -10,7 +12,7 @@ import Color from "../Engine/Math/Color";
 import Vec2 from "../Engine/Math/Vec2";
 import KeysResource from "../Engine/Resources/KeysResource";
 import Update from "../Engine/Update";
-import { Hud } from "../Hud/Components";
+import { closeCurtains } from "../Game/Systems";
 import Layers from "../Layers";
 import States from "../States";
 
@@ -56,41 +58,11 @@ function waitForSpace(update:Update) {
 }
 
 function spawnClosingCurtains(update:Update) {
-  const hud = update.query([ Hud.NAME, Position.NAME ])[0].components[1] as Position;
-
-  update.spawn([
-    Position.fromXY(0, 460).follow(hud),
-    new Gradient(Layers.OVERLAYS, 
-      Color.Black(1), Color.Black(1),
-      Color.Black(0), Color.Black(0),
-      new Vec2(210, 160)
-    ),
-    new Curtain(new Vec2(0, 460), new Vec2(0, 150), 1000 ),
-    new Tag('curtain:top')
-  ]);
-  update.spawn([
-    Position.fromXY(0, 300).follow(hud),
-    new Gradient(Layers.OVERLAYS, 
-      Color.Black(1), Color.Black(1),
-      Color.Black(1), Color.Black(1),
-      new Vec2(210, 160)
-    ),
-    new Curtain(new Vec2(0, 300), new Vec2(0, 0), 1000 ),
-    new Tag('curtain:middle')
-  ]);
-  update.spawn([
-    Position.fromXY(0, 150).follow(hud),
-    new Gradient(Layers.OVERLAYS, 
-      Color.Black(0), Color.Black(0),
-      Color.Black(1), Color.Black(1),
-      new Vec2(210, 150),
-    ),
-    new Curtain(new Vec2(0, 150), new Vec2(0, -150), 1000, ( (args) => {
-      args.update.exitState(States.MAIN_MENU_TO_GAME);
-      args.update.enterState(States.GAME);
-      args.update.despawn(args.entity);
-    }) ),
-  ])
+  spawnCurtains(update, (args) => {
+    args.update.exitState(States.MAIN_MENU_TO_GAME);
+    args.update.enterState(States.GAME);
+    args.update.despawn(args.entity);
+  });
 }
 
 
@@ -104,6 +76,7 @@ function cleanup(update:Update) {
 
 // "Plugin"
 export default function addMainMenu(builder:GameEngineBuilder) {
+  builder.systems.enter(States.MAIN_MENU, closeCurtains);
   builder.systems.enter(States.MAIN_MENU, spawnMenuGraphic);
   builder.systems.update(States.MAIN_MENU, waitForSpace);
   builder.systems.enter(States.MAIN_MENU_TO_GAME, spawnClosingCurtains);

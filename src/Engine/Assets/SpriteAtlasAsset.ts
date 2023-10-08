@@ -75,8 +75,8 @@ export function generateTiledSpriteAtlas(name: string, tileSize: Vec2, tileCount
       const id = new Vec2(x, y);
 
       const pos = (id.multiply(tileSize)).add(id.multiply(padding));
-      const framePos = pos.add(MINUS_ONE);
-      const frameSize = tileSize.add(PLUS_ONE);
+      const framePos = pos; //pos.add(MINUS_ONE);
+      const frameSize = tileSize; //tileSize.add(PLUS_ONE);
 
       atlas.frames[`${pos.x},${pos.y}`] = {
         frame: { x: framePos.x, y: framePos.y, w: frameSize.x, h: frameSize.y },

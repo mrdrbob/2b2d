@@ -7,4 +7,5 @@ export class Player implements Component {
 
   public facing:Vec2 = Vec2.ZERO;
   public jumpTimeRemaining:number = 0;
+  public invincibleTimeRemaining:number = 0;
 }

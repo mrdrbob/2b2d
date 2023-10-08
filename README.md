@@ -26,6 +26,7 @@ Probably no one. You're welcome to toy with it, but you may run into bugs and pe
 * The ECS system relies heavily on caching the results of queries, so if you're frequently adding/remove components or entities, performance may degrade. Or it might not? I haven't benchmarked anything.
 * Because of how tilemaps are drawn, you can't have maps bigger than 255 X 255 tiles. 65,025 tiles aught to be enough for anyone!  (If you need bigger, you could maybe stitch together several sub-tilemaps. Or use a proper engine.)
 * The physics engine only has two body types: `StaticBody` which does not move, and `KenticBody` which does move but can't pass through any `StaticBody`. `KineticBody` entities, however, do not interact with each other and can pass through.
+* Anchor points are always the center of the sprite. `(•_•) ( •_•)>⌐□-□ (⌐□_□)` Deal with it.
 
 ## How would I use this?
 

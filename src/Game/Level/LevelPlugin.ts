@@ -1,5 +1,6 @@
 import Assets from "../../Assets";
 import LdtkData from "../../Engine/Assets/Ldtk";
+import AnimatedTilemap from "../../Engine/Components/AnimatedTilemap";
 import Position from "../../Engine/Components/Position";
 import StaticBody from "../../Engine/Components/StaticBody";
 import Tilemap from "../../Engine/Components/Tilemap";
@@ -10,7 +11,9 @@ import { processLdtkIntGrid } from "../../Engine/Utils/LdtkUtils";
 import Layers from "../../Layers";
 import States from "../../States";
 import { CleanupOnGameLoopExit } from "../Components";
+import { FlagCollider } from "../Flag/Components";
 import { GameStateResource } from "../Resources";
+import { WaterCollider } from "../Water/Components";
 
 
 // Systems
@@ -21,13 +24,20 @@ function spawnLevel(update:Update) {
   update.spawn([
     new Tilemap(Layers.BG, Assets.PLATFORM_BG_TEXTURE, Assets.PLATFORM_TILEMAPS[levelId].BG_TILES, Assets.PLATFORM_ATLAS.BG),
     Position.fromXY(0, 0),
-    new CleanupOnGameLoopExit(),
+    CleanupOnGameLoopExit.TAG,
   ]);
 
   update.spawn([
-    new Tilemap(Layers.TILES, Assets.PLATFORM_TILES_TEXTURE, Assets.PLATFORM_TILEMAPS[levelId].TILES, Assets.PLATFORM_ATLAS.TILES),
+    new Tilemap(Layers.TILES, Assets.PLATFORM_TILES_TEXTURE, Assets.PLATFORM_TILEMAPS[levelId].TILES[0], Assets.PLATFORM_ATLAS.TILES),
+    new AnimatedTilemap([Assets.PLATFORM_TILEMAPS[levelId].TILES[0], Assets.PLATFORM_TILEMAPS[levelId].TILES[1]], 200),
     Position.fromXY(0, 0),
-    new CleanupOnGameLoopExit(),
+    CleanupOnGameLoopExit.TAG,
+  ]);
+
+  update.spawn([
+    new Tilemap(Layers.FG, Assets.PLATFORM_TILES_TEXTURE, Assets.PLATFORM_TILEMAPS[levelId].FG_TILES, Assets.PLATFORM_ATLAS.TILES),
+    Position.fromXY(0, 0),
+    CleanupOnGameLoopExit.TAG,
   ]);
 
   const assets = update.resource<AssetsResource>(AssetsResource.NAME);
@@ -39,7 +49,7 @@ function spawnLevel(update:Update) {
     update.spawn([
       new Position(pos),
       new StaticBody(size.scalarMultiply(0.5)),
-      new CleanupOnGameLoopExit(),
+      CleanupOnGameLoopExit.TAG,
     ])
   });
 
@@ -47,8 +57,8 @@ function spawnLevel(update:Update) {
   processLdtkIntGrid(ldtk, levelName, 'Collisions', 2, (pos, size) => {
     update.spawn([
       new Position(pos),
-      new StaticBody(size.scalarMultiply(0.5)),
-      new CleanupOnGameLoopExit(),
+      new FlagCollider(size.scalarMultiply(0.5)),
+      CleanupOnGameLoopExit.TAG,
     ])
   });
 
@@ -56,11 +66,10 @@ function spawnLevel(update:Update) {
   processLdtkIntGrid(ldtk, levelName, 'Collisions', 3, (pos, size) => {
     update.spawn([
       new Position(pos),
-      new StaticBody(size.scalarMultiply(0.5)),
-      new CleanupOnGameLoopExit(),
+      new WaterCollider(size.scalarMultiply(0.5)),
+      CleanupOnGameLoopExit.TAG,
     ])
   });
-
 }
 
 export default function addLevel(builder:GameEngineBuilder) {
