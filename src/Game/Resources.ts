@@ -7,6 +7,6 @@ export class GameStateResource implements Resource {
   name(): string { return GameStateResource.NAME }
 
   public health:number = Config.MaxHealth;
-  public level:number = 0;
+  public level:number = Config.StartLevelId;
 }
 

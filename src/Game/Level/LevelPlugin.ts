@@ -22,20 +22,20 @@ function spawnLevel(update:Update) {
   const levelId = gameState.level;
 
   update.spawn([
-    new Tilemap(Layers.BG, Assets.PLATFORM_BG_TEXTURE, Assets.PLATFORM_TILEMAPS[levelId].BG_TILES, Assets.PLATFORM_ATLAS.BG),
+    new Tilemap(Layers.BG, Assets.PLATFORM_BG_TEXTURE, Assets.PLATFORM_TILEMAPS.BG_TILES + levelId.toString(), Assets.PLATFORM_ATLAS.BG),
     Position.fromXY(0, 0),
     CleanupOnGameLoopExit.TAG,
   ]);
 
   update.spawn([
-    new Tilemap(Layers.TILES, Assets.PLATFORM_TILES_TEXTURE, Assets.PLATFORM_TILEMAPS[levelId].TILES[0], Assets.PLATFORM_ATLAS.TILES),
-    new AnimatedTilemap([Assets.PLATFORM_TILEMAPS[levelId].TILES[0], Assets.PLATFORM_TILEMAPS[levelId].TILES[1]], 200),
+    new Tilemap(Layers.TILES, Assets.PLATFORM_TILES_TEXTURE, Assets.PLATFORM_TILEMAPS.TILES[0] + levelId.toString(), Assets.PLATFORM_ATLAS.TILES),
+    new AnimatedTilemap([Assets.PLATFORM_TILEMAPS.TILES[0] + levelId.toString(), Assets.PLATFORM_TILEMAPS.TILES[1] + levelId.toString()], 200),
     Position.fromXY(0, 0),
     CleanupOnGameLoopExit.TAG,
   ]);
 
   update.spawn([
-    new Tilemap(Layers.FG, Assets.PLATFORM_TILES_TEXTURE, Assets.PLATFORM_TILEMAPS[levelId].FG_TILES, Assets.PLATFORM_ATLAS.TILES),
+    new Tilemap(Layers.FG, Assets.PLATFORM_TILES_TEXTURE, Assets.PLATFORM_TILEMAPS.FG_TILES + levelId.toString(), Assets.PLATFORM_ATLAS.TILES),
     Position.fromXY(0, 0),
     CleanupOnGameLoopExit.TAG,
   ]);

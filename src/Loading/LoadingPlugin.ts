@@ -92,15 +92,12 @@ function checkLoadingProgress(update:Update) {
     assets.add(generateTiledSpriteAtlas(Assets.PLATFORM_ATLAS.BG, new Vec2(24, 24), new Vec2(6, 2), new Vec2(0, 0)));
     assets.add(generateTiledSpriteAtlas(Assets.PLATFORM_ATLAS.TILES, new Vec2(18, 18), new Vec2(20, 9), new Vec2(0, 0)));
 
-    assets.add(createTilemapFromLdtkJson(Assets.PLATFORM_TILEMAPS[0].BG_TILES, ldtk, 'Level_0', 'Background', 0));
-    assets.add(createTilemapFromLdtkJson(Assets.PLATFORM_TILEMAPS[0].TILES[0], ldtk, 'Level_0', 'Tiles', 0));
-    assets.add(createTilemapFromLdtkJson(Assets.PLATFORM_TILEMAPS[0].TILES[1], ldtk, 'Level_0', 'Tiles', 1));
-    assets.add(createTilemapFromLdtkJson(Assets.PLATFORM_TILEMAPS[0].FG_TILES, ldtk, 'Level_0', 'Foreground', 0));
-
-    assets.add(createTilemapFromLdtkJson(Assets.PLATFORM_TILEMAPS[1].BG_TILES, ldtk, 'Level_1', 'Background', 0));
-    assets.add(createTilemapFromLdtkJson(Assets.PLATFORM_TILEMAPS[1].TILES[0], ldtk, 'Level_1', 'Tiles', 0));
-    assets.add(createTilemapFromLdtkJson(Assets.PLATFORM_TILEMAPS[1].TILES[1], ldtk, 'Level_1', 'Tiles', 1));
-    assets.add(createTilemapFromLdtkJson(Assets.PLATFORM_TILEMAPS[1].FG_TILES, ldtk, 'Level_1', 'Foreground', 0));
+    for (let i = 0; i < ldtk.levels.length; i++) {
+      assets.add(createTilemapFromLdtkJson(Assets.PLATFORM_TILEMAPS.BG_TILES + i.toString(), ldtk, 'Level_' + i.toString(), 'Background', 0));
+      assets.add(createTilemapFromLdtkJson(Assets.PLATFORM_TILEMAPS.TILES[0] + i.toString(), ldtk, 'Level_' + i.toString(), 'Tiles', 0));
+      assets.add(createTilemapFromLdtkJson(Assets.PLATFORM_TILEMAPS.TILES[1] + i.toString(), ldtk, 'Level_' + i.toString(), 'Tiles', 1));
+      assets.add(createTilemapFromLdtkJson(Assets.PLATFORM_TILEMAPS.FG_TILES + i.toString(), ldtk, 'Level_' + i.toString(), 'Foreground', 0));
+    }
 
     update.exitState(States.LOADING);
     update.enterState(States.MAIN_MENU);

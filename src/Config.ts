@@ -1,3 +1,4 @@
 export default {
-  MaxHealth: 6
+  MaxHealth: 6,
+  StartLevelId: 0
 }

@@ -1,4 +1,6 @@
 
+
+
 export default {
   MENU_TEXTURE: 'asset:menu-texture',
   MENU_ATLAS: 'asset:menu-atlas',
@@ -10,30 +12,20 @@ export default {
   PLATFORM_TILES_TEXTURE: 'asset:platform-tiles-texture',
   PLATFORM_JSON: 'asset:platform-json',
 
-  // I'm sure there's a better way to do this.
-  PLATFORM_TILEMAPS: [
-    {
-      BG_TILES: 'assets:bg-tiles-0',
-      TILES: [
-        'assets:tiles-0-0',
-        'assets:tiles-0-1'
-      ],
-      ENTITIES: 'assets:entities-0',
-      FG_TILES: 'assets:fg-tiles-0'
-    },
-    {
-      BG_TILES: 'assets:bg-tiles-1',
-      TILES: [ 
-        'assets:tiles-1-0',
-        'assets:tiles-1-1'
-       ],
-      ENTITIES: 'assets:entities-1',
-      FG_TILES: 'assets:fg-tiles-1'
-    }
-  ],
   PLATFORM_ATLAS: {
-    BG: 'assets:platform-bg-atlas',
-    TILES: 'assets:platform-tiles-atlas',
+    BG: 'platform-atlas-bg',
+    TILES: 'platform-atlas-tiles'
+  },
+
+  PLATFORM_TILEMAPS:
+  {
+    BG_TILES: 'assets:bg-tiles-',
+    TILES: [
+      'assets:tiles-0-',
+      'assets:tiles-1-'
+    ],
+    ENTITIES: 'assets:entities-',
+    FG_TILES: 'assets:fg-tiles-'
   },
 
   // Death screen
