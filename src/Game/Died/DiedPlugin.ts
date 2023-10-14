@@ -9,6 +9,7 @@ import Tag from "../../Engine/Components/Tag";
 import Tween from "../../Engine/Components/Tween";
 import GameEngineBuilder from "../../Engine/GameEngine";
 import Vec2 from "../../Engine/Math/Vec2";
+import AudioServerResource from "../../Engine/Resources/AudioServerResource";
 import Update from "../../Engine/Update";
 import Layers from "../../Layers";
 import States from "../../States";
@@ -30,6 +31,9 @@ function detectPlayerDied(update:Update) {
   if (event.length == 0)
     return;
   
+  const audio = update.resource<AudioServerResource>(AudioServerResource.NAME);
+  audio.play(Assets.SOUND.DIED);
+
   const sprite = new Sprite(Assets.DEAD_PLAYER_TEXTURE, Assets.DEAD_PLAYER_ATLAS, Layers.ENTITIES, '0');
   const position = new Position(event[0].playerPosition);
   update.spawn([

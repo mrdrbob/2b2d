@@ -1,6 +1,8 @@
+import Assets from "../../../Assets";
 import Position from "../../../Engine/Components/Position";
 import Velocity from "../../../Engine/Components/Velocity";
 import Vec2 from "../../../Engine/Math/Vec2";
+import AudioServerResource from "../../../Engine/Resources/AudioServerResource";
 import Update from "../../../Engine/Update";
 import { GameStateResource } from "../../Resources";
 import { PlayerDiedEvent, PlayerEnemyCollisionEvent } from "../../Systems";
@@ -36,13 +38,14 @@ export default function detectEnemyHit(update:Update) {
   const state = update.resource<GameStateResource>(GameStateResource.NAME);
   state.health -= first.damage;
 
+  const audio = update.resource<AudioServerResource>(AudioServerResource.NAME);
   if (state.health <= 0) {
-    console.log('dead from hits');
     const diedEvent = update.event<PlayerDiedEvent>(PlayerDiedEvent.NAME);
     diedEvent.push({ playerPosition: position.globalPosition() });
     update.despawn(query[0].entity);
     return;
   }
 
+  audio.play(Assets.SOUND.HURT);
   player.invincibleTimeRemaining = 2000;
 }

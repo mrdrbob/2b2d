@@ -6,6 +6,7 @@ import SpriteRenderer from "./Rendering/SpriteRenderer";
 import TilemapRenderer from "./Rendering/TilemapRenderer";
 import { ResourceBuilder, Resources } from "./Resource";
 import AssetsResource from "./Resources/AssetsResource";
+import AudioServerResource from "./Resources/AudioServerResource";
 import KeysResource from "./Resources/KeysResource";
 import LayersResource from "./Resources/LayersResource";
 import ScreenResource from "./Resources/ScreenResource";
@@ -37,8 +38,10 @@ export default class GameEngineBuilder {
 
   constructor() {
     // Add some defaults
+    const assets = new AssetsResource();
     this.resources.addResource(new KeysResource());
-    this.resources.addResource(new AssetsResource());
+    this.resources.addResource(assets);
+    this.resources.addResource(new AudioServerResource(assets));
     this.renderers.add(new SpriteRenderer());
     this.renderers.add(new TilemapRenderer());
     this.renderers.add(new GradientRenderer());
@@ -51,8 +54,7 @@ export default class GameEngineBuilder {
   }
 
   public async finish(width:number, height:number, zoom:number) {
-    const devicePixelRatio = window.devicePixelRatio || 1;
-    this.resources.addResource(new ScreenResource(new Vec2(width, height), devicePixelRatio));
+    this.resources.addResource(new ScreenResource(new Vec2(width, height)));
     
     const runner = this.systems.finish();
     const resources = this.resources.finish();

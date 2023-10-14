@@ -1,7 +1,9 @@
+import Assets from "../../Assets";
 import KineticBody from "../../Engine/Components/KineticBody";
 import Position from "../../Engine/Components/Position";
 import Velocity from "../../Engine/Components/Velocity";
 import Vec2 from "../../Engine/Math/Vec2";
+import AudioServerResource from "../../Engine/Resources/AudioServerResource";
 import Update from "../../Engine/Update";
 import AABB from "../../Engine/Utils/AABB";
 import States from "../../States";
@@ -24,7 +26,8 @@ export function checkForFlagCollision(update:Update) {
     if (aabb.contains(globalPosition)) {
       velocity.velocity = Vec2.ZERO;
       
-      console.log('hit flag');
+      const audio = update.resource<AudioServerResource>(AudioServerResource.NAME);
+      audio.play(Assets.SOUND.FLAG);
       update.exitState(States.GAME);
       update.enterState(States.GAME_TO_NEXT_STAGE);
       return;

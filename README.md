@@ -17,11 +17,11 @@ Probably no one. You're welcome to toy with it, but you may run into bugs and pe
 * Limited Aseprite support (via exported atlas JSON files)
 * Basic LDTK support (currently only loads tilemaps with some caveats)
 * Engine states (which determine which systems run)
-* A *very* rudimentary AABB-based "phsyics" engine.
+* A *very* rudimentary AABB-based "physics" engine.
 
 ## Caveats and limitations
 
-* Sprites are really basic. I mean, *really* basic. I didn't bother implementing support for rotation, alpha, etc. Maybe coming in the future, though?
+* Sprites are really basic. I mean, *really* basic. I didn't bother implementing support for rotation. Maybe coming in the future, though?
 * Currently, tilemaps require your tile source sprite to be a grid of square tiles with no spacing or padding between tiles. Annoying maybe, but makes rendering fast and easy.
 * The ECS system relies heavily on caching the results of queries, so if you're frequently adding/remove components or entities, performance may degrade. Or it might not? I haven't benchmarked anything.
 * Because of how tilemaps are drawn, you can't have maps bigger than 255 X 255 tiles. 65,025 tiles aught to be enough for anyone!  (If you need bigger, you could maybe stitch together several sub-tilemaps. Or use a proper engine.)
@@ -57,7 +57,6 @@ Your best bet is to look through the files and folders (except `Engine`) for exa
 ## What things should I expect from the repo in the future?
 
 * Abandonment when I get bored of this
-* Maybe some kind of rudimentary sound system
 * Post-processing?
 
 ## But... why?

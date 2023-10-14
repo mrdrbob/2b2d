@@ -24,7 +24,7 @@ async function main() {
   addGamePlay(builder);
   addCurtain(builder);
   
-  const engine = await builder.finish(800, 600, 2);
+  const engine = await builder.finish(800, 600, 8);
 
   engine.execute([States.SPAWN_CAM]);
   

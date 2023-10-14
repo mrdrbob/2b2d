@@ -5,5 +5,5 @@ export default class ScreenResource implements Resource {
   public static readonly NAME:string = 'ScreenResource';
   name() { return ScreenResource.NAME; }
 
-  constructor(public screenSize:Vec2, devicePixelRatio:number) { }
+  constructor(public screenSize:Vec2) { }
 }

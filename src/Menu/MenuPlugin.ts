@@ -5,11 +5,13 @@ import Component from "../Engine/Component";
 import Camera from "../Engine/Components/Camera";
 import Gradient from "../Engine/Components/Gradient";
 import Position from "../Engine/Components/Position";
+import Sound from "../Engine/Components/Sound";
 import Sprite from "../Engine/Components/Sprite";
 import Tag from "../Engine/Components/Tag";
 import GameEngineBuilder from "../Engine/GameEngine";
 import Color from "../Engine/Math/Color";
 import Vec2 from "../Engine/Math/Vec2";
+import AudioServerResource from "../Engine/Resources/AudioServerResource";
 import KeysResource from "../Engine/Resources/KeysResource";
 import Update from "../Engine/Update";
 import { closeCurtains } from "../Game/Systems";
@@ -48,6 +50,28 @@ function spawnMenuGraphic(update:Update) {
   //*/
 }
 
+function startMenuMusic(update:Update) {
+  const audio = update.resource<AudioServerResource>(AudioServerResource.NAME);
+  const id = audio.play(Assets.SOUND.MENU_MUSIC, 0.5, true)!;
+
+  update.spawn([
+    new Sound(id),
+    new Tag('tag:menu-music'),
+  ]);
+}
+
+function fadeMenuMusic(update:Update) {
+  const audio = update.resource<AudioServerResource>(AudioServerResource.NAME);
+  var query = update.query([Sound.NAME, 'tag:menu-music']);
+  if (query.length == 0)
+    return;
+  
+  const sound = query[0].components[0] as Sound;
+  audio.fadeOut(sound.soundId, 2);
+  
+
+}
+
 function waitForSpace(update:Update) {
   const keys = update.resource<KeysResource>(KeysResource.NAME);
 
@@ -78,6 +102,8 @@ function cleanup(update:Update) {
 export default function addMainMenu(builder:GameEngineBuilder) {
   builder.systems.enter(States.MAIN_MENU, closeCurtains);
   builder.systems.enter(States.MAIN_MENU, spawnMenuGraphic);
+  builder.systems.enter(States.MAIN_MENU, startMenuMusic);
+  builder.systems.exit(States.MAIN_MENU, fadeMenuMusic);
   builder.systems.update(States.MAIN_MENU, waitForSpace);
   builder.systems.enter(States.MAIN_MENU_TO_GAME, spawnClosingCurtains);
   builder.systems.exit(States.MAIN_MENU_TO_GAME, cleanup);

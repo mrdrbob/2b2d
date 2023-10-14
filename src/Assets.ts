@@ -40,4 +40,13 @@ export default {
 
   YOU_WIN_TEXTURE: 'assets:you-win-texture',
   YOU_WIN_ATLAS: 'assets:you-win-asset',
+
+  SOUND: {
+    JUMP: 'jump',
+    DROP: 'drop',
+    MENU_MUSIC: 'menu-music',
+    FLAG: 'flag',
+    HURT: 'hurt',
+    DIED: 'died',
+  }
 };

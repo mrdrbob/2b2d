@@ -41,7 +41,6 @@ export class RenderingBuilder {
 export class RenderingSystem {
   loadedTextures: Map<string, GPUTexture> = new Map<string, GPUTexture>();
 
-  devicePixelRatio!: number;
   device!: GPUDevice;
   context!: GPUCanvasContext;
   presentationFormat!: GPUTextureFormat;
@@ -58,11 +57,13 @@ export class RenderingSystem {
   async initialize() {
     const gameDiv = document.getElementById('game');
     const canvas = document.createElement('canvas');
-    canvas.width = this.width;
-    canvas.height = this.height;
+    canvas.width = this.width * (window.devicePixelRatio || 1);
+    canvas.height = this.height * (window.devicePixelRatio || 1);
+    canvas.style.width = this.width + 'px';
+    canvas.style.height = this.height + 'px';
+
     gameDiv?.appendChild(canvas);
 
-    this.devicePixelRatio = window.devicePixelRatio || 1;
     const adapter = await navigator.gpu?.requestAdapter();
     this.device = await adapter?.requestDevice()!;
 
@@ -86,7 +87,7 @@ export class RenderingSystem {
 
   private createWorldUniformBuffer() {
     this.worldUniformBufferValues = new Float32Array([
-      (this.devicePixelRatio * this.zoom) / (this.width * 0.5), (this.devicePixelRatio * this.zoom) / (this.height * 0.5)
+      (this.zoom) / (this.width), (this.zoom) / (this.height)
     ]);
     this.worldUniformBuffer = this.device.createBuffer({
       label: 'world uniform buffer',

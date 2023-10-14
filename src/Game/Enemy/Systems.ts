@@ -6,6 +6,7 @@ import Sprite from "../../Engine/Components/Sprite";
 import Tween from "../../Engine/Components/Tween";
 import Vec2 from "../../Engine/Math/Vec2";
 import AssetsResource from "../../Engine/Resources/AssetsResource";
+import AudioServerResource from "../../Engine/Resources/AudioServerResource";
 import Update from "../../Engine/Update";
 import Layers from "../../Layers";
 import { CleanupOnGameLoopExit } from "../Components";
@@ -34,7 +35,7 @@ export function spawnEnemies(update:Update) {
       new Animated('FlyEnemy'),
       new Position(position),
       new Bat(position, position.add(new Vec2(0, 50))),
-      new Enemy(3, new Vec2(8, 6)),
+      new Enemy(1, new Vec2(8, 6)),
       CleanupOnGameLoopExit.TAG
     ]);
   }
@@ -70,11 +71,13 @@ export function batsFly(update:Update) {
 
 export function detectStomps(update:Update) {
   const reader = update.event<PlayerEnemyCollisionEvent>(PlayerEnemyCollisionEvent.NAME);
+  const audio = update.resource<AudioServerResource>(AudioServerResource.NAME);
 
   for (const event of reader.read()) {
     if (!event.fromAbove)
       continue;
 
+    audio.play(Assets.SOUND.DROP);
     update.despawn(event.enemy);
     
     const [ position ] = update.getEntityComponents(event.enemy, [ Position.NAME ]) as [ Position ];

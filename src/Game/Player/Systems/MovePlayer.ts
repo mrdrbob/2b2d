@@ -1,8 +1,10 @@
+import Assets from "../../../Assets";
 import Animated from "../../../Engine/Components/Animated";
 import KineticBody from "../../../Engine/Components/KineticBody";
 import Sprite from "../../../Engine/Components/Sprite";
 import Velocity from "../../../Engine/Components/Velocity";
 import Vec2 from "../../../Engine/Math/Vec2";
+import AudioServerResource from "../../../Engine/Resources/AudioServerResource";
 import KeysResource from "../../../Engine/Resources/KeysResource";
 import Update from "../../../Engine/Update";
 import { Player } from "../Components";
@@ -15,6 +17,7 @@ const jumpTime:number = 0.2 * 1000;
 export default function movePlayer(update:Update) {
   const query = update.queryCached('movePlayer', [Player.NAME, Velocity.NAME, Animated.NAME, Sprite.NAME, KineticBody.NAME]);
   const keys = update.resource<KeysResource>(KeysResource.NAME);
+  const sound = update.resource<AudioServerResource>(AudioServerResource.NAME);
 
   const isLeft = keys.isKeyDown('ArrowLeft');
   const isRight = keys.isKeyDown('ArrowRight');
@@ -39,6 +42,9 @@ export default function movePlayer(update:Update) {
     if (isSpace && player.jumpTimeRemaining > 0) {
       newVel = newVel.add(new Vec2(0, jumpSpeed)); 
       player.jumpTimeRemaining -= deltaTime;
+      if (body.isGrounded) {
+        sound.play(Assets.SOUND.JUMP, 0.1);
+      }
     } else if (body.isGrounded) {
       player.jumpTimeRemaining = jumpTime;
     } else {

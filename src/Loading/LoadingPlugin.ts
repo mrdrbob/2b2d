@@ -10,6 +10,7 @@ import Delay from "../Engine/Components/Delay";
 import GameEngineBuilder from "../Engine/GameEngine";
 import Vec2 from "../Engine/Math/Vec2";
 import AssetsResource from "../Engine/Resources/AssetsResource";
+import AudioServerResource from "../Engine/Resources/AudioServerResource";
 import Update from "../Engine/Update";
 import States from "../States";
 
@@ -43,26 +44,14 @@ function loadAssets(update:Update) {
   assets.add(loadTextureAsset(Assets.YOU_DIED_TEXTURE, 'assets/you-died.png'));
   assets.add(loadTextureAsset(Assets.YOU_WIN_TEXTURE, 'assets/you-win.png'));
 
-  /*
-  update.spawn([
-    new Gradient(Layers.OVERLAYS, 
-      Color.Black(1), Color.Black(1), 
-      Color.Black(1), Color.Black(1), 
-      new Vec2(210, 150)
-    ),
-    Position.fromXY(0, 0),
-    new Curtain(new Vec2(0, 0), new Vec2(0, -300), 2000, Curtain.DespawnAfter ),
-  ]);
-  update.spawn([
-    new Gradient(Layers.OVERLAYS, 
-      Color.Black(1), Color.Black(1), 
-      Color.Black(0), Color.Black(0), 
-      new Vec2(210, 150)
-    ),
-    Position.fromXY(0, 150),
-    new Curtain(new Vec2(0, 150), new Vec2(0, -150), 2000, Curtain.DespawnAfter ),
-  ]);
-  */
+  // Sounds
+  const audioServer = update.resource<AudioServerResource>(AudioServerResource.NAME);
+  audioServer.loadAudioSource(Assets.SOUND.JUMP, 'assets/jump.opus');
+  audioServer.loadAudioSource(Assets.SOUND.DROP, 'assets/drop.opus');
+  audioServer.loadAudioSource(Assets.SOUND.MENU_MUSIC, 'assets/menu.opus');
+  audioServer.loadAudioSource(Assets.SOUND.HURT, 'assets/hurt.opus');
+  audioServer.loadAudioSource(Assets.SOUND.FLAG, 'assets/flag.opus');
+  audioServer.loadAudioSource(Assets.SOUND.DIED, 'assets/died.opus');
 }
 
 function checkLoadingProgress(update:Update) {
@@ -79,6 +68,12 @@ function checkLoadingProgress(update:Update) {
     Assets.DEATH_SCREEN_TEXTURE,
     Assets.YOU_DIED_TEXTURE,
     Assets.YOU_WIN_TEXTURE,
+    Assets.SOUND.JUMP,
+    Assets.SOUND.DROP,
+    Assets.SOUND.MENU_MUSIC,
+    Assets.SOUND.HURT,
+    Assets.SOUND.FLAG,
+    Assets.SOUND.DIED,
   ]);
 
   if (isLoaded) {
