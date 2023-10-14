@@ -9,9 +9,9 @@ import KeysResource from "../../../Engine/Resources/KeysResource";
 import Update from "../../../Engine/Update";
 import { Player } from "../Components";
 
-const speed:number = 0.5;
+const speed:number = 0.03;
 const drag:number = 0.8;
-const jumpSpeed:number = 2.5;
+const jumpSpeed:number = 0.15;
 const jumpTime:number = 0.2 * 1000;
 
 export default function movePlayer(update:Update) {

@@ -11,6 +11,7 @@ const COLLISION_BIAS = 0.1;
 
 export function applyPhysics(update: Update) {
   const weightQuery = update.queryCached('applyPhysicsWeight', [Velocity.NAME, Weight.NAME]);
+  const delta = update.deltaTime();
 
   for (const entity of weightQuery) {
     const [vel, weight] = entity.components as [Velocity, Weight];
@@ -25,8 +26,6 @@ export function applyPhysics(update: Update) {
     const kinBody = new AABB(kinPos.pos, kineticBody.size);
     let isGrounded = false;
 
-    let velocity = kinVel.velocity;
-
     // Create all the AABB static body representations
     let /* the */ bodies /* hit the floor */ = staticBodyQuery.map(staticEntity => {
       const [staticPos, staticBody] = staticEntity.components as [Position, StaticBody];
@@ -34,8 +33,11 @@ export function applyPhysics(update: Update) {
       return { entity: staticEntity.entity, body: statBody };
     });
 
+    // Cast the velocity over time
+    let ray = kinVel.velocity.scalarMultiply(delta);
+
     // Gather all collisions
-    let collisions = bodies.map(body => body.body.detectRayCollision(kinBody.pos, velocity))
+    let collisions = bodies.map(body => body.body.detectRayCollision(kinBody.pos, ray))
       .filter(x => x != null)
       .map(y => y!);
 
@@ -46,8 +48,8 @@ export function applyPhysics(update: Update) {
     while (collisions.length > 0 && maxTries > 0) {
       const collision = collisions[0];
 
-      const velocityAdjustment = collision.normal.multiply(velocity.abs()).scalarMultiply(1 - collision.moment);
-      velocity = velocity.add(velocityAdjustment);
+      const velocityAdjustment = collision.normal.multiply(ray.abs()).scalarMultiply(1 - collision.moment);
+      ray = ray.add(velocityAdjustment);
 
       // A nudge in the direction of the normal
       const positionAdjustment = collision.normal.scalarMultiply(COLLISION_BIAS);
@@ -56,7 +58,7 @@ export function applyPhysics(update: Update) {
       isGrounded = isGrounded || collision.normal.y > 0;
 
       // Now we need to pull the collisions again and retry
-      collisions = bodies.map(body => body.body.detectRayCollision(kinBody.pos, velocity))
+      collisions = bodies.map(body => body.body.detectRayCollision(kinBody.pos, ray))
         .filter(x => x != null)
         .map(y => y!);
 
@@ -69,8 +71,8 @@ export function applyPhysics(update: Update) {
 
 
     // Apply transformation
-    kinBody.pos = kinBody.pos.add(velocity);
-    kinVel.velocity = velocity;
+    kinBody.pos = kinBody.pos.add(ray);
+    kinVel.velocity = ray.scalarMultiply(1 / delta);
     kinPos.pos = kinBody.pos;
     kineticBody.isGrounded = isGrounded;
   }

@@ -43,7 +43,7 @@ export default function spawnPlayer(update:Update) {
     CleanupOnGameLoopExit.TAG,
     new Velocity(Vec2.ZERO),
     KineticBody.fromWH(8, 12),
-    new Weight(-0.6),
+    new Weight(-0.05),
     new Player(),
     // new Debug(position.add(new Vec2(0, 20)), new Vec2(8 * 2, 24), [0, 1.0, 1.0, 0.5]),
   ]);

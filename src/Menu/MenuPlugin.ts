@@ -68,8 +68,6 @@ function fadeMenuMusic(update:Update) {
   
   const sound = query[0].components[0] as Sound;
   audio.fadeOut(sound.soundId, 2);
-  
-
 }
 
 function waitForSpace(update:Update) {

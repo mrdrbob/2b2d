@@ -8,7 +8,7 @@ import { GameStateResource } from "../../Resources";
 import { PlayerDiedEvent, PlayerEnemyCollisionEvent } from "../../Systems";
 import { Player } from "../Components";
 
-const BOUNCE_VELOCITY = 7;
+const BOUNCE_VELOCITY = 0.4;
 
 export default function detectEnemyHit(update:Update) {
   const event = update.event<PlayerEnemyCollisionEvent>(PlayerEnemyCollisionEvent.NAME);
