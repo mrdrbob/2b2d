@@ -1,11 +1,4 @@
-import { SpriteAtlas } from "../Assets/SpriteAtlasAsset";
-import Position from "../Components/Position";
-import Sprite from "../Components/Sprite";
-import Vec2 from "../Math/Vec2";
-import AssetsResource from "../Resources/AssetsResource";
-import Update from "../Update";
 import BaseSpriteRenderer, { RenderBatch } from "./BaseSpriteRenderer";
-import { Renderer, RenderingSystem } from "./Renderer";
 import wgsl from './Shaders/Sprite.wgsl?raw';
 
 const MAX_SPRITES:number = 1000;

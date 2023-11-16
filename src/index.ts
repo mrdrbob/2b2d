@@ -1,6 +1,7 @@
 
 import { addCurtain } from './Curtain/Plugin';
 import GameEngineBuilder from './Engine/GameEngine';
+import SpriteJiggleRenderer from './Rendering/SpriteJiggleRenderer';
 import addGamePlay from './Game/GamePlugin';
 import addHud from './Hud/Plugin';
 import Layers from './Layers';
@@ -17,6 +18,8 @@ async function main() {
   builder.layers.add(Layers.FG);
   builder.layers.add(Layers.HUD);
   builder.layers.add(Layers.OVERLAYS);
+
+  builder.renderers.add(new SpriteJiggleRenderer());
 
   addHud(builder);
   addLoading(builder);

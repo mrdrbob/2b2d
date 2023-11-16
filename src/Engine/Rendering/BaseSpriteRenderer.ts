@@ -144,12 +144,16 @@ export default abstract class BaseSpriteRenderer<T extends RenderBatch> implemen
     return update.queryCached('SpriteRendererDraw', [ Sprite.NAME, Position.NAME ]);
   }
 
+  protected canProcessSprite(sprite:Sprite) {
+    return sprite.specialRenderer == null;
+  }
+
   protected getSpiteData(layer: string,  entity:{ entity: number, components: Component[] }) { 
     const [sprite, position] = entity.components as [Sprite, Position];
     if (sprite.layer != layer)
       return null;
 
-    if (!sprite.useDefaultRenderer)
+    if (!this.canProcessSprite(sprite))
       return null;
 
     const pos = position.globalPosition();

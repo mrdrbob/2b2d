@@ -5,6 +5,7 @@ import Position from "../../Engine/Components/Position";
 import Sprite from "../../Engine/Components/Sprite";
 import Tween from "../../Engine/Components/Tween";
 import Vec2 from "../../Engine/Math/Vec2";
+import SpriteJiggleRenderer from "../../Rendering/SpriteJiggleRenderer";
 import AssetsResource from "../../Engine/Resources/AssetsResource";
 import AudioServerResource from "../../Engine/Resources/AudioServerResource";
 import Update from "../../Engine/Update";
@@ -29,9 +30,11 @@ export function spawnEnemies(update:Update) {
 
   for (const enemy of enemies) {
     const position = new Vec2(enemy.px[0], level.pxHei - enemy.px[1]).add(offset);
+    const sprite = new Sprite(Assets.CHARACTERS_TEXTURE, Assets.CHARACTERS_ATLAS, Layers.ENTITIES, '4');
+    sprite.specialRenderer = SpriteJiggleRenderer.NAME;
 
     update.spawn([
-      new Sprite(Assets.CHARACTERS_TEXTURE, Assets.CHARACTERS_ATLAS, Layers.ENTITIES, '4'),
+      sprite,
       new Animated('FlyEnemy'),
       new Position(position),
       new Bat(position, position.add(new Vec2(0, 50))),

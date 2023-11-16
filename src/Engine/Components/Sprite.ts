@@ -6,7 +6,7 @@ export default class Sprite implements Component {
 
   name() { return Sprite.NAME; }
 
-  public useDefaultRenderer:boolean = true;
+  public specialRenderer:string | null = null;
   public scale:Vec2 = new Vec2(1, 1);
   public color:[number, number, number, number] = [1, 1, 1, 1];
 
