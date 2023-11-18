@@ -62,7 +62,7 @@ export function bringThePain(update:Update) {
 }
 
 export function updateHealthItems(update:Update) {
-  const query = update.queryCached('updateHealthItems', [ HealthDisplay.name, Sprite.NAME ]);
+  const query = update.queryCached('updateHealthItems', [ HealthDisplay.NAME, Sprite.NAME ]);
   const gameState = update.resource<GameStateResource>(GameStateResource.NAME);
   const health = gameState.health;
 

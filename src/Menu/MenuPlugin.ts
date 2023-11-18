@@ -1,16 +1,11 @@
 import Assets from "../Assets";
-import { Curtain } from "../Curtain/Plugin";
 import spawnCurtains from "../Curtain/SpawnCurtains";
 import Component from "../Engine/Component";
-import Camera from "../Engine/Components/Camera";
-import Gradient from "../Engine/Components/Gradient";
 import Position from "../Engine/Components/Position";
 import Sound from "../Engine/Components/Sound";
 import Sprite from "../Engine/Components/Sprite";
 import Tag from "../Engine/Components/Tag";
 import GameEngineBuilder from "../Engine/GameEngine";
-import Color from "../Engine/Math/Color";
-import Vec2 from "../Engine/Math/Vec2";
 import AudioServerResource from "../Engine/Resources/AudioServerResource";
 import KeysResource from "../Engine/Resources/KeysResource";
 import Update from "../Engine/Update";

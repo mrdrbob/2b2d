@@ -47,11 +47,11 @@ export default function cameraFollowPlayer(update:Update) {
     const [ _player, pos ] = player.components as [Player, Position];
     const desiredPosition = pos.pos.max(topLeft).min(bottomRight);
 
-    camera.pos = desiredPosition;
+    camera!.pos = desiredPosition;
   }
 
   /*
-  const tQuery = update.queryCached('cameraFollowPlayer:debug', [Position.name, Debug.name, Player.NAME]);
+  const tQuery = update.queryCached('cameraFollowPlayer:debug', [Position.NAME, Debug.NAME, Player.NAME]);
   for (const t of tQuery) {
     const [pos, debug] = t.components as [Position, Debug, Player];
     debug.position = pos.pos;

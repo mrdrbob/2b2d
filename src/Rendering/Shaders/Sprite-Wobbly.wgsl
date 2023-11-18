@@ -74,6 +74,9 @@ fn vs (
 @fragment 
 fn fs(vertex:VertexOutput) -> @location(0) vec4f {
     let uv = vertex.uv / vec2f(textureDimensions(text));
-    return textureSample(text, sampl, uv) * vertex.color;
+
+    let x = uv.x + (sin((uv.y * 10.0) + (jiggle.time * 0.35)) * 0.005);
+
+    return textureSample(text, sampl, vec2f(x, uv.y)) * vertex.color;
     // return vec4f(1.0, 0.5, 0.0, 1.0);
 }

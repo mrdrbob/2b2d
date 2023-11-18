@@ -4,7 +4,6 @@ import BaseSpriteRenderer, { RenderBatch } from "../Engine/Rendering/BaseSpriteR
 import { RenderingSystem } from "../Engine/Rendering/Renderer";
 import wgsl from './Shaders/Sprite-Wobbly.wgsl?raw';
 
-
 // An example custom renderer that mostly uses BaseSpriteRenderer
 interface JiggleBatch extends RenderBatch {
 
@@ -21,7 +20,7 @@ export default class SpriteJiggleRenderer extends BaseSpriteRenderer<JiggleBatch
   override async initialize(parent: RenderingSystem) {
     this.jiggleValues = new Float32Array([ 0 ]);
     this.jiggleBuffer = parent.device.createBuffer({
-      label: 'world uniform buffer',
+      label: 'jiggle uniform buffer',
       size: this.jiggleValues.byteLength,
       usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
     });
@@ -33,7 +32,7 @@ export default class SpriteJiggleRenderer extends BaseSpriteRenderer<JiggleBatch
   protected override getSharedBindGroupLayoutEntries(): GPUBindGroupLayoutEntry[] {
     const entries = super.getSharedBindGroupLayoutEntries();
     entries.push(
-      { binding: 3, visibility: GPUShaderStage.VERTEX, buffer: { type: 'uniform' } }, // Jiggle
+      { binding: 3, visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT, buffer: { type: 'uniform' } }, // Jiggle
     )
     return entries;
   }
@@ -56,7 +55,10 @@ export default class SpriteJiggleRenderer extends BaseSpriteRenderer<JiggleBatch
 
   time:number = 0;
   override draw(update: Update, layer: string): void {
-    this.time += update.deltaTime();
+    this.time += (update.deltaTime() / 500);
+    console.log(this.time);
+    while (this.time > 360)
+      this.time -= 360;
     super.draw(update, layer);
   }
 

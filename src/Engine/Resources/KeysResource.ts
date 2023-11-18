@@ -2,7 +2,7 @@ import Resource from "../Resource";
 
 export default class KeysResource implements Resource {
   public static readonly NAME: string = 'KeysResource';
-  name(): string { return KeysResource.name; }
+  name(): string { return KeysResource.NAME; }
 
   private dirty: boolean = false;
   private lastFrame: Set<string> = new Set<string>();

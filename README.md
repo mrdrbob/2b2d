@@ -6,6 +6,12 @@
 
 But really, it was my attempt to answer the question, "what does it take to make a very basic game engine from scratch." It's an academic exercise which is likely of little to no practical use.
 
+## Example Game
+
+This repo is both the game engine and an example game. The example game can be played on [Itch.io](https://mrdrbob.itch.io/2b2d-example-game) in modern browsers with WebGPU enabled.
+
+![Screenshot of the 2B2D example game](docs/screen-shot.png?raw=true)
+
 ## Who should use this?
 
 Probably no one. You're welcome to toy with it, but you may run into bugs and performance issues. You may find some of the source code helpful to read, but keep in mind I barely understood what I was doing when I built this. Nothing here should be considered correct or best practice.
