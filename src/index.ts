@@ -1,36 +1,19 @@
-
-import { addCurtain } from './Curtain/Plugin';
-import GameEngineBuilder from './Engine/GameEngine';
-import SpriteJiggleRenderer from './Rendering/SpriteJiggleRenderer';
-import addGamePlay from './Game/GamePlugin';
-import addHud from './Hud/Plugin';
-import Layers from './Layers';
-import addLoading from './Loading/LoadingPlugin';
-import addMainMenu from './Menu/MenuPlugin';
-import States from './States';
+import Builder from "./2B2D/Builder";
+import GamePlugin from "./Example/GamePlugin";
+import States from "./Example/States";
 
 async function main() {
-  const builder = new GameEngineBuilder();
-  
-  builder.layers.add(Layers.BG);
-  builder.layers.add(Layers.TILES);
-  builder.layers.add(Layers.ENTITIES);
-  builder.layers.add(Layers.FG);
-  builder.layers.add(Layers.HUD);
-  builder.layers.add(Layers.OVERLAYS);
+  const builder = new Builder();
 
-  builder.renderers.add(new SpriteJiggleRenderer());
+  // Scheduel all the game systems and signals
+  builder.plugin(GamePlugin);
 
-  addHud(builder);
-  addLoading(builder);
-  addMainMenu(builder);
-  addGamePlay(builder);
-  addCurtain(builder);
-  
-  const engine = await builder.finish(800, 600, 8);
+  // Start of in the Init state.
+  builder.command({ type: 'enter-state', state: States.Init });
 
-  engine.execute([States.SPAWN_CAM]);
-  
+  const engine = await builder.finish();
+  engine.start();
 };
+
 
 main().catch(console.error);

@@ -36,7 +36,7 @@ Probably no one. You're welcome to toy with it, but you may run into bugs and pe
 
 ## How would I use this?
 
-Clone this repo. Update anything that is not in the `Engine` directory. Then:
+Clone this repo. Refer to the `Example` director for how to put something together, then create your own director, add your components, states, assets, etc. Update the `index.ts` to use your new game. Then:
 
 `yarn dev`
 
@@ -50,10 +50,10 @@ The concepts are roughly:
 * Resources are basically global stores for values, data, etc. Assets for example are saved as a Resource.
 * Commands give you a way to spawn/despawn entities outside of the normal frame loop, after all other systems have run. This way you can spawn or despawn something and not worry about systems that have yet to run being effected. (In a *good* ECS, you do this to allow multithreaded handling of systems, but this one is neither good nor does it support multithreading)
 * Assets are files that are loaded at runtime. Out-of-the-box, the engine supports loading images, spite atlas JSON, and arbitrary JSON. LDTK json assets can be turned into Tilemaps.
-* Plugins are not exactly a first-class citizen, but you can bundle up registering your systems into separate methods and call those plugins (see: `GamePlugin.ts` or `LoadingPlugin.ts`).
+* Plugins are not exactly a first-class citizen, but you can bundle up registering your systems into separate methods and call those plugins (see: `GamePlugin.ts` or `InitPlugin.ts`).
 * A Renderer is a class that knows how to render something. The engine comes with two: one to render entities that have `Sprite` and `Position` components, and another that renders entities that have both `Tilemap` and `Position` components.
 
-Your best bet is to look through the files and folders (except `Engine`) for examples of usage. Everything in the `Engine` folder is part of the core engine and should not container any game-specific code.
+Your best bet is to look through the files and folders in the `Example` directory for examples of usage. Everything in the `2B2D` folder is part of the core engine and should not container any game-specific code.
 
 ## Anything notable?
 
