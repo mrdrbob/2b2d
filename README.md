@@ -8,9 +8,11 @@ But really, it was my attempt to answer the question, "what does it take to make
 
 ## Example Game
 
-This repo is both the game engine and an example game. The example game can be played on [Itch.io](https://mrdrbob.itch.io/2b2d-example-game) in modern browsers with WebGPU enabled.
+This repo is both the game engine and an example game. V1 of the example game can be played on [Itch.io](https://mrdrbob.itch.io/2b2d-example-game) in modern browsers with WebGPU enabled.
 
 ![Screenshot of the 2B2D example game](docs/screen-shot.png?raw=true)
+
+*Note*: This is V2 of the engine, which was a ground-up rewrite / refactor, but the playable game is roughly the same as the V1 demo above. I removed the menu music and the jiggle renderer in V2, but otherwise the game plays exactly the same.
 
 ## Who should use this?
 
@@ -43,17 +45,18 @@ Clone this repo. Refer to the `Example` director for how to put something togeth
 The concepts are roughly:
 
 * Components extend `Component` and contain data that could apply to entities.
-* Entities are basically numbers, but you assign components to entities to build up an actor of some kind.
+* Entities are an identifier (number) and a collection of components that make up the data about the entity.
 * States are a global resource that determine which systems run. You can have any number of states active at a given time. States have an "enter" schedule, "update" schedule, and "exit" schedule. The "enter" schedule runs systems for a single frame when the state is first started. "update" happens every frame until the state is over. "exit" runs for a single frame after the state has stopped. Hint: These are useful for spawning and despawning entities!
-* Systems are functions that run every update during the state they're set to run in. Within the system you have access to queries, resources, states, and commands.
+* Systems are functions that run every update during the state they're set to run in. Within the system you have access to queries, resources, states, signals, and commands.
 * Queries get a list of entities and components that match a list of desired components. If your player character has a `Position`, `Velocity`, and `Player` component, you can query for those three items and get a list of all entities that have all three components currently registered to them (which would likely only be one entity, your player).
 * Resources are basically global stores for values, data, etc. Assets for example are saved as a Resource.
 * Commands give you a way to spawn/despawn entities outside of the normal frame loop, after all other systems have run. This way you can spawn or despawn something and not worry about systems that have yet to run being effected. (In a *good* ECS, you do this to allow multithreaded handling of systems, but this one is neither good nor does it support multithreading)
 * Assets are files that are loaded at runtime. Out-of-the-box, the engine supports loading images, spite atlas JSON, and arbitrary JSON. LDTK json assets can be turned into Tilemaps.
 * Plugins are not exactly a first-class citizen, but you can bundle up registering your systems into separate methods and call those plugins (see: `GamePlugin.ts` or `InitPlugin.ts`).
 * A Renderer is a class that knows how to render something. The engine comes with two: one to render entities that have `Sprite` and `Position` components, and another that renders entities that have both `Tilemap` and `Position` components.
+* Signals are basically events (but I called them signals to avoid constantly importing the DOM Event object by accident). You send a signal during a frame and it will be processed by handlers at the top of the next frame. Signal handlers are executed prior to other scheduled systems, though is possible to read events in a normal system to avoid this behavior if you really want.
 
-Your best bet is to look through the files and folders in the `Example` directory for examples of usage. Everything in the `2B2D` folder is part of the core engine and should not container any game-specific code.
+Your best bet is to look through the files and folders in the `Example` directory for examples of usage. Everything in the `2B2D` folder is part of the core engine and should not contain any game-specific code.
 
 ## Anything notable?
 
