@@ -5,6 +5,7 @@ import loadTextureAsset from "../2B2D/Assets/TextureAsset";
 import createTilemapFromLdtkJson from "../2B2D/Assets/TilemapData";
 import Vec2 from "../2B2D/Math/Vec2";
 import { AssetsResource } from "../2B2D/Resources/AssetsResource";
+import { AudioResource } from "../2B2D/Resources/AudioResource";
 
 const GameAssets = {
   Menu: { 
@@ -108,7 +109,29 @@ const GameAssets = {
       Generate: () => generateSingleSpriteAtlas(GameAssets.WinScreen.Atlas.Handle, new Vec2(200, 150))
     }
   },
-  Init: (assets:AssetsResource) => {
+  Sounds:{
+    Jump: {
+      Handle: 'jump-audio',
+      Load: (audio:AudioResource) => audio.loadAudio(GameAssets.Sounds.Jump.Handle, 'assets/jump.opus')
+    },
+    Hurt: {
+      Handle: 'hurt-audio',
+      Load: (audio:AudioResource) => audio.loadAudio(GameAssets.Sounds.Hurt.Handle, 'assets/hurt.opus')
+    },
+    Died: {
+      Handle: 'died-audio',
+      Load: (audio:AudioResource) => audio.loadAudio(GameAssets.Sounds.Died.Handle, 'assets/died.opus')
+    },
+    Flag: {
+      Handle: 'flag-audio',
+      Load: (audio:AudioResource) => audio.loadAudio(GameAssets.Sounds.Flag.Handle, 'assets/flag.opus')
+    },
+    Drop: {
+      Handle: 'drop-audio',
+      Load: (audio:AudioResource) => audio.loadAudio(GameAssets.Sounds.Drop.Handle, 'assets/drop.opus')
+    }
+  },
+  Init: (assets:AssetsResource, audio:AudioResource) => {
     assets.add(GameAssets.Menu.Texture.Load());
     assets.add(GameAssets.Menu.Atlas.Generate());
     assets.add(GameAssets.Characters.Texture.Load());
@@ -125,6 +148,11 @@ const GameAssets = {
     assets.add(GameAssets.Death.Message.Atlas.Generate());
     assets.add(GameAssets.WinScreen.Texture.Load());
     assets.add(GameAssets.WinScreen.Atlas.Generate());
+    assets.add(GameAssets.Sounds.Jump.Load(audio));
+    assets.add(GameAssets.Sounds.Hurt.Load(audio));
+    assets.add(GameAssets.Sounds.Died.Load(audio));
+    assets.add(GameAssets.Sounds.Flag.Load(audio));
+    assets.add(GameAssets.Sounds.Drop.Load(audio));
   },
   IsLoaded: (assets:AssetsResource) => {
     return assets.loaded([
@@ -135,6 +163,11 @@ const GameAssets = {
       GameAssets.LevelData.LdtkData.Handle,
       GameAssets.LevelData.Background.Texture.Handle,
       GameAssets.LevelData.Tiles.Texture.Handle,
+      GameAssets.Sounds.Jump.Handle,
+      GameAssets.Sounds.Hurt.Handle,
+      GameAssets.Sounds.Died.Handle,
+      GameAssets.Sounds.Flag.Handle,
+      GameAssets.Sounds.Drop.Handle,
     ]);
   },
   GenerateTilemaps: (assets:AssetsResource) => {

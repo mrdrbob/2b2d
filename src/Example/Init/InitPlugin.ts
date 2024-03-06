@@ -21,6 +21,7 @@ export default function InitPlugin(builder: Builder) {
 
 function enterInit(update:Update) {
   const assets = update.assets();
+  const audio = update.audio();
 
   // Spawn a camera
   update.spawn([
@@ -33,7 +34,7 @@ function enterInit(update:Update) {
   update.addRenderer(RenderGradients);
   update.addRenderer(RenderTilemaps);
 
-  GameAssets.Init(assets);
+  GameAssets.Init(assets, audio);
 
   update.signals.send(InitializationStarted);
 }

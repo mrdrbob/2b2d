@@ -6,6 +6,8 @@ import { GameStateResouce } from "../../GameStateResource";
 import Player, { PlayerComponent } from "../Components/Player";
 import PlayerDied from "../Signals/PlayerDiedSignal";
 
+export const PlayerDamangedSignal = 'PlayerDamangedSignal';
+
 export default function TakeEnemyDamage(update:Update, signals:Signal[]) {
   if (signals.length === 0)
     return;
@@ -34,4 +36,5 @@ export default function TakeEnemyDamage(update:Update, signals:Signal[]) {
   }
 
   player.invincibleTimeRemaining = 2000;
+  update.signals.send(PlayerDamangedSignal);
 }

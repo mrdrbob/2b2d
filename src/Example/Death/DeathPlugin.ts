@@ -18,6 +18,7 @@ import Tag from "../../2B2D/Components/Tag";
 import SpriteTween from "../../2B2D/Components/SpriteTween";
 import { GameStateResouce } from "../GameStateResource";
 import Config from "../Config";
+import TweenChain, { TweenChainBuilder } from "../../2B2D/Components/TweenChain";
 
 const DeathScreenCleanupTag = "DeathScreenCleanupTag";
 const CloseFinalCurtains = 'CloseFinalCurtains';
@@ -96,8 +97,8 @@ function curtainsOpened(update:Update) {
     Tag(DeathScreenCleanupTag)
   ]);
 
-  // Spawn the message and timer separately 
-  // (beacuse the timer automatically despawns itself)
+  // Spawn the message and tween chain separately 
+  // (beacuse the tween chain automatically despawns itself)
   const message = update.spawn([
     Sprite(
       GameAssets.Death.Message.Texture.Handle,
@@ -111,21 +112,27 @@ function curtainsOpened(update:Update) {
     Tag(DeathScreenCleanupTag)
   ]);
 
-  // Spawn a tween to fade / move the message
-  update.spawn([
-    SpriteTween(
-      new Vec2(0, -10),
-      new Vec2(0, 10),
-      Color.White(0),
-      Color.White(1),
-      message
-    ),
-    Timer(1000)
-  ]);
+  // Put together a little chained animation.
+  // Start at zero alpha, position 0,0.
+  // Move to 0, 10 and fade in for 1 second.
+  // Hold for 2 seconds.
+  // Move to 0, 30 and fade out for 1 second.
+  const animation = TweenChainBuilder.start()
+    .andThen(1000, (step) => step
+      .pos(new Vec2(0, 10))
+      .color(Color.White(1))
+    )
+    .andThen(2000)
+    .andThen(1000, (step) => step
+      .pos(new Vec2(0, 30))
+      .color(Color.White(0))
+    );
+
+  update.spawn([ TweenChain(animation.steps, message) ]);
 
   // Spawn another timer to just delay closing the curtains again.
   update.spawn([
-    Timer(3000, { name: CloseFinalCurtains, sender: DeathPlugin.name })
+    Timer(5000, { name: CloseFinalCurtains, sender: DeathPlugin.name })
   ]);
 }
 

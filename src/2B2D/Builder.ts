@@ -12,6 +12,8 @@ import AnimateTilemaps from "./Systems/AnimateTilemaps";
 import UpdateTimers from "./Systems/UpdateTimers";
 import Update from "./Update";
 import UpdateSpriteTweens from "./Systems/UpdateSpriteTweens";
+import { AudioResource } from "./Resources/AudioResource";
+import UpdateTweenChains from "./Systems/UpdateTweenChains";
 
 export default class Builder {
   private engine = new Engine();
@@ -127,11 +129,17 @@ export default class Builder {
       this.always(AnimateTilemaps);
       this.always(UpdateTimers);
       this.always(UpdateSpriteTweens);
+      this.always(UpdateTweenChains);
 
       // Default commands
       this.commands.push({
         type: 'add-resource',
         resource: Assets()
+      });
+
+      this.commands.push({
+        type: 'add-resource',
+        resource: new AudioResource()
       });
 
       const keysResource = Keys();
@@ -143,6 +151,10 @@ export default class Builder {
         type: 'add-ticker',
         ticker: keysResource
       });
+      this.commands.push({
+        type: "add-resource",
+        resource: new AudioResource()
+      })
     }
     
     this.engine.processCommands(this.commands);

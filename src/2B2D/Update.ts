@@ -14,6 +14,7 @@ import Vec2 from "./Math/Vec2";
 import Assets, { AssetsResource } from "./Resources/AssetsResource";
 import Visible, { VisibleComponent } from "./Components/Visible";
 import Keys, { KeysResource } from "./Resources/KeysResource";
+import { AudioResource } from "./Resources/AudioResource";
 
 export type UpdateData = {
   world: World,
@@ -65,6 +66,10 @@ export default class Update {
   /** Convenience method to get the `AssetsResource` instance (for loading and accessing
    * assets). Assumes it exists and is registered. */
   assets() { return this.resource<AssetsResource>(Assets.name); }
+
+  /** Convenience method to get the `AudioResource` instance (for loading and playing
+   * audio). Assumes it exists and is registered. */
+  audio() { return this.resource<AudioResource>(AudioResource.name); }
 
   /** Convenience method to get the `KeysResource` instance (for getting and responding 
    * to keyboard inputes). Assumes it exists and is registered. */

@@ -14,6 +14,7 @@ import Layers from "./Layers";
 import LevelPlugin from "./Level/LevelPlugin";
 import MainMenuPlugin, { ExitMenuSignal } from "./MainMenu/MainMenuPlugin";
 import PlayerPlugin from "./Player/PlayerPlugin";
+import SoundPlugin from "./Sound/SoundPlugin";
 import States from "./States";
 import WinPlugin from "./Win/WinPlugin";
 
@@ -55,6 +56,8 @@ export default function GamePlugin(builder:Builder) {
   // Spawns/despawn the "you win" screen
   builder.plugin(WinPlugin);
 
+  // Handles all SFX by responding to various signals
+  builder.plugin(SoundPlugin);
 
   // Global systems and events
   builder.update(States.Gameloop, ApplyAabbPhysics);

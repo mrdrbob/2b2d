@@ -42,7 +42,8 @@ export default function MovePlayer(update:Update) {
     if (isSpace && player.jumpTimeRemaining > 0) {
       newVel = newVel.add(new Vec2(0, jumpSpeed)); 
       player.jumpTimeRemaining -= delta;
-      update.signals.send(PlayerJumpedSignal);
+      if (body.isGrounded)
+        update.signals.send(PlayerJumpedSignal);
     } else if (body.isGrounded) {
       player.jumpTimeRemaining = jumpTime;
     } else {
