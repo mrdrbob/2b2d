@@ -25,18 +25,25 @@ export default class World {
     return id;
   }
 
-  add(entity:Entity, component:Component) {
+  add(entity:Entity, component:Component | string) {
     const entityComponents = this.entities.get(entity);
     if (!entityComponents)
       return; // TODO: Error?
 
-    entityComponents.set(component.name, component);
+    let name:string;
+    if (typeof component === 'string') {
+      entityComponents.set(component, { name: component });
+      name = component;
+    } else {
+      entityComponents.set(component.name, component);
+      name = component.name;
+    }
     this.queryCache.clear();
 
-    let entitiesWithThisComponent = this.componentToEntitiesMap.get(component.name);
+    let entitiesWithThisComponent = this.componentToEntitiesMap.get(name);
     if (!entitiesWithThisComponent) {
       entitiesWithThisComponent = new Set<Entity>();
-      this.componentToEntitiesMap.set(component.name, entitiesWithThisComponent);
+      this.componentToEntitiesMap.set(name, entitiesWithThisComponent);
     }
     entitiesWithThisComponent.add(entity);
   }

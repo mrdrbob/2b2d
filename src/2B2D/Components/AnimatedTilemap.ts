@@ -1,22 +1,14 @@
 import Component from "../Component";
 
-export interface AnimatedTilemapComponent extends Component {
-  name: "AnimatedTilemap",
-  tags: string[],
-  rate: number,
-  time: number,
-  frame: number
-}
+export default class AnimatedTilemap implements Component {
+  static readonly NAME:string = 'AnimatedTilemap';
+  readonly name:string = AnimatedTilemap.NAME;
 
-/** Generates an animated tilemap. See the `platform.ldtk` example LDTK map for tiles with custom-data
- * for an example.
- */
-export default function AnimatedTilemap(tags: string[], rate: number): AnimatedTilemapComponent {
-  return {
-    name: 'AnimatedTilemap',
-    tags,
-    rate,
-    time: 0,
-    frame: 0
-  };
+  /** Generates an animated tilemap. See the `platform.ldtk` example LDTK map for tiles with custom-data
+   * for an example.
+   */
+  constructor(public tags: string[], public rate: number) {}
+
+  time: number = 0;
+  frame: number = 0;
 }

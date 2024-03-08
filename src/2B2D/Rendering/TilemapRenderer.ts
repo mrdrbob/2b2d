@@ -1,8 +1,8 @@
 import { Handle } from "../Asset";
 import LdtkData from "../Assets/LdtkData";
 import { TilemapData } from "../Assets/TilemapData";
-import Position, { PositionComponent } from "../Components/Position";
-import Tilemap, { TilemapComponent } from "../Components/Tilemap";
+import Position from "../Components/Position";
+import Tilemap from "../Components/Tilemap";
 import { Entity } from "../Entity";
 import { Layer } from "../Layer";
 import Vec2 from "../Math/Vec2";
@@ -123,7 +123,7 @@ export class TilemapRenderer extends AbstractRenderer {
   beginFrame(update: Update): void {
     // First prep all the batch bind groups
     const assets = update.assets();
-    const query = update.query([ Tilemap.name, Position.name ]);
+    const query = update.query([ Tilemap.NAME, Position.NAME ]);
 
     if (query.length === 0) {
       this.frameBatch.clear();
@@ -139,7 +139,7 @@ export class TilemapRenderer extends AbstractRenderer {
     // so you can set `checkGenerations = false` on the Tilemap renderer.
     if (this.checkGenerations) {
       const nextGeneration = query.map(entity => {
-        const [ tilemap, position ] = entity.components as [ TilemapComponent, PositionComponent ];
+        const [ tilemap, position ] = entity.components as [ Tilemap, Position ];
         return `${entity.entity}|${tilemap.generation}|${position.pos.x}|${position.pos.y}`
       });
       nextGeneration.sort();
@@ -152,7 +152,7 @@ export class TilemapRenderer extends AbstractRenderer {
     this.frameBatch.clear();
 
     for (const entity of query) {
-      const [ tilemap, position ] = entity.components as [ TilemapComponent, PositionComponent ];
+      const [ tilemap, position ] = entity.components as [ Tilemap, Position ];
       const tileData = assets.assume<TilemapData>(tilemap.tilemap);
       const texture = this.ensureTextureLoadedToGpu(assets, tilemap.texture);
       const atlas = this.ensureAtlasTexture(tilemap.tilemap, tileData);

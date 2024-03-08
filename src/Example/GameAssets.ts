@@ -4,8 +4,8 @@ import loadSpriteAtlasAsset, { generateSingleSpriteAtlas, generateTiledSpriteAtl
 import loadTextureAsset from "../2B2D/Assets/TextureAsset";
 import createTilemapFromLdtkJson from "../2B2D/Assets/TilemapData";
 import Vec2 from "../2B2D/Math/Vec2";
-import { AssetsResource } from "../2B2D/Resources/AssetsResource";
-import { AudioResource } from "../2B2D/Resources/AudioResource";
+import AssetsResource from "../2B2D/Resources/AssetsResource";
+import AudioResource from "../2B2D/Resources/AudioResource";
 
 const GameAssets = {
   Menu: { 

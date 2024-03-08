@@ -1,13 +1,13 @@
-import Sprite, { SpriteComponent } from "../../../2B2D/Components/Sprite";
+import Sprite from "../../../2B2D/Components/Sprite";
 import Update from "../../../2B2D/Update";
-import Player, { PlayerComponent } from "../Components/Player";
+import Player from "../Components/Player";
 
 export default function HandleInvincibility(update: Update) {
-  const query = update.single([ Player.name, Sprite.name ]);
+  const query = update.single([ Player.NAME, Sprite.NAME ]);
   if (!query)
     return;
 
-  const [ player, sprite ] = query.components as [ PlayerComponent, SpriteComponent ];
+  const [ player, sprite ] = query.components as [ Player, Sprite ];
   if (player.invincibleTimeRemaining <= 0)
     return;
 

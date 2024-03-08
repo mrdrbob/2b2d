@@ -3,13 +3,12 @@ import Component from "../../2B2D/Component";
 import Camera from "../../2B2D/Components/Camera";
 import Parent from "../../2B2D/Components/Parent";
 import Position from "../../2B2D/Components/Position";
-import Sprite, { SpriteComponent } from "../../2B2D/Components/Sprite";
-import Tag from "../../2B2D/Components/Tag";
+import Sprite from "../../2B2D/Components/Sprite";
 import UseSpriteRenderer from "../../2B2D/Components/UseSpriteRenderer";
 import Update from "../../2B2D/Update";
 import GameAssets from "../GameAssets";
 import { GameloopCleanupTag } from "../GamePlugin";
-import { GameStateResouce } from "../GameStateResource";
+import GameStateResouce from "../GameStateResource";
 import Layers from "../Layers";
 import States from "../States";
 
@@ -33,7 +32,7 @@ interface HealthDisplayComponent extends Component {
 }
 
 function spawnHud(update:Update) {
-  const camera = update.single([ Camera.name, Position.name ]);
+  const camera = update.single([ Camera, Position.NAME ]);
   if (!camera) {
     console.warn('HUD could not spawn. No camera');
     return;
@@ -41,54 +40,54 @@ function spawnHud(update:Update) {
 
   update.spawn([
     { name: 'HealthDisplay', empty: 0, half: 1, full: 2 } as HealthDisplayComponent,
-    Sprite(
+    new Sprite(
       GameAssets.LevelData.Tiles.Texture.Handle, 
       GameAssets.LevelData.Tiles.Atlas.Handle, 
       Layers.Hud, 
       Frame.Empty
     ),
-    Position.from_xy(-88, 65),
-    Parent(camera.entity),
-    Tag(GameloopCleanupTag),
-    UseSpriteRenderer()
+    Position.fromXY(-88, 65),
+    new Parent(camera.entity),
+    GameloopCleanupTag,
+    UseSpriteRenderer,
   ]);
 
   update.spawn([
     { name: 'HealthDisplay', empty: 2, half: 3, full: 4 } as HealthDisplayComponent,
-    Sprite(
+    new Sprite(
       GameAssets.LevelData.Tiles.Texture.Handle, 
       GameAssets.LevelData.Tiles.Atlas.Handle, 
       Layers.Hud, 
       Frame.Empty
     ),
-    Position.from_xy(-68, 65),
-    Parent(camera.entity),
-    Tag(GameloopCleanupTag),
-    UseSpriteRenderer()
+    Position.fromXY(-68, 65),
+    new Parent(camera.entity),
+    GameloopCleanupTag,
+    UseSpriteRenderer,
   ]);
 
   update.spawn([
     { name: 'HealthDisplay', empty: 4, half: 5, full: 6 } as HealthDisplayComponent,
-    Sprite(
+    new Sprite(
       GameAssets.LevelData.Tiles.Texture.Handle, 
       GameAssets.LevelData.Tiles.Atlas.Handle, 
       Layers.Hud, 
       Frame.Empty
     ),
-    Position.from_xy(-48, 65),
-    Parent(camera.entity),
-    Tag(GameloopCleanupTag),
-    UseSpriteRenderer(),
+    Position.fromXY(-48, 65),
+    new Parent(camera.entity),
+    GameloopCleanupTag,
+    UseSpriteRenderer,
   ]);
 }
 
 function updateHud(update:Update) {
-  const query = update.query([ 'HealthDisplay', Sprite.name ]);
-  const gameState = update.resource<GameStateResouce>(GameStateResouce.name);
+  const query = update.query([ 'HealthDisplay', Sprite.NAME ]);
+  const gameState = update.resource<GameStateResouce>(GameStateResouce.NAME);
   const health = gameState.health;
 
   for (const entity of query) {
-    const [ display, sprite ] = entity.components as [ HealthDisplayComponent, SpriteComponent ];
+    const [ display, sprite ] = entity.components as [ HealthDisplayComponent, Sprite ];
 
     sprite.frame = health <= display.empty ? Frame.Empty
                  : health == display.half ? Frame.Half

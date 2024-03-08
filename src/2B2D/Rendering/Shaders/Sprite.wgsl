@@ -20,7 +20,8 @@ struct Sprite {
     rg: vec2f, // RGBA color
     ba: vec2f, // RGBA color
     scale: vec2f, // Scale
-    atlasPos: vec2f, // Position in the atlas
+    atlasPos: vec2f, // Position in the atlas,
+    rotation: vec2f, // Rotation
 }
 
 // Position and texture UV mappings and color adjustments
@@ -48,7 +49,12 @@ fn vs (
     let sprite = sprites[instance];
 
     // Calculate the vertex positions
-    let pos = sprite.pos + -frame.camera + (input.vertex * sprite.size * sprite.scale);
+    let scaled = input.vertex * sprite.size * sprite.scale;
+    let rotated = vec2f(
+        scaled.x * sprite.rotation.x - scaled.y * sprite.rotation.y,
+        scaled.x * sprite.rotation.y + scaled.y * sprite.rotation.x
+    );
+    let pos = sprite.pos + -frame.camera + rotated;
     let world_space = pos * world.texel;
 
     // Calculate the VU

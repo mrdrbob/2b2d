@@ -2,25 +2,17 @@ import Component from "../Component";
 import Color from "../Math/Color";
 import Vec2 from "../Math/Vec2";
 
-export interface GradientComponent extends Component {
-  name: 'Gradient',
-  layer:string, 
-  nw:Color, 
-  ne:Color, 
-  sw:Color, 
-  se:Color, 
-  size:Vec2
-}
+export default class Gradient implements Component {
+  static readonly NAME:string = 'Gradient';
+  readonly name:string = Gradient.NAME;
 
-/** Generates a gradient. Colors are given for each corner. */
-function Gradient(layer:string, nw:Color, ne:Color, sw:Color, se:Color, size:Vec2) : GradientComponent {
-  return {
-    name: 'Gradient',
-    layer,
-    nw, ne, 
-    sw, se, 
-    size
-  };
+  /** Generates a gradient. Colors are given for each corner. */
+  constructor(
+    public layer:string, 
+    public nw:Color, 
+    public ne:Color, 
+    public sw:Color, 
+    public se:Color, 
+    public size:Vec2
+  ) {}
 }
-
-export default Gradient;

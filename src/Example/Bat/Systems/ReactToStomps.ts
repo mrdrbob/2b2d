@@ -1,7 +1,6 @@
 import Position, { PositionComponent } from "../../../2B2D/Components/Position";
 import Sprite from "../../../2B2D/Components/Sprite";
-import SpriteTween from "../../../2B2D/Components/SpriteTween";
-import Timer from "../../../2B2D/Components/Timer";
+import TweenChain from "../../../2B2D/Components/TweenChain";
 import UseSpriteRenderer from "../../../2B2D/Components/UseSpriteRenderer";
 import Color from "../../../2B2D/Math/Color";
 import Vec2 from "../../../2B2D/Math/Vec2";
@@ -19,12 +18,12 @@ export default function ReactToStomps(update:Update, signals:Signal[]) {
       continue;
 
     // We only care about bats
-    const bat = update.get<BatComponent>(collision.enemy, Bat.name);
+    const bat = update.get<BatComponent>(collision.enemy, Bat.NAME);
     if (!bat)
       continue;
 
-    // Get this bat's position, despawn, and spawn a ghost
-    const position = update.get<PositionComponent>(collision.enemy, Position.name)!;
+    // Get this bat's position, despawn, and spawn a ghost that floats up and does a sweet 360 flip
+    const position = update.get<PositionComponent>(collision.enemy, Position.NAME)!;
     const globalPosition = update.resolvePosition(collision.enemy, position);
 
     update.despawn(collision.enemy);
@@ -32,7 +31,7 @@ export default function ReactToStomps(update:Update, signals:Signal[]) {
     const endColor = new Color(1, 0, 0, 0);
 
     update.spawn([
-      Sprite(
+      new Sprite(
         GameAssets.Characters.Texture.Handle,
         GameAssets.Characters.Atlas.Handle,
         Layers.Entities,
@@ -40,15 +39,15 @@ export default function ReactToStomps(update:Update, signals:Signal[]) {
         undefined,
         startColor
       ),
-      Position(globalPosition),
-      SpriteTween(
-        globalPosition,
-        globalPosition.add(new Vec2(0, 50)),
-        startColor,
-        endColor
-      ),
-      Timer(1000),
-      UseSpriteRenderer()
+      new Position(globalPosition),
+      TweenChain.build()
+        .andThen(1000, step => step
+          .pos(globalPosition.add(new Vec2(0, 50)))
+          .color(endColor)
+          .rotation(Math.PI * 2)
+        )
+        .chain(),
+      UseSpriteRenderer
     ]);
 
   }

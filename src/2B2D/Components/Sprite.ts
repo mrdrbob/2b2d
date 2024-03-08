@@ -4,42 +4,18 @@ import { Layer } from "../Layer";
 import Color from "../Math/Color";
 import Vec2 from "../Math/Vec2";
 
-export interface SpriteComponent extends Component {
-  name: 'Sprite',
-  texture: Handle,
-  atlas: Handle,
-  layer: Layer,
-  frame: string,
-  scale: Vec2,
-  color: Color
-}
+export default class Sprite implements Component {
+  static readonly NAME:string = 'Sprite';
+  readonly name:string = Sprite.NAME;
 
-export interface Test {
-  (name: string, age: number): string,
-  other: string
-}
-
-/** Represents an image. Must be used with a sprite atlas, even if the sprite is the only image on the texture.
- * Unless you use a custom renderer, you will need to include `UseSpriteRenderer` to render the sprite.
- * Will also require a `Position` component to render.
- */
-function Sprite(
-  texture:Handle, 
-  atlas:Handle, 
-  layer:Layer, 
-  frame?:string, 
-  scale?:Vec2,
-  color?:Color
-) : SpriteComponent {
-  return {
-    name: 'Sprite',
-    texture: texture,
-    atlas: atlas,
-    layer,
-    frame: frame ?? '0',
-    scale: scale ?? Vec2.ONE,
-    color: color ?? Color.White(1)
+  constructor(
+    public texture:Handle, 
+    public atlas:Handle, 
+    public layer:Layer, 
+    public frame:string = '0', 
+    public scale:Vec2 = Vec2.ONE,
+    public color:Color = Color.White(1),
+    public radians:number = 0
+  ) {
   }
 }
-
-export default Sprite;

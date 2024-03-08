@@ -3,10 +3,9 @@ import Component from "../../2B2D/Component";
 import Camera from "../../2B2D/Components/Camera";
 import Gradient from "../../2B2D/Components/Gradient";
 import Parent from "../../2B2D/Components/Parent";
-import Position, { PositionComponent } from "../../2B2D/Components/Position";
-import Tag from "../../2B2D/Components/Tag";
-import Timer, { TimerComponent } from "../../2B2D/Components/Timer";
-import Visible, { VisibleComponent } from "../../2B2D/Components/Visible";
+import Position from "../../2B2D/Components/Position";
+import Timer from "../../2B2D/Components/Timer";
+import Visible from "../../2B2D/Components/Visible";
 import Color from "../../2B2D/Math/Color";
 import Vec2 from "../../2B2D/Math/Vec2";
 import Signal from "../../2B2D/Signal";
@@ -43,7 +42,7 @@ function initializeCurtains(update: Update) {
   SCREEN_SIZE = new Vec2(update.data.rendering.width, update.data.rendering.height)
     .scalarMultiply(2 / update.data.rendering.zoom);
 
-  const camera = update.single([ Camera.name ]);
+  const camera = update.single([ Camera ]);
   if (!camera) {
     console.warn('Could not spawn curtains without camera');
     return;
@@ -51,31 +50,31 @@ function initializeCurtains(update: Update) {
 
   // First spawn a parent object that can be used for positioning and visibility
   const parent = update.spawn([
-    Parent(camera.entity),
-    Position.from_xy(0, 0),
-    Tag(ParentTag),
-    Visible(true)
+    new Parent(camera.entity),
+    Position.fromXY(0, 0),
+    ParentTag,
+    new Visible(true)
   ]);
 
   // Top of the curtain
   update.spawn([
-    Gradient(Layers.Curtains, Color.Black(1), Color.Black(1), Color.Black(0), Color.Black(0), SCREEN_SIZE),
-    Position.from_xy(0, SCREEN_SIZE.y),
-    Parent(parent)
+    new Gradient(Layers.Curtains, Color.Black(1), Color.Black(1), Color.Black(0), Color.Black(0), SCREEN_SIZE),
+    Position.fromXY(0, SCREEN_SIZE.y),
+    new Parent(parent)
   ]);
 
   // Middle of the curtain
   update.spawn([
-    Gradient(Layers.Curtains, Color.Black(1), Color.Black(1), Color.Black(1), Color.Black(1), SCREEN_SIZE),
-    Position.from_xy(0, 0),
-    Parent(parent)
+    new Gradient(Layers.Curtains, Color.Black(1), Color.Black(1), Color.Black(1), Color.Black(1), SCREEN_SIZE),
+    Position.fromXY(0, 0),
+    new Parent(parent)
   ]);
   
   // Bottom of the curtain
   update.spawn([
-    Gradient(Layers.Curtains, Color.Black(0), Color.Black(0), Color.Black(1), Color.Black(1), SCREEN_SIZE),
-    Position.from_xy(0, -SCREEN_SIZE.y),
-    Parent(parent)
+    new Gradient(Layers.Curtains, Color.Black(0), Color.Black(0), Color.Black(1), Color.Black(1), SCREEN_SIZE),
+    Position.fromXY(0, -SCREEN_SIZE.y),
+    new Parent(parent)
   ]);
 }
 
@@ -87,19 +86,19 @@ function initializationComplete(update:Update) {
 
 // Tweens the curtains down, out of sight.
 function curtainsOpen(update: Update) {
-  const timerQuery = update.single([ CurtainOpenerTag, Timer.name ]);
+  const timerQuery = update.single([ CurtainOpenerTag, Timer.NAME ]);
   if (!timerQuery)
     return;
 
-  const curtainQuery = update.single([ ParentTag, Position.name ]);
+  const curtainQuery = update.single([ ParentTag, Position.NAME ]);
   if (!curtainQuery)
     return;
 
-  const [ _timer, timer ] = timerQuery.components as [ Component, TimerComponent ];
+  const [ _timer, timer ] = timerQuery.components as [ Component, Timer ];
   const progress = timer.currentTime / timer.totalTime;
 
 
-  const [ _tag, position ] = curtainQuery.components as [ Component, PositionComponent ];
+  const [ _tag, position ] = curtainQuery.components as [ Component, Position ];
   const start = 0;
   const dest = -SCREEN_SIZE.y * 2;
   const len = dest - start;
@@ -110,18 +109,18 @@ function curtainsOpen(update: Update) {
 
 // Tweens the curtains down, into sight.
 function curtainsClose(update: Update) {
-  const timerQuery = update.single([ CurtainCloserTag, Timer.name ]);
+  const timerQuery = update.single([ CurtainCloserTag, Timer.NAME ]);
   if (!timerQuery)
     return;
 
-  const curtainQuery = update.single([ ParentTag, Position.name ]);
+  const curtainQuery = update.single([ ParentTag, Position.NAME ]);
   if (!curtainQuery)
     return;
 
-  const [ _timer, timer ] = timerQuery.components as [ Component, TimerComponent ];
+  const [ _timer, timer ] = timerQuery.components as [ Component, Timer ];
   const progress = timer.currentTime / timer.totalTime;
 
-  const [ _tag, position ] = curtainQuery.components as [ Component, PositionComponent ];
+  const [ _tag, position ] = curtainQuery.components as [ Component, Position ];
   const start = SCREEN_SIZE.y * 2;
   const dest = 0;
   const len = dest - start;
@@ -133,11 +132,11 @@ function curtainsClose(update: Update) {
 // Once the curtains are out of site, then can be hidden so we're not
 // rendering stuff off-screen.
 function hideCurtains(update: Update) {
-  const curtain = update.single([ ParentTag, Visible.name ]);
+  const curtain = update.single([ ParentTag, Visible.NAME ]);
   if (!curtain)
     return;
 
-  const [ _tag, visible ] = curtain.components as [ Component, VisibleComponent ];
+  const [ _tag, visible ] = curtain.components as [ Component, Visible ];
 
   visible.visible = false;
 }
@@ -146,24 +145,24 @@ export function openCurtains(update: Update, sender?:string) {
   // Tween curtains down, hiden them when no longer visible, send signal
   // if appropriate.
   update.spawn([
-    Timer(1000, { name: CurtainsOpenedSignal, sender }),
-    Tag(CurtainOpenerTag)
+    new Timer(1000, { name: CurtainsOpenedSignal, sender }),
+    CurtainOpenerTag
   ]);
 }
 
 export function closeCurtains(update:Update, sender?:string) {
    // Make sure curtains are visible and appropriately placed.
-  const curtain = update.single([ ParentTag, Visible.name, Position.name ]);
+  const curtain = update.single([ ParentTag, Visible.NAME, Position.NAME ]);
   if (!curtain)
     return;
 
-  const [ _tag, visible, position ] = curtain.components as [ Component, VisibleComponent, PositionComponent ];
+  const [ _tag, visible, position ] = curtain.components as [ Component, Visible, Position ];
   position.pos = new Vec2(position.pos.x, SCREEN_SIZE.y * 2);
   visible.visible = true;
 
   // Now tween down into view
   update.spawn([
-    Timer(1000, { name: CurtainsClosedSignal, sender }),
-    Tag(CurtainCloserTag)
+    new Timer(1000, { name: CurtainsClosedSignal, sender }),
+    CurtainCloserTag
   ]);
 }

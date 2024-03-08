@@ -8,13 +8,14 @@ import { Entity, ResolvableEntity } from "./Entity";
 import Renderer from "./Rendering/Renderer";
 import RenderingSystem, { CreateRenderer } from "./Rendering/RenderingSystem";
 import { Layer } from "./Layer";
-import Position, { PositionComponent } from "./Components/Position";
-import Parent, { ParentComponent } from "./Components/Parent";
+import Position from "./Components/Position";
+import Parent from "./Components/Parent";
 import Vec2 from "./Math/Vec2";
-import Assets, { AssetsResource } from "./Resources/AssetsResource";
-import Visible, { VisibleComponent } from "./Components/Visible";
-import Keys, { KeysResource } from "./Resources/KeysResource";
-import { AudioResource } from "./Resources/AudioResource";
+import Visible from "./Components/Visible";
+import Keys from "./Resources/KeysResource";
+import AudioResource from "./Resources/AudioResource";
+import AssetsResource from "./Resources/AssetsResource";
+import KeysResource from "./Resources/KeysResource";
 
 export type UpdateData = {
   world: World,
@@ -65,15 +66,15 @@ export default class Update {
 
   /** Convenience method to get the `AssetsResource` instance (for loading and accessing
    * assets). Assumes it exists and is registered. */
-  assets() { return this.resource<AssetsResource>(Assets.name); }
+  assets() { return this.resource<AssetsResource>(AssetsResource.NAME); }
 
   /** Convenience method to get the `AudioResource` instance (for loading and playing
    * audio). Assumes it exists and is registered. */
-  audio() { return this.resource<AudioResource>(AudioResource.name); }
+  audio() { return this.resource<AudioResource>(AudioResource.NAME); }
 
   /** Convenience method to get the `KeysResource` instance (for getting and responding 
    * to keyboard inputes). Assumes it exists and is registered. */
-  keys() { return this.resource<KeysResource>(Keys.name); }
+  keys() { return this.resource<KeysResource>(KeysResource.NAME); }
 
   /** Exits the `state` by sending an `exit-state` command. */
   exit(state:State) { this.data.commands.push({ type: 'exit-state', state }) };
@@ -84,7 +85,7 @@ export default class Update {
   /** Spawns an entity by sending a `spawn` command, and returns a resolvable entity reference 
    * that can be resolved next frame.
    */
-  spawn(components:Component[]) { 
+  spawn(components:Array<Component | string>) { 
     const resolvable = new ResolvableEntity();
     this.data.commands.push({ type: 'spawn', components, resolvable });
     return resolvable;
@@ -141,8 +142,8 @@ export default class Update {
   /** Will recursively resolve a chain of `Parent` components to work out the final 
    * global position of an entity with a `Position` component.
    */
-  resolvePosition(entity:Entity, pos:PositionComponent) : Vec2 {
-    const parent = this.get<ParentComponent>(entity, Parent.name);
+  resolvePosition(entity:Entity, pos:Position) : Vec2 {
+    const parent = this.get<Parent>(entity, Parent.NAME);
     if (!parent)
       return pos.pos;
 
@@ -152,7 +153,7 @@ export default class Update {
       return pos.pos;
     }
 
-    const parentPosition = this.get<PositionComponent>(parentEntity, Position.name);
+    const parentPosition = this.get<Position>(parentEntity, Position.NAME);
     if (parentPosition) {
       return pos.pos.add(
         this.resolvePosition(parentEntity, parentPosition)
@@ -167,11 +168,11 @@ export default class Update {
    * you need a `Visible` component set to `false`.
    */
   resolveVisibility(entity:Entity): boolean {
-    const visibleComponent = this.get<VisibleComponent>(entity, Visible.name);
+    const visibleComponent = this.get<Visible>(entity, Visible.NAME);
     if (visibleComponent)
       return visibleComponent.visible;
 
-    const parent = this.get<ParentComponent>(entity, Parent.name);
+    const parent = this.get<Parent>(entity, Parent.NAME);
     if (!parent)
       return true;
     

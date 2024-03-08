@@ -1,20 +1,16 @@
-import Position, { PositionComponent } from "../Components/Position";
-import Sprite, { SpriteComponent } from "../Components/Sprite";
+import { Handle } from "../Asset";
+import { SpriteAtlas } from "../Assets/SpriteAtlasAsset";
+import Component from "../Component";
+import Position from "../Components/Position";
+import Sprite from "../Components/Sprite";
+import UseSpriteRenderer from '../Components/UseSpriteRenderer';
+import { Layer } from "../Layer";
 import Update from "../Update";
-import Renderer from "./Renderer";
+import BufferFiller from "../Utils/BufferFiller";
+import { QueryResult } from "../World";
+import AbstractRenderer from "./AbstractRenderer";
 import RenderingSystem from "./RenderingSystem";
 import wgsl from './Shaders/Sprite.wgsl?raw';
-import UseSpriteRenderer, { UseSpriteRendererComponent } from '../Components/UseSpriteRenderer';
-import { Layer } from "../Layer";
-import Component from "../Component";
-import { SpriteAtlas } from "../Assets/SpriteAtlasAsset";
-import { Handle } from "../Asset";
-import Vec2 from "../Math/Vec2";
-import Color from "../Math/Color";
-import AbstractRenderer from "./AbstractRenderer";
-import BufferFiller from "../Utils/BufferFiller";
-import { Entity } from "../Entity";
-import { QueryResult } from "../World";
 
 // Most sprites that can be on a single layer with the same texture
 const MAX_SPRITES_PER_BATCH = 1024;
@@ -105,7 +101,7 @@ export class SpriteRenderer extends AbstractRenderer {
     this.frameBatch.clear();
 
     // Now pull renderable instances and sort for frame.
-    const renderableEntities = update.query([ Sprite.name, Position.name, UseSpriteRenderer.name ]);
+    const renderableEntities = update.query([ Sprite.NAME, Position.NAME, UseSpriteRenderer ]);
 
     // Going to sort these then turn into bind groups
     var sorting = new Map<Layer, Map<Handle, Array<QueryResult>>>();
@@ -115,9 +111,9 @@ export class SpriteRenderer extends AbstractRenderer {
     // Each texture will be batched so all instances of that texture (on that layer)
     // are drawn in a single draw call.
     for (const entity of renderableEntities) {
-      const components = entity.components as [ SpriteComponent, PositionComponent, UseSpriteRendererComponent ];
+      const components = entity.components as [ Sprite, Position, Component ];
       
-      const [ sprite, position, rendering ] = components;
+      const [ sprite, _position, _rendering ] = components;
 
       let textureSort = sorting.get(sprite.layer);
       if (!textureSort) {
@@ -143,9 +139,9 @@ export class SpriteRenderer extends AbstractRenderer {
 
         let bindGroup = this.bindGroupCache.get(texture);
         if (!bindGroup) {
-          // Instance buffers is made up 6 Vec2s:
-          // pos, size, rg, ba, scale, atlasPos
-          const buffer = new Float32Array(MAX_SPRITES_PER_BATCH * 6 * 2);
+          // Instance buffers is made up 7 Vec2s:
+          // pos, size, rg, ba, scale, atlasPos, rot
+          const buffer = new Float32Array(MAX_SPRITES_PER_BATCH * 7 * 2);
           const gpuBuffer = this.parent.device.createBuffer({
             label: `sprite instance buffer ${texture}`,
             size: buffer.byteLength,
@@ -173,7 +169,7 @@ export class SpriteRenderer extends AbstractRenderer {
 
         // Add each instance to the buffer
         for (const comp of components) {
-          const [ sprite, position, _rendering ] = comp.components as [ SpriteComponent, PositionComponent, UseSpriteRendererComponent ];
+          const [ sprite, position, _rendering ] = comp.components as [ Sprite, Position, Component ];
           const atlas = assets.assume<SpriteAtlas>(sprite.atlas);
 
           const pos = update.resolvePosition(comp.entity, position);
@@ -185,6 +181,8 @@ export class SpriteRenderer extends AbstractRenderer {
           builder.push(sprite.color.array());
           builder.push(sprite.scale);
           builder.push([frame.frame.x, frame.frame.y]);
+
+          builder.push([Math.cos(sprite.radians), Math.sin(sprite.radians)]);
         }
 
         this.parent.device.queue.writeBuffer(gpuBuffer, 0, buffer, 0, builder.offset * Float32Array.BYTES_PER_ELEMENT)

@@ -18,7 +18,7 @@ export type Command =
 
 export type SpawnEntityCommand = {
   type: 'spawn',
-  components: Component[],
+  components: Array<Component | string>,
   resolvable: ResolvableEntity
 }
 

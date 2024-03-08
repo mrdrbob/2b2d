@@ -1,15 +1,15 @@
-import Position, { PositionComponent } from "../Components/Position";
-import Sprite, { SpriteComponent } from "../Components/Sprite";
-import TweenChain, { TweenChainComponent } from "../Components/TweenChain";
+import Position from "../Components/Position";
+import Sprite from "../Components/Sprite";
+import TweenChain from "../Components/TweenChain";
 import Update from "../Update";
 
 export default function UpdateTweenChains(update:Update) {
-  const query = update.query([ TweenChain.name ]);
+  const query = update.query([ TweenChain.NAME ]);
 
   const delta = update.delta();
 
   for (const item of query) {
-    const [ chain ] = item.components as [ TweenChainComponent ];
+    const [ chain ] = item.components as [ TweenChain ];
     if (chain.steps.length === 0)
       continue;
 
@@ -38,8 +38,8 @@ export default function UpdateTweenChains(update:Update) {
     const deltaTime = step.end.time - step.start.time;
     const progress = timeInTask / deltaTime;
 
-    const position = update.get<PositionComponent>(entityId, Position.name);
-    const sprite = update.get<SpriteComponent>(entityId, Sprite.name);
+    const position = update.get<Position>(entityId, Position.NAME);
+    const sprite = update.get<Sprite>(entityId, Sprite.NAME);
 
     if (position && step.end.position) {
       if (!step.start.position) {
@@ -66,6 +66,15 @@ export default function UpdateTweenChains(update:Update) {
 
       const scaleDelta = step.end.scale.sub(step.start.scale);
       sprite.scale = step.start.scale.add(scaleDelta.scalarMultiply(progress));
+    }
+
+    if (sprite && step.end.radians) {
+      if (!step.start.radians) {
+        step.start.radians = sprite.radians;
+      }
+
+      const rotationDelta = step.end.radians - step.start.radians;
+      sprite.radians = step.start.radians + (rotationDelta * progress);
     }
   }
 }

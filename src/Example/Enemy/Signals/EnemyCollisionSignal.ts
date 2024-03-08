@@ -1,19 +1,14 @@
 import { Entity } from "../../../2B2D/Entity";
 import Signal from "../../../2B2D/Signal";
 
-export interface EnemyCollisionSignal extends Signal {
-  name: 'EnemyCollision',
-  enemy: Entity,
-  damage: number,
-  isStomp: boolean
-}
+export default class EnemyCollision implements Signal {
+  static readonly NAME:string = 'EnemyCollision';
+  readonly name:string = EnemyCollision.NAME;
 
-export default function EnemyCollision(enemy: Entity, damage: number, isStomp: boolean, sender?: string) : EnemyCollisionSignal {
-  return {
-    name: 'EnemyCollision',
-    enemy,
-    damage,
-    isStomp,
-    sender
-  };
+  constructor(
+    public enemy: Entity, 
+    public damage: number, 
+    public isStomp: boolean, 
+    public sender: string | undefined = undefined
+  ) { }
 }

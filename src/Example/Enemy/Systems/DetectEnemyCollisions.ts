@@ -1,26 +1,26 @@
-import KineticBody, { KineticBodyComponent } from "../../../2B2D/Components/KineticBody";
-import Position, { PositionComponent } from "../../../2B2D/Components/Position";
-import Velocity, { VelocityComponent } from "../../../2B2D/Components/Velocity";
+import KineticBody from "../../../2B2D/Components/KineticBody";
+import Position from "../../../2B2D/Components/Position";
+import Velocity from "../../../2B2D/Components/Velocity";
 import Update from "../../../2B2D/Update";
 import AABB from "../../../2B2D/Utils/AABB";
-import Player, { PlayerComponent } from "../../Player/Components/Player";
-import Enemy, { EnemyComponent } from "../Components/Enemy";
+import Player from "../../Player/Components/Player";
+import Enemy from "../Components/Enemy";
 import EnemyCollision from "../Signals/EnemyCollisionSignal";
 
 const ENEMY_HIT_COOLDOWN = 1000;
 
 export default function DetectEnemyCollisions(update: Update) {
-  const player = update.single([ Player.name, Position.name, Velocity.name, KineticBody.name ]);
+  const player = update.single([ Player.NAME, Position.NAME, Velocity.NAME, KineticBody.NAME ]);
   if (!player)
     return;
 
-  const enemies = update.query([ Enemy.name, Position.name ]);
+  const enemies = update.query([ Enemy.NAME, Position.NAME ]);
 
-  const [ _player, playerPosition, playerVelocity, playerBody ] = player.components as [ PlayerComponent, PositionComponent, VelocityComponent, KineticBodyComponent ];
+  const [ _player, playerPosition, playerVelocity, playerBody ] = player.components as [ Player, Position, Velocity, KineticBody ];
   const playerGlobalPos = update.resolvePosition(player.entity, playerPosition);
 
   for (const entity of enemies) {
-    const [enemy, enemyPos] = entity.components as [ EnemyComponent, PositionComponent ];
+    const [enemy, enemyPos] = entity.components as [ Enemy, Position ];
     if (enemy.hitCoolDown > 0) {
       enemy.hitCoolDown -= update.delta();
       continue;
@@ -38,7 +38,7 @@ export default function DetectEnemyCollisions(update: Update) {
       const delta = (playerGlobalPos.y - enemyTop) / (enemyAABB.size.y * 2);
       const isStomp = delta > 0.9;
 
-      update.signals.send(EnemyCollision(entity.entity, enemy.damage, isStomp));
+      update.signals.send(new EnemyCollision(entity.entity, enemy.damage, isStomp));
       continue;
     }
 
@@ -47,7 +47,7 @@ export default function DetectEnemyCollisions(update: Update) {
       enemy.hitCoolDown = ENEMY_HIT_COOLDOWN;
       const isStomp = hit.normal.y > 0;
 
-      update.signals.send(EnemyCollision(entity.entity, enemy.damage, isStomp));
+      update.signals.send(new EnemyCollision(entity.entity, enemy.damage, isStomp));
     }
   }
 

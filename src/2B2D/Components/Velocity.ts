@@ -1,15 +1,10 @@
 import Component from "../Component";
 import Vec2 from "../Math/Vec2";
 
-export interface VelocityComponent extends Component {
-  name: 'Velocity',
-  velocity: Vec2
-}
+export default class Velocity implements Component {
+  static readonly NAME:string = 'Velocity';
+  readonly name:string = Velocity.NAME;
 
-/** Reprsents an entity's velocity in 2D space */
-export default function Velocity(velocity?:Vec2): VelocityComponent {
-  return {
-    name: 'Velocity',
-    velocity: velocity ?? Vec2.ZERO
-  };
+  /** Reprsents an entity's velocity in 2D space */
+  constructor(public velocity:Vec2 = Vec2.ZERO) {}
 }

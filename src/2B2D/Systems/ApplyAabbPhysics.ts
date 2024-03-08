@@ -1,8 +1,8 @@
-import KineticBody, { KineticBodyComponent } from "../Components/KineticBody";
-import Position, { PositionComponent } from "../Components/Position";
-import StaticBody, { StaticBodyComponent } from "../Components/StaticBody";
-import Velocity, { VelocityComponent } from "../Components/Velocity";
-import Weight, { WeightComponent } from "../Components/Weight";
+import KineticBody from "../Components/KineticBody";
+import Position from "../Components/Position";
+import StaticBody from "../Components/StaticBody";
+import Velocity from "../Components/Velocity";
+import Weight from "../Components/Weight";
 import Vec2 from "../Math/Vec2";
 import Update from "../Update";
 import AABB from "../Utils/AABB";
@@ -10,25 +10,25 @@ import AABB from "../Utils/AABB";
 const COLLISION_BIAS = 0.1;
 
 export default function ApplyAabbPhysics(update: Update) {
-  const weightQuery = update.query([Velocity.name, Weight.name]);
+  const weightQuery = update.query([Velocity.NAME, Weight.NAME]);
   const delta = update.delta();
 
   for (const entity of weightQuery) {
-    const [vel, weight] = entity.components as [VelocityComponent, WeightComponent];
+    const [vel, weight] = entity.components as [Velocity, Weight];
     vel.velocity = new Vec2(vel.velocity.x, vel.velocity.y + weight.gravity);
   }
 
-  const kineticsQuery = update.query([Position.name, Velocity.name, KineticBody.name]);
-  const staticBodyQuery = update.query([Position.name, StaticBody.name]);
+  const kineticsQuery = update.query([Position.NAME, Velocity.NAME, KineticBody.NAME]);
+  const staticBodyQuery = update.query([Position.NAME, StaticBody.NAME]);
 
   for (const kineticEntity of kineticsQuery) {
-    const [kinPos, kinVel, kineticBody] = kineticEntity.components as [PositionComponent, VelocityComponent, KineticBodyComponent];
+    const [kinPos, kinVel, kineticBody] = kineticEntity.components as [Position, Velocity, KineticBody];
     const kinBody = new AABB(kinPos.pos, kineticBody.size);
     let isGrounded = false;
 
     // Create all the AABB static body representations
     let /* the */ bodies /* hit the floor */ = staticBodyQuery.map(staticEntity => {
-      const [staticPos, staticBody] = staticEntity.components as [PositionComponent, StaticBodyComponent];
+      const [staticPos, staticBody] = staticEntity.components as [Position, StaticBody];
       const statBody = new AABB(staticPos.pos, staticBody.size.add(kinBody.size));
       return { entity: staticEntity.entity, body: statBody };
     });

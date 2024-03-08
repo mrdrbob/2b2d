@@ -1,8 +1,9 @@
 import Resource from "../Resource";
 import Ticker from "../Ticker";
 
-export class KeysResource implements Resource, Ticker {
-  name = 'Keys';
+export default class KeysResource implements Resource, Ticker {
+  static readonly NAME:string = 'KeysResource';
+  readonly name = KeysResource.NAME;
 
   private dirty: boolean = false;
   private lastFrame: Set<string> = new Set<string>();
@@ -34,5 +35,3 @@ export class KeysResource implements Resource, Ticker {
     return !this.thisFrame.has(key) && this.lastFrame.has(key);
   }
 }
-
-export default function Keys() { return new KeysResource(); }

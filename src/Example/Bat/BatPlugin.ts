@@ -9,5 +9,5 @@ export default function BatPlugin(builder:Builder) {
   builder.enter(States.Gameloop, SpawnBats);
   builder.update(States.Gameloop, MoveBats);
   
-  builder.handle(EnemyCollision.name, ReactToStomps);
+  builder.handle(EnemyCollision.NAME, ReactToStomps);
 }

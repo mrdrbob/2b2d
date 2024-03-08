@@ -1,7 +1,7 @@
 import Builder from "../../2B2D/Builder";
 import Signal from "../../2B2D/Signal";
 import Update from "../../2B2D/Update";
-import EnemyCollision, { EnemyCollisionSignal } from "../Enemy/Signals/EnemyCollisionSignal";
+import EnemyCollision from "../Enemy/Signals/EnemyCollisionSignal";
 import GameAssets from "../GameAssets";
 import { PlayerJumpedSignal } from "../Player/PlayerPlugin";
 import PlayerDied from "../Player/Signals/PlayerDiedSignal";
@@ -11,9 +11,9 @@ import { PlayerDamangedSignal } from "../Player/Systems/TakeEnemyDamage";
 export default function SoundPlugin(builder:Builder) {
   builder.handle(PlayerJumpedSignal, playerJumped);
   builder.handle(PlayerDamangedSignal, playerHurt);
-  builder.handle(PlayerDied.name, playerDied);
+  builder.handle(PlayerDied.NAME, playerDied);
   builder.handle(PlayerTouchedFlag, touchedFlag);
-  builder.handle(EnemyCollision.name, stomps);
+  builder.handle(EnemyCollision.NAME, stomps);
 }
 
 function playerJumped(update: Update) {
@@ -37,7 +37,7 @@ function touchedFlag(update:Update) {
 }
 
 function stomps(update:Update, signals:Signal[]) {
-  for (const collision of signals as EnemyCollisionSignal[]) {
+  for (const collision of signals as EnemyCollision[]) {
     if (!collision.isStomp)
       continue;
 

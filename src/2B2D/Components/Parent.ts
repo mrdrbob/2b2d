@@ -1,18 +1,13 @@
 import Component from "../Component";
 import { Entity, ResolvableEntity } from "../Entity";
 
-export interface ParentComponent extends Component {
-  name: 'Parent',
-  entity: Entity | ResolvableEntity
-};
+export default class Parent implements Component {
+  static readonly NAME:string = 'Parent';
+  name:string = Parent.NAME;
 
-/** Some properties can be inherited (or offset from) a parent entity. For exmaple:
- * `Position` values will be offset from the `Parent` entity's position.
- * `Visibility` values will be inherited from any ancestor entity.
- */
-export default function Parent(entity: Entity | ResolvableEntity) : ParentComponent {
-  return {
-    name: 'Parent',
-    entity
-  };
+  /** Some properties can be inherited (or offset from) a parent entity. For exmaple:
+   * `Position` values will be offset from the `Parent` entity's position.
+   * `Visibility` values will be inherited from any ancestor entity.
+   */
+  constructor(public entity: Entity | ResolvableEntity) {}
 }

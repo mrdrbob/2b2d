@@ -7,7 +7,7 @@ import Config from "./Config";
 import CurtainsPlugin from "./Curtains/CurtainsPlugin";
 import DeathPlugin from "./Death/DeathPlugin";
 import EnemyPlugin from "./Enemy/EnemyPlugin";
-import { GameStateResouce } from "./GameStateResource";
+import GameStateResouce from "./GameStateResource";
 import HudPlugin from "./Hud/HudPlugin";
 import InitPlugin from "./Init/InitPlugin";
 import Layers from "./Layers";
@@ -67,7 +67,7 @@ export default function GamePlugin(builder:Builder) {
 }
 
 function startGameLoop(update:Update) {
-  const res = update.resource<GameStateResouce>(GameStateResouce.name);
+  const res = update.resource<GameStateResouce>(GameStateResouce.NAME);
 
   res.health = Config.MaxHealth;
   res.level = Config.StartLevelId;

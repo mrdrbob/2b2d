@@ -7,8 +7,10 @@ interface PlayingAudio {
   gainNode: GainNode
 }
 
-export class AudioResource implements Resource {
-  name = 'AudioResource';
+export default class AudioResource implements Resource {
+  public static readonly NAME:string = 'AudioResource';
+  readonly name = AudioResource.NAME;
+
   audioContext: AudioContext;
   gainNode: GainNode;
 

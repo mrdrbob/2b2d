@@ -1,8 +1,9 @@
 import Asset, { Handle, UntypedAsset } from "../Asset";
 import Resource from "../Resource";
 
-export class AssetsResource implements Resource {
-  public readonly name: string = "Assets";
+export default class AssetsResource implements Resource {
+  static readonly NAME = 'Assets';
+  readonly name: string = AssetsResource.NAME;
 
   private assets = new Map<Handle, UntypedAsset>();
 
@@ -24,5 +25,3 @@ export class AssetsResource implements Resource {
     });
   }
 }
-
-export default function Assets() { return new AssetsResource(); }

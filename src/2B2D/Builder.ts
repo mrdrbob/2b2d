@@ -3,17 +3,16 @@ import Engine from "./Engine";
 import { SignalHandler } from "./Signal";
 import { Layer } from "./Layer";
 import Resource from "./Resource";
-import Assets from "./Resources/AssetsResource";
-import Keys from "./Resources/KeysResource";
 import { State } from "./State";
 import { Schedule, System } from "./System";
 import AnimateSprites from "./Systems/AnimateSprites";
 import AnimateTilemaps from "./Systems/AnimateTilemaps";
 import UpdateTimers from "./Systems/UpdateTimers";
 import Update from "./Update";
-import UpdateSpriteTweens from "./Systems/UpdateSpriteTweens";
-import { AudioResource } from "./Resources/AudioResource";
 import UpdateTweenChains from "./Systems/UpdateTweenChains";
+import AssetsResource from "./Resources/AssetsResource";
+import AudioResource from "./Resources/AudioResource";
+import KeysResource from "./Resources/KeysResource";
 
 export default class Builder {
   private engine = new Engine();
@@ -128,13 +127,12 @@ export default class Builder {
       this.always(AnimateSprites);
       this.always(AnimateTilemaps);
       this.always(UpdateTimers);
-      this.always(UpdateSpriteTweens);
       this.always(UpdateTweenChains);
 
       // Default commands
       this.commands.push({
         type: 'add-resource',
-        resource: Assets()
+        resource: new AssetsResource()
       });
 
       this.commands.push({
@@ -142,7 +140,7 @@ export default class Builder {
         resource: new AudioResource()
       });
 
-      const keysResource = Keys();
+      const keysResource = new KeysResource();
       this.commands.push({
         type: 'add-resource',
         resource: keysResource

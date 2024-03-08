@@ -1,7 +1,7 @@
 import { Handle } from "../Asset";
 import { SpriteAtlas } from "../Assets/SpriteAtlasAsset";
-import Animated, { AnimatedComponent } from "../Components/Animated";
-import Sprite, { SpriteComponent } from "../Components/Sprite";
+import Animated from "../Components/Animated";
+import Sprite from "../Components/Sprite";
 import Update from "../Update";
 
 export interface Frame {
@@ -44,11 +44,11 @@ function generateAnimationData(atlas:SpriteAtlas) {
 }
 
 export default function AnimateSprites(update: Update) {
-  const query = update.query([ Animated.name, Sprite.name ]);
+  const query = update.query([ Animated.NAME, Sprite.NAME ]);
   const assets = update.assets();
   
   for (const entity of query) {
-    const [ animation, sprite ] = entity.components as [ AnimatedComponent, SpriteComponent ];
+    const [ animation, sprite ] = entity.components as [ Animated, Sprite ];
 
     if (!animation.tag)
       continue;

@@ -29,7 +29,7 @@ Probably no one. You're welcome to toy with it, but you may run into bugs and pe
 
 ## Caveats and limitations
 
-* Sprites are really basic. I mean, *really* basic. I didn't bother implementing support for rotation. Maybe coming in the future, though?
+* Sprites are really basic. But now you can rotate them, so they've got that going for them, which is good.
 * Currently, tilemaps require your tile source sprite to be a grid of square tiles with no spacing or padding between tiles. Annoying maybe, but makes rendering fast and easy.
 * The ECS system relies heavily on caching the results of queries, so if you're frequently adding/remove components or entities, performance may degrade. Or it might not? I haven't benchmarked anything.
 * Because of how tilemaps are drawn, you can't have maps bigger than 255 X 255 tiles. 65,025 tiles aught to be enough for anyone!  (If you need bigger, you could maybe stitch together several sub-tilemaps. Or use a proper engine.)
@@ -51,9 +51,9 @@ The concepts are roughly:
 * Queries get a list of entities and components that match a list of desired components. If your player character has a `Position`, `Velocity`, and `Player` component, you can query for those three items and get a list of all entities that have all three components currently registered to them (which would likely only be one entity, your player).
 * Resources are basically global stores for values, data, etc. Assets for example are saved as a Resource.
 * Commands give you a way to spawn/despawn entities outside of the normal frame loop, after all other systems have run. This way you can spawn or despawn something and not worry about systems that have yet to run being effected. (In a *good* ECS, you do this to allow multithreaded handling of systems, but this one is neither good nor does it support multithreading)
-* Assets are files that are loaded at runtime. Out-of-the-box, the engine supports loading images, spite atlas JSON, and arbitrary JSON. LDTK json assets can be turned into Tilemaps.
-* Plugins are not exactly a first-class citizen, but you can bundle up registering your systems into separate methods and call those plugins (see: `GamePlugin.ts` or `InitPlugin.ts`).
-* A Renderer is a class that knows how to render something. The engine comes with two: one to render entities that have `Sprite` and `Position` components, and another that renders entities that have both `Tilemap` and `Position` components.
+* Assets are files that are loaded at runtime. Out-of-the-box, the engine supports loading images, spite atlas JSON, arbitrary JSON, and audio. LDTK json assets can be turned into Tilemaps.
+* Plugins are not exactly a first-class citizen, but you can bundle up registering your systems into separate methods and call those plugins (see: `GamePlugin.ts` or `InitPlugin.ts` for examples).
+* A Renderer is a class that knows how to render something. The engine comes with three: one to render entities that have `Sprite`, `Position`, and `UseSpriteRenderer` components, another that renders entities that have both `Tilemap` and `Position` components, and a final one that renders items with `Gradient` and `Position` coordinates.
 * Signals are basically events (but I called them signals to avoid constantly importing the DOM Event object by accident). You send a signal during a frame and it will be processed by handlers at the top of the next frame. Signal handlers are executed prior to other scheduled systems, though is possible to read events in a normal system to avoid this behavior if you really want.
 
 Your best bet is to look through the files and folders in the `Example` directory for examples of usage. Everything in the `2B2D` folder is part of the core engine and should not contain any game-specific code.

@@ -1,24 +1,22 @@
 import Builder from "../../2B2D/Builder";
-import Position, { PositionComponent } from "../../2B2D/Components/Position";
+import Component from "../../2B2D/Component";
+import Camera from '../../2B2D/Components/Camera';
+import Position from "../../2B2D/Components/Position";
 import Sprite from "../../2B2D/Components/Sprite";
 import Timer from "../../2B2D/Components/Timer";
+import TweenChain from "../../2B2D/Components/TweenChain";
 import UseSpriteRenderer from "../../2B2D/Components/UseSpriteRenderer";
+import Color from "../../2B2D/Math/Color";
+import Vec2 from "../../2B2D/Math/Vec2";
 import Update from "../../2B2D/Update";
+import Config from "../Config";
 import { CurtainsClosedSignal, CurtainsOpenedSignal, closeCurtains, openCurtains } from "../Curtains/CurtainsPlugin";
 import GameAssets from "../GameAssets";
-import { ExitingGameLoopSignal, GameloopCleanupTag } from "../GamePlugin";
+import { ExitingGameLoopSignal } from "../GamePlugin";
+import GameStateResouce from "../GameStateResource";
 import Layers from "../Layers";
 import PlayerDied from "../Player/Signals/PlayerDiedSignal";
 import States from "../States";
-import Camera from '../../2B2D/Components/Camera';
-import Component from "../../2B2D/Component";
-import Vec2 from "../../2B2D/Math/Vec2";
-import Color from "../../2B2D/Math/Color";
-import Tag from "../../2B2D/Components/Tag";
-import SpriteTween from "../../2B2D/Components/SpriteTween";
-import { GameStateResouce } from "../GameStateResource";
-import Config from "../Config";
-import TweenChain, { TweenChainBuilder } from "../../2B2D/Components/TweenChain";
 
 const DeathScreenCleanupTag = "DeathScreenCleanupTag";
 const CloseFinalCurtains = 'CloseFinalCurtains';
@@ -26,12 +24,14 @@ const FinalCurtainClose = 'FinalCurtainClose';
 
 const DeathScreenState = 'DeathScreenState';
 
+const DeathPluginName = 'DeathPluginName';
+
 export default function DeathPlugin(builder:Builder) {
-  builder.handle(PlayerDied.name, delayBeforeCurtainClose);
-  builder.handleFrom(ExitingGameLoopSignal, DeathPlugin.name, exitingToDeath);
-  builder.handleFrom(CurtainsClosedSignal, DeathPlugin.name, curatinsClosed);
-  builder.handleFrom(CurtainsOpenedSignal, DeathPlugin.name, curtainsOpened);
-  builder.handleFrom(CloseFinalCurtains, DeathPlugin.name, closeFinalCurtains);
+  builder.handle(PlayerDied.NAME, delayBeforeCurtainClose);
+  builder.handleFrom(ExitingGameLoopSignal, DeathPluginName, exitingToDeath);
+  builder.handleFrom(CurtainsClosedSignal, DeathPluginName, curatinsClosed);
+  builder.handleFrom(CurtainsOpenedSignal, DeathPluginName, curtainsOpened);
+  builder.handleFrom(CloseFinalCurtains, DeathPluginName, closeFinalCurtains);
   builder.handleFrom(CurtainsClosedSignal, FinalCurtainClose, moveBackToGameLoop);
   
   builder.cleanup(DeathScreenState, DeathScreenCleanupTag);
@@ -40,37 +40,37 @@ export default function DeathPlugin(builder:Builder) {
 // Player has been killed. Wait a couple seconds before closing the curtains.
 function delayBeforeCurtainClose(update:Update) {
   update.spawn([
-    Timer(2000, { name: ExitingGameLoopSignal, sender: DeathPlugin.name })
-  ])
+    new Timer(2000, { name: ExitingGameLoopSignal, sender: DeathPluginName })
+  ]);
 }
 
 // After a delay close the curtains
 function exitingToDeath(update:Update) {
-  closeCurtains(update, DeathPlugin.name);
+  closeCurtains(update, DeathPluginName);
 }
 
 // Curtains are closed, so spawn in BG, and oipen curtains.
 function curatinsClosed(update:Update) {
-  const camera = update.single([ Camera.name, Position.name ]);
+  const camera = update.single([ Camera, Position.NAME ]);
   if (!camera)
     return;
 
   // Center the camera back on 0,0 (so we don't have to parent everything to the camera)
-  const [ _cam, position ] = camera.components as [ Component, PositionComponent ];
+  const [ _cam, position ] = camera.components as [ Component, Position ];
   position.pos = Vec2.ZERO;
 
   // Spawn the BG
   update.spawn([
-    Sprite(
+    new Sprite(
       GameAssets.Death.BG.Texture.Handle,
       GameAssets.Death.BG.Atlas.Handle,
       Layers.BG
     ),
-    Position.from_xy(0, 0),
-    UseSpriteRenderer(),
-    Tag(DeathScreenCleanupTag)
+    Position.fromXY(0, 0),
+    UseSpriteRenderer,
+    DeathScreenCleanupTag
   ]);
-  openCurtains(update, DeathPlugin.name);
+  openCurtains(update, DeathPluginName);
 
   // Exit the game loop.
   update.exit(States.Gameloop);
@@ -79,37 +79,37 @@ function curatinsClosed(update:Update) {
 
 // Curtains are now opened, spawn in message and guy and tween into view.
 function curtainsOpened(update:Update) {
-  const start = new Vec2(0, -30);
-  const end = new Vec2(0, 100);
-
   update.spawn([
-    Sprite(
+    new Sprite(
       GameAssets.Death.Guy.Texture.Handle,
       GameAssets.Death.Guy.Atlas.Handle,
       Layers.BG,
-      undefined, undefined, 
+      undefined,
+      undefined, 
       Color.White(0)
     ),
-    Position(start),
-    SpriteTween(start, end, Color.White(0), Color.White(0.5)),
-    Timer(3000),
-    UseSpriteRenderer(),
-    Tag(DeathScreenCleanupTag)
+    Position.fromXY(0, -30),
+    TweenChain.build()
+      .andThen(3000, s => s.pos(new Vec2(0, 100)).color(Color.White(0.5)))
+      .chain(),
+    UseSpriteRenderer,
+    DeathScreenCleanupTag
   ]);
 
   // Spawn the message and tween chain separately 
   // (beacuse the tween chain automatically despawns itself)
   const message = update.spawn([
-    Sprite(
+    new Sprite(
       GameAssets.Death.Message.Texture.Handle,
       GameAssets.Death.Message.Atlas.Handle,
       Layers.FG,
-      undefined, undefined,
+      undefined, 
+      new Vec2(0.8, 0.8),
       Color.White(0)
     ),
-    Position.from_xy(0, 0),
-    UseSpriteRenderer(),
-    Tag(DeathScreenCleanupTag)
+    Position.fromXY(0, 0),
+    UseSpriteRenderer,
+    DeathScreenCleanupTag
   ]);
 
   // Put together a little chained animation.
@@ -117,22 +117,24 @@ function curtainsOpened(update:Update) {
   // Move to 0, 10 and fade in for 1 second.
   // Hold for 2 seconds.
   // Move to 0, 30 and fade out for 1 second.
-  const animation = TweenChainBuilder.start()
+  const animation = TweenChain.build()
     .andThen(1000, (step) => step
       .pos(new Vec2(0, 10))
       .color(Color.White(1))
+      .scale(Vec2.ONE)
     )
     .andThen(2000)
     .andThen(1000, (step) => step
       .pos(new Vec2(0, 30))
       .color(Color.White(0))
-    );
+    )
+    .chain(message);
 
-  update.spawn([ TweenChain(animation.steps, message) ]);
+  update.spawn([ animation ]);
 
   // Spawn another timer to just delay closing the curtains again.
   update.spawn([
-    Timer(5000, { name: CloseFinalCurtains, sender: DeathPlugin.name })
+    new Timer(5000, { name: CloseFinalCurtains, sender: DeathPluginName })
   ]);
 }
 
@@ -144,7 +146,7 @@ function closeFinalCurtains(update:Update) {
 function moveBackToGameLoop(update:Update) {
   update.exit(DeathScreenState);
 
-  const res = update.resource<GameStateResouce>(GameStateResouce.name);
+  const res = update.resource<GameStateResouce>(GameStateResouce.NAME);
 
   res.health = Config.MaxHealth;
   // Let them continue where they left off, ya' big softy

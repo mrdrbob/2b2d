@@ -25,7 +25,7 @@ function enterInit(update:Update) {
 
   // Spawn a camera
   update.spawn([
-    Position.from_xy(0, 0),
+    Position.fromXY(0, 0),
     Camera
   ]);
 

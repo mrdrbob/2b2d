@@ -9,12 +9,12 @@ import Update from "../../../2B2D/Update";
 import Enemy from "../../Enemy/Components/Enemy";
 import GameAssets from "../../GameAssets";
 import { GameloopCleanupTag } from "../../GamePlugin";
-import { GameStateResouce } from "../../GameStateResource";
+import GameStateResouce from "../../GameStateResource";
 import Layers from "../../Layers";
 import Bat from "../Components/Bat";
 
 export default function SpawnBats(update:Update) {
-  const gameState = update.resource<GameStateResouce>(GameStateResouce.name);
+  const gameState = update.resource<GameStateResouce>(GameStateResouce.NAME);
   const assets = update.assets();
   const ldtk = assets.assume<LdtkData>(GameAssets.LevelData.LdtkData.Handle);
 
@@ -29,18 +29,18 @@ export default function SpawnBats(update:Update) {
     const position = new Vec2(enemy.px[0], level.pxHei - enemy.px[1]).add(offset);
 
     update.spawn([
-      Sprite(
+      new Sprite(
         GameAssets.Characters.Texture.Handle,
         GameAssets.Characters.Atlas.Handle,
         Layers.Entities,
         '4'
       ),
-      Animated('FlyEnemy'),
-      Position(position),
-      Bat(position, position.add(new Vec2(0, 50))),
-      Enemy(1, new Vec2(8, 6)),
-      Tag(GameloopCleanupTag),
-      UseSpriteRenderer()
+      new Animated('FlyEnemy'),
+      new Position(position),
+      new Bat(position, position.add(new Vec2(0, 50))),
+      new Enemy(1, new Vec2(8, 6)),
+      GameloopCleanupTag,
+      UseSpriteRenderer
     ]);
   }
 }

@@ -1,11 +1,12 @@
 import Vec2 from "../../../2B2D/Math/Vec2";
 import Signal from "../../../2B2D/Signal";
 
-export interface PlayerDiedSignal extends Signal {
-  name: 'PlayerDied',
-  position: Vec2
-}
+export default class PlayerDied implements Signal {
+  static readonly NAME:string = 'PlayerDied';
+  readonly name:string = PlayerDied.NAME;
 
-export default function PlayerDied(position: Vec2, sender?: string): PlayerDiedSignal {
-  return { name: 'PlayerDied', position, sender };
+  constructor(
+    public position: Vec2, 
+    public sender: string | undefined = undefined,
+  ) { }
 }

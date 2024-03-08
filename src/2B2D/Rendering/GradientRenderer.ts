@@ -1,5 +1,5 @@
-import Gradient, { GradientComponent } from "../Components/Gradient";
-import Position, { PositionComponent } from "../Components/Position";
+import Gradient from "../Components/Gradient";
+import Position from "../Components/Position";
 import { Layer } from "../Layer";
 import Color from "../Math/Color";
 import Vec2 from "../Math/Vec2";
@@ -146,14 +146,14 @@ export class GradientRenderer implements Renderer {
   beginFrame(update: Update): void {
     this.batches.clear();
 
-    const query = update.query([ Gradient.name, Position.name ]);
+    const query = update.query([ Gradient.NAME, Position.NAME ]);
     if (query.length === 0)
       return;
 
     // First, we sort these into layers to draw.
     const layerBatches = new Map<Layer, GradientData[]>();
     for (const entity of query) {
-      const [ gradient, position ] = entity.components as [ GradientComponent, PositionComponent ];
+      const [ gradient, position ] = entity.components as [ Gradient, Position ];
       const isVisible = update.resolveVisibility(entity.entity);
       if (!isVisible)
         continue;

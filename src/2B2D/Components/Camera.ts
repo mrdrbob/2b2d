@@ -1,5 +1,4 @@
-import Tag from "./Tag";
+// Not really a compoenent, more of just a tag.
+const Camera = 'Camera';
+export default Camera;
 
-const inst = Tag('Camera');
-
-export default inst;

@@ -1,13 +1,13 @@
-import Position, { PositionComponent } from "../../../2B2D/Components/Position";
+import Position from "../../../2B2D/Components/Position";
 import Update from "../../../2B2D/Update";
-import Bat, { BatComponent } from "../Components/Bat";
+import Bat from "../Components/Bat";
 
 export default function MoveBats(update:Update) {
-  const query = update.query([ Bat.name, Position.name ]);
+  const query = update.query([ Bat.NAME, Position.NAME ]);
   const delta = update.delta();
 
   for (const entity of query) {
-    const [ bat, position ] = entity.components as [ BatComponent, PositionComponent ];
+    const [ bat, position ] = entity.components as [ Bat, Position ];
 
     bat.time += delta;
     while (bat.time >= bat.totalTime) {

@@ -1,7 +1,6 @@
 import Builder from "../../2B2D/Builder";
 import Position from "../../2B2D/Components/Position";
 import Sprite from "../../2B2D/Components/Sprite";
-import Tag from "../../2B2D/Components/Tag";
 import UseSpriteRenderer from "../../2B2D/Components/UseSpriteRenderer";
 import Signal from "../../2B2D/Signal";
 import Update from "../../2B2D/Update";
@@ -25,14 +24,14 @@ export default function MainMenuPlugin(builder:Builder) {
 
 function spawnMenu(update:Update) {
   update.spawn([
-    Sprite(
+    new Sprite(
       GameAssets.Menu.Texture.Handle,
       GameAssets.Menu.Atlas.Handle,
       Layers.BG
     ),
-    Position.from_xy(0, 0),
-    UseSpriteRenderer(),
-    Tag(MainMenuTag),
+    Position.fromXY(0, 0),
+    UseSpriteRenderer,
+    MainMenuTag,
   ]);
 
   update.enter(WaitForInputState);

@@ -19,7 +19,7 @@ export default function PlayerPlugin(builder:Builder) {
   builder.update(States.Gameloop, HandleInvincibility);
   
   
-  builder.handle(EnemyCollision.name, BounceOnStomps);
-  builder.handle(EnemyCollision.name, TakeEnemyDamage);
-  builder.handle(PlayerDied.name, SpawnGhost);
+  builder.handle(EnemyCollision.NAME, BounceOnStomps);
+  builder.handle(EnemyCollision.NAME, TakeEnemyDamage);
+  builder.handle(PlayerDied.NAME, SpawnGhost);
 }

@@ -1,14 +1,13 @@
 import LdtkData from "../../2B2D/Assets/LdtkData";
 import Builder from "../../2B2D/Builder";
-import Position, { PositionComponent } from "../../2B2D/Components/Position";
+import Position from "../../2B2D/Components/Position";
 import Sprite from "../../2B2D/Components/Sprite";
-import Tag from "../../2B2D/Components/Tag";
 import Timer from "../../2B2D/Components/Timer";
 import UseSpriteRenderer from "../../2B2D/Components/UseSpriteRenderer";
 import Update from "../../2B2D/Update";
 import { CurtainsClosedSignal, closeCurtains, openCurtains } from "../Curtains/CurtainsPlugin";
 import GameAssets from "../GameAssets";
-import { GameStateResouce } from "../GameStateResource";
+import GameStateResouce from "../GameStateResource";
 import Layers from "../Layers";
 import PlayerTouchedFlag from "../Player/Signals/PlayerTouchedFlag";
 import States from "../States";
@@ -25,12 +24,14 @@ const TransitionToMenu = 'TransitionToMenu';
 const WinPluginCleanupTag = 'WinPluginCleanupTag';
 const WinScreenState = 'WinScreenState';
 
+const WinPluginName = 'WinPlugin';
+
 export default function WinPlugin(builder:Builder) {
   builder.handle(PlayerTouchedFlag, playerTouchedFlag);
   builder.handleFrom(CurtainsClosedSignal, WinPluginFirstClose, beginTransitionToNextStage);
-  builder.handleFrom(TransitionToNextPhase, WinPlugin.name, transitionToNextPhase);
+  builder.handleFrom(TransitionToNextPhase, WinPluginName, transitionToNextPhase);
 
-  builder.handleFrom(WinPluginSecondClose, WinPlugin.name, secondCurtainClose);
+  builder.handleFrom(WinPluginSecondClose, WinPluginName, secondCurtainClose);
   builder.handleFrom(CurtainsClosedSignal, TransitionToMenu, transtionToMenu);
 
   builder.cleanup(WinScreenState, WinPluginCleanupTag);
@@ -46,12 +47,12 @@ function beginTransitionToNextStage(update:Update) {
 
   // A small delay to allow the commands to execute and despawn to happen.
   update.spawn([
-    Timer(100, { name: TransitionToNextPhase, sender: WinPlugin.name })
+    new Timer(100, { name: TransitionToNextPhase, sender: WinPluginName })
   ]);
 }
 
 function transitionToNextPhase(update:Update) {
-  const gameState = update.resource<GameStateResouce>(GameStateResouce.name);
+  const gameState = update.resource<GameStateResouce>(GameStateResouce.NAME);
   gameState.level += 1;
   
   const assets = update.assets();
@@ -59,26 +60,26 @@ function transitionToNextPhase(update:Update) {
 
   if (gameState.level >= ldtk.levels.length) {
     // Reset the camera to 0, 0
-    const camera = update.single([ Camera.name, Position.name ]);
+    const camera = update.single([ Camera, Position.NAME ]);
     if (camera) {
-      const [ _cam, position ] = camera.components as [ Component, PositionComponent ];
+      const [ _cam, position ] = camera.components as [ Component, Position ];
       position.pos = Vec2.ZERO;
     }
 
     // You win screen!
     update.spawn([
-      Sprite(
+      new Sprite(
         GameAssets.WinScreen.Texture.Handle,
         GameAssets.WinScreen.Atlas.Handle,
         Layers.BG
       ),
-      Position.from_xy(0, 0),
-      UseSpriteRenderer(),
-      Tag(WinPluginCleanupTag)
+      Position.fromXY(0, 0),
+      UseSpriteRenderer,
+      WinPluginCleanupTag
     ]);
 
     update.spawn([
-      Timer(2000, { name: WinPluginSecondClose, sender: WinPlugin.name })
+      new Timer(2000, { name: WinPluginSecondClose, sender: WinPluginName })
     ]);
 
     update.enter(WinScreenState);

@@ -1,18 +1,18 @@
-import AnimatedTilemap, { AnimatedTilemapComponent } from "../Components/AnimatedTilemap";
-import Tilemap, { TilemapComponent } from "../Components/Tilemap";
+import AnimatedTilemap from "../Components/AnimatedTilemap";
+import Tilemap from "../Components/Tilemap";
 import Update from "../Update";
 
 const MAX_GENERATION = 10000;
 
 export default function AnimateTilemaps(update: Update) {
-  const query = update.query([ Tilemap.name, AnimatedTilemap.name ]);
+  const query = update.query([ Tilemap.NAME, AnimatedTilemap.NAME ]);
   if (query.length == 0)
     return;
 
   const delta = update.delta();
 
   for (const entity of query) {
-    const [ tilemap, animation ] = entity.components as [ TilemapComponent, AnimatedTilemapComponent ];
+    const [ tilemap, animation ] = entity.components as [ Tilemap, AnimatedTilemap ];
 
     animation.time += delta;
     while (animation.time > animation.rate) {

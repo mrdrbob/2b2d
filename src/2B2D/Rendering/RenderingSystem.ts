@@ -1,6 +1,6 @@
 import Component from "../Component";
 import Camera from "../Components/Camera";
-import Position, { PositionComponent } from "../Components/Position";
+import Position from "../Components/Position";
 import Vec2 from "../Math/Vec2";
 import Update from "../Update";
 import Renderer from "./Renderer";
@@ -131,9 +131,9 @@ export default class RenderingSystem {
       return;
 
     let cameraPosition = new Vec2(0, 0);
-    const camera = update.single([ Camera.name, Position.name ]);
+    const camera = update.single([ Camera, Position.NAME ]);
     if (camera) {
-      const [ _, position ] = camera.components as [ Component, PositionComponent ];
+      const [ _, position ] = camera.components as [ Component, Position ];
       cameraPosition = update.resolvePosition(camera.entity, position);
     }
 

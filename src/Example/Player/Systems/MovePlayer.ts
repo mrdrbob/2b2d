@@ -1,10 +1,10 @@
-import Animated, { AnimatedComponent } from "../../../2B2D/Components/Animated";
-import KineticBody, { KineticBodyComponent } from "../../../2B2D/Components/KineticBody";
-import Sprite, { SpriteComponent } from "../../../2B2D/Components/Sprite";
-import Velocity, { VelocityComponent } from "../../../2B2D/Components/Velocity";
+import Animated from "../../../2B2D/Components/Animated";
+import KineticBody from "../../../2B2D/Components/KineticBody";
+import Sprite from "../../../2B2D/Components/Sprite";
+import Velocity from "../../../2B2D/Components/Velocity";
 import Vec2 from "../../../2B2D/Math/Vec2";
 import Update from "../../../2B2D/Update";
-import Player, { PlayerComponent } from "../Components/Player";
+import Player from "../Components/Player";
 import { PlayerJumpedSignal } from "../PlayerPlugin";
 
 const speed:number = 0.03;
@@ -13,7 +13,7 @@ const jumpSpeed:number = 0.15;
 const jumpTime:number = 0.2 * 1000;
 
 export default function MovePlayer(update:Update) {
-  const query = update.single([ Player.name, Velocity.name, Animated.name, Sprite.name, KineticBody.name ]);
+  const query = update.single([ Player.NAME, Velocity.NAME, Animated.NAME, Sprite.NAME, KineticBody.NAME ]);
   if (!query)
     return;
 
@@ -24,7 +24,7 @@ export default function MovePlayer(update:Update) {
   const isSpace = keys.isKeyDown(' ');
   const delta = update.delta();
 
-  const [ player, vel, anim, sprite, body ] = query.components as [PlayerComponent, VelocityComponent, AnimatedComponent, SpriteComponent, KineticBodyComponent];
+  const [ player, vel, anim, sprite, body ] = query.components as [Player, Velocity, Animated, Sprite, KineticBody];
   
   
   let newVel = vel.velocity;
