@@ -45,7 +45,7 @@ export default function SpawnLevel(update:Update) {
   // Foreground tiles
   update.spawn([
     new Tilemap(
-      Layers.BG, 
+      Layers.FG, 
       GameAssets.LevelData.Tiles.Texture.Handle, 
       GameAssets.LevelData.Foreground.Tilemap.Handle(gameState.level)
     ),
