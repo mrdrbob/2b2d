@@ -8,7 +8,7 @@ import Player from "../Components/Player";
 const BOUNCE_VELOCITY = 0.4;
 const BOUNCE_SECONDS = 0.1;
 
-export default function BounceOnStomps(update:Update, signals:Signal[]) {
+export default function BounceOnStomps(update: Update, signals: Signal[]) {
   if (signals.length === 0)
     return;
 
@@ -18,12 +18,12 @@ export default function BounceOnStomps(update:Update, signals:Signal[]) {
   if (!signal.isStomp)
     return;
 
-  const query = update.single([ Player.NAME, Velocity.NAME ]);
+  const query = update.single([Player.NAME, Velocity.NAME]);
   if (!query)
     return;
 
   // Cause the player to "hop" a bit.
-  const [ player, velocity ] = query.components as [ Player, Velocity ];
+  const [player, velocity] = query.components as [Player, Velocity];
   velocity.velocity = velocity.velocity.add(new Vec2(0, BOUNCE_VELOCITY));
   player.jumpTimeRemaining = BOUNCE_SECONDS * 1000;
 }

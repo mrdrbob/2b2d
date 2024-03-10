@@ -8,7 +8,7 @@ const Layers = {
   Hud: 'Hud',
   Curtains: 'Curtains',
 
-  add: function (builder:Builder) {
+  add: function (builder: Builder) {
     builder.layer(Layers.BG);
     builder.layer(Layers.Tiles);
     builder.layer(Layers.Entities);

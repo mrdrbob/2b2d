@@ -1,26 +1,26 @@
 import { Command } from "./Command";
+import { Layer } from "./Layer";
+import Renderer from "./Rendering/Renderer";
+import RenderingSystem from "./Rendering/RenderingSystem";
 import Resource from "./Resource";
+import Signal, { SignalHandler } from "./Signal";
 import { State } from "./State";
 import { Schedule, System } from "./System";
-import Update from "./Update";
-import Signal, { SignalHandler } from "./Signal";
-import World from "./World";
-import { Layer } from "./Layer";
-import RenderingSystem from "./Rendering/RenderingSystem";
-import Renderer from "./Rendering/Renderer";
 import Ticker from "./Ticker";
+import Update from "./Update";
+import World from "./World";
 
 
 export default class Engine {
-  private tick:(time:number) => void;
-  private lastTick:number = 0;
-  public run:boolean = false;
-  
+  private tick: (time: number) => void;
+  private lastTick: number = 0;
+  public run: boolean = false;
+
   public world = new World();
   public resources = new Map<string, Resource>();
-  
-  public static readonly ALWAYS_STATE:State = 'Always';
-  public static readonly SCHEDULE_EXECUTION_ORDER:Schedule[] = [ 'entering', 'update', 'exiting' ];
+
+  public static readonly ALWAYS_STATE: State = 'Always';
+  public static readonly SCHEDULE_EXECUTION_ORDER: Schedule[] = ['entering', 'update', 'exiting'];
   public state = new Map<Schedule, Set<State>>();
   public systems = new Map<Schedule, Map<State, System[]>>;
 
@@ -37,7 +37,7 @@ export default class Engine {
   public tickers = new Array<Ticker>();
 
   constructor() {
-    this.state.set('update', new Set<State>([ Engine.ALWAYS_STATE ]));
+    this.state.set('update', new Set<State>([Engine.ALWAYS_STATE]));
     this.state.set('entering', new Set<State>());
     this.state.set('exiting', new Set<State>());
 
@@ -67,7 +67,7 @@ export default class Engine {
     this.run = false;
   }
 
-  processCommands(commands:Array<Command>) {
+  processCommands(commands: Array<Command>) {
     const exitingStates = this.state.get('exiting')!;
     const updateStates = this.state.get('update')!;
     const enteringStates = this.state.get('entering')!;
@@ -123,8 +123,8 @@ export default class Engine {
     }
   }
 
-  update(delta:number) {
-    let commands:Array<Command> = [];
+  update(delta: number) {
+    let commands: Array<Command> = [];
 
     // Build update context
     const update = new Update({

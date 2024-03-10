@@ -18,7 +18,7 @@ const Frame = {
   Empty: '108,36',
 };
 
-export default function HudPlugin(builder:Builder) {
+export default function HudPlugin(builder: Builder) {
   builder.enter(States.Gameloop, spawnHud);
   builder.update(States.Gameloop, updateHud);
 }
@@ -31,8 +31,8 @@ interface HealthDisplayComponent extends Component {
   full: number // >= is full
 }
 
-function spawnHud(update:Update) {
-  const camera = update.single([ Camera, Position.NAME ]);
+function spawnHud(update: Update) {
+  const camera = update.single([Camera, Position.NAME]);
   if (!camera) {
     console.warn('HUD could not spawn. No camera');
     return;
@@ -41,9 +41,9 @@ function spawnHud(update:Update) {
   update.spawn([
     { name: 'HealthDisplay', empty: 0, half: 1, full: 2 } as HealthDisplayComponent,
     new Sprite(
-      GameAssets.LevelData.Tiles.Texture.Handle, 
-      GameAssets.LevelData.Tiles.Atlas.Handle, 
-      Layers.Hud, 
+      GameAssets.LevelData.Tiles.Texture.Handle,
+      GameAssets.LevelData.Tiles.Atlas.Handle,
+      Layers.Hud,
       Frame.Empty
     ),
     Position.fromXY(-88, 65),
@@ -55,9 +55,9 @@ function spawnHud(update:Update) {
   update.spawn([
     { name: 'HealthDisplay', empty: 2, half: 3, full: 4 } as HealthDisplayComponent,
     new Sprite(
-      GameAssets.LevelData.Tiles.Texture.Handle, 
-      GameAssets.LevelData.Tiles.Atlas.Handle, 
-      Layers.Hud, 
+      GameAssets.LevelData.Tiles.Texture.Handle,
+      GameAssets.LevelData.Tiles.Atlas.Handle,
+      Layers.Hud,
       Frame.Empty
     ),
     Position.fromXY(-68, 65),
@@ -69,9 +69,9 @@ function spawnHud(update:Update) {
   update.spawn([
     { name: 'HealthDisplay', empty: 4, half: 5, full: 6 } as HealthDisplayComponent,
     new Sprite(
-      GameAssets.LevelData.Tiles.Texture.Handle, 
-      GameAssets.LevelData.Tiles.Atlas.Handle, 
-      Layers.Hud, 
+      GameAssets.LevelData.Tiles.Texture.Handle,
+      GameAssets.LevelData.Tiles.Atlas.Handle,
+      Layers.Hud,
       Frame.Empty
     ),
     Position.fromXY(-48, 65),
@@ -81,16 +81,16 @@ function spawnHud(update:Update) {
   ]);
 }
 
-function updateHud(update:Update) {
-  const query = update.query([ 'HealthDisplay', Sprite.NAME ]);
+function updateHud(update: Update) {
+  const query = update.query(['HealthDisplay', Sprite.NAME]);
   const gameState = update.resource<GameStateResouce>(GameStateResouce.NAME);
   const health = gameState.health;
 
   for (const entity of query) {
-    const [ display, sprite ] = entity.components as [ HealthDisplayComponent, Sprite ];
+    const [display, sprite] = entity.components as [HealthDisplayComponent, Sprite];
 
     sprite.frame = health <= display.empty ? Frame.Empty
-                 : health == display.half ? Frame.Half
-                 : Frame.Full;
+      : health == display.half ? Frame.Half
+        : Frame.Full;
   }
 }

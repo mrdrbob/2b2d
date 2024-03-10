@@ -8,9 +8,9 @@ import AssetsResource from "../2B2D/Resources/AssetsResource";
 import AudioResource from "../2B2D/Resources/AudioResource";
 
 const GameAssets = {
-  Menu: { 
-    Texture:  {
-      Handle: 'menu-texture', 
+  Menu: {
+    Texture: {
+      Handle: 'menu-texture',
       Load: () => loadTextureAsset(GameAssets.Menu.Texture.Handle, 'assets/main-menu.png')
     },
     Atlas: {
@@ -18,7 +18,7 @@ const GameAssets = {
       Generate: () => generateSingleSpriteAtlas(GameAssets.Menu.Atlas.Handle, new Vec2(200, 150))
     }
   },
-  Characters:  {
+  Characters: {
     Texture: {
       Handle: 'char-texture',
       Load: () => loadTextureAsset(GameAssets.Characters.Texture.Handle, 'assets/characters.png')
@@ -40,7 +40,7 @@ const GameAssets = {
         Load: () => loadTextureAsset(GameAssets.LevelData.Background.Texture.Handle, 'assets/platform-bg-tiles.png'),
       },
       Tilemap: {
-        Handle: (id:number) => `level-bg-layer-${id}`
+        Handle: (id: number) => `level-bg-layer-${id}`
       }
     },
     // "Tiles" make up the platforms AND foreground tiles.
@@ -54,7 +54,7 @@ const GameAssets = {
         Generate: () => generateTiledSpriteAtlas(GameAssets.LevelData.Tiles.Atlas.Handle, new Vec2(18, 18), new Vec2(20, 9), new Vec2(0, 0))
       },
       Tilemap: {
-        Handle: (level:number, frame:number) => `level-tiles-tilemap-${level}-${frame}`
+        Handle: (level: number, frame: number) => `level-tiles-tilemap-${level}-${frame}`
       }
     },
     Foreground: {
@@ -62,7 +62,7 @@ const GameAssets = {
         JustUseTheTileTexture: () => { throw new Error('You should not call this.'); }
       },
       Tilemap: {
-        Handle: (id:number) => `level-fg-layer-${id}`
+        Handle: (id: number) => `level-fg-layer-${id}`
       }
     }
 
@@ -109,29 +109,29 @@ const GameAssets = {
       Generate: () => generateSingleSpriteAtlas(GameAssets.WinScreen.Atlas.Handle, new Vec2(200, 150))
     }
   },
-  Sounds:{
+  Sounds: {
     Jump: {
       Handle: 'jump-audio',
-      Load: (audio:AudioResource) => audio.loadAudio(GameAssets.Sounds.Jump.Handle, 'assets/jump.opus')
+      Load: (audio: AudioResource) => audio.loadAudio(GameAssets.Sounds.Jump.Handle, 'assets/jump.opus')
     },
     Hurt: {
       Handle: 'hurt-audio',
-      Load: (audio:AudioResource) => audio.loadAudio(GameAssets.Sounds.Hurt.Handle, 'assets/hurt.opus')
+      Load: (audio: AudioResource) => audio.loadAudio(GameAssets.Sounds.Hurt.Handle, 'assets/hurt.opus')
     },
     Died: {
       Handle: 'died-audio',
-      Load: (audio:AudioResource) => audio.loadAudio(GameAssets.Sounds.Died.Handle, 'assets/died.opus')
+      Load: (audio: AudioResource) => audio.loadAudio(GameAssets.Sounds.Died.Handle, 'assets/died.opus')
     },
     Flag: {
       Handle: 'flag-audio',
-      Load: (audio:AudioResource) => audio.loadAudio(GameAssets.Sounds.Flag.Handle, 'assets/flag.opus')
+      Load: (audio: AudioResource) => audio.loadAudio(GameAssets.Sounds.Flag.Handle, 'assets/flag.opus')
     },
     Drop: {
       Handle: 'drop-audio',
-      Load: (audio:AudioResource) => audio.loadAudio(GameAssets.Sounds.Drop.Handle, 'assets/drop.opus')
+      Load: (audio: AudioResource) => audio.loadAudio(GameAssets.Sounds.Drop.Handle, 'assets/drop.opus')
     }
   },
-  Init: (assets:AssetsResource, audio:AudioResource) => {
+  Init: (assets: AssetsResource, audio: AudioResource) => {
     assets.add(GameAssets.Menu.Texture.Load());
     assets.add(GameAssets.Menu.Atlas.Generate());
     assets.add(GameAssets.Characters.Texture.Load());
@@ -154,7 +154,7 @@ const GameAssets = {
     assets.add(GameAssets.Sounds.Flag.Load(audio));
     assets.add(GameAssets.Sounds.Drop.Load(audio));
   },
-  IsLoaded: (assets:AssetsResource) => {
+  IsLoaded: (assets: AssetsResource) => {
     return assets.loaded([
       GameAssets.Menu.Texture.Handle,
       GameAssets.Menu.Atlas.Handle,
@@ -170,7 +170,7 @@ const GameAssets = {
       GameAssets.Sounds.Drop.Handle,
     ]);
   },
-  GenerateTilemaps: (assets:AssetsResource) => {
+  GenerateTilemaps: (assets: AssetsResource) => {
     const ldtk = assets.assume<LdtkData>(GameAssets.LevelData.LdtkData.Handle);
 
     for (let i = 0; i < ldtk.levels.length; i++) {

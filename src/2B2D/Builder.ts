@@ -1,18 +1,18 @@
 import { Command } from "./Command";
 import Engine from "./Engine";
-import { SignalHandler } from "./Signal";
 import { Layer } from "./Layer";
 import Resource from "./Resource";
+import AssetsResource from "./Resources/AssetsResource";
+import AudioResource from "./Resources/AudioResource";
+import KeysResource from "./Resources/KeysResource";
+import { SignalHandler } from "./Signal";
 import { State } from "./State";
 import { Schedule, System } from "./System";
 import AnimateSprites from "./Systems/AnimateSprites";
 import AnimateTilemaps from "./Systems/AnimateTilemaps";
 import UpdateTimers from "./Systems/UpdateTimers";
-import Update from "./Update";
 import UpdateTweenChains from "./Systems/UpdateTweenChains";
-import AssetsResource from "./Resources/AssetsResource";
-import AudioResource from "./Resources/AudioResource";
-import KeysResource from "./Resources/KeysResource";
+import Update from "./Update";
 
 export default class Builder {
   private engine = new Engine();
@@ -23,41 +23,41 @@ export default class Builder {
   /**
    * Adds a plugin to the existing builder
    */
-  plugin(plugin:(builder:Builder) => void) {
+  plugin(plugin: (builder: Builder) => void) {
     plugin(this);
     return this;
   }
 
   /** Schdule a system for a particular schedule and state. Generally, use `enter`, `exit`, or `update`
    * methods instead. */
-  schedule(schedule:Schedule, state:State, system:System) {
+  schedule(schedule: Schedule, state: State, system: System) {
     const systemsInSchedule = this.engine.systems.get(schedule)!;
     const systemsInState = systemsInSchedule.get(state);
     if (systemsInState) {
       systemsInState.push(system);
     } else {
-      systemsInSchedule.set(state, [ system ]);
+      systemsInSchedule.set(state, [system]);
     }
     return this;
   }
 
   /** Schedules `system` to run once when entering `state` */
-  enter(state:State, system:System) { return this.schedule('entering', state, system); }
+  enter(state: State, system: System) { return this.schedule('entering', state, system); }
 
   /** Schedules `system` to run every frame during the update phase of `state` */
-  exit(state:State, system:System) { return this.schedule('exiting', state, system); }
+  exit(state: State, system: System) { return this.schedule('exiting', state, system); }
 
   /** Schedules `system` to run once when exiting `state` */
-  update(state:State, system:System) { return this.schedule('update', state, system); }
+  update(state: State, system: System) { return this.schedule('update', state, system); }
 
   /** Schedules `system` to every frame through the entire game lifecycle */
-  always(system:System) { return this.schedule('update', Engine.ALWAYS_STATE, system); }
+  always(system: System) { return this.schedule('update', Engine.ALWAYS_STATE, system); }
 
   /** Despawns any entities with `tag` when `state` exits. */
-  cleanup(state:State, tag:string) { return this.schedule('exiting', state, (u:Update) => { u.cleanUpTag(tag); }); }
+  cleanup(state: State, tag: string) { return this.schedule('exiting', state, (u: Update) => { u.cleanUpTag(tag); }); }
 
   /** Registers a `handler` for a given `signal` */
-  handle(signal:string, handler:SignalHandler) {
+  handle(signal: string, handler: SignalHandler) {
     let handlers = this.engine.handlers.get(signal);
     if (!handlers) {
       handlers = new Array<SignalHandler>();
@@ -70,7 +70,7 @@ export default class Builder {
   /** Registers a `handler` that will only respond to `signal` events from a given `sender`, and 
    * will assume the signal is singular (will not handle multiple signals, only the first)
    */
-  handleFrom(signal:string, sender:string, handler: (update:Update) => void) {
+  handleFrom(signal: string, sender: string, handler: (update: Update) => void) {
     this.handle(signal, (update, signals) => {
       if (signals.length === 0)
         return;
@@ -84,7 +84,7 @@ export default class Builder {
    * will assume the signal is singular (will not handle multiple signals, only the first). Will
    * send the signal typed as T for convenience
    */
-  handleFromTyped<T>(signal:string, sender:string, handler: (update:Update, signal: T) => void) {
+  handleFromTyped<T>(signal: string, sender: string, handler: (update: Update, signal: T) => void) {
     this.handle(signal, (update, signals) => {
       if (signals.length === 0)
         return;
@@ -95,7 +95,7 @@ export default class Builder {
   }
 
   /** Adds a `resource` to the engine */
-  resource(resource:Resource) {
+  resource(resource: Resource) {
     this.engine.resources.set(resource.name, resource);
     return this;
   }
@@ -103,7 +103,7 @@ export default class Builder {
   /** Adds a `layer` to the engine. Layers are added in order, from 
    * back first, to front last
    */
-  layer(layer:Layer) {
+  layer(layer: Layer) {
     this.engine.layers.push(layer);
     return this;
   }
@@ -111,7 +111,7 @@ export default class Builder {
   /** Adds a command to be executed prior to the first frame. Useful for
    * entering the first state, adding rendering systems, etc.
    */
-  command(command:Command) {
+  command(command: Command) {
     this.commands.push(command);
     return this;
   }
@@ -121,7 +121,7 @@ export default class Builder {
    * @param skipDefaults If true, no default systems or resources will be added to the engine instance.
    * @returns an instance of the engine
    */
-  async finish(skipDefaults?:boolean) {
+  async finish(skipDefaults?: boolean) {
     if (!skipDefaults) {
       // Default systems
       this.always(AnimateSprites);
@@ -154,11 +154,11 @@ export default class Builder {
         resource: new AudioResource()
       })
     }
-    
+
     this.engine.processCommands(this.commands);
 
     await this.engine.rendering.init();
-    
+
     return this.engine;
   }
 }

@@ -1,20 +1,20 @@
 import LdtkData from "../../2B2D/Assets/LdtkData";
 import Builder from "../../2B2D/Builder";
+import Component from "../../2B2D/Component";
+import Camera from '../../2B2D/Components/Camera';
 import Position from "../../2B2D/Components/Position";
 import Sprite from "../../2B2D/Components/Sprite";
 import Timer from "../../2B2D/Components/Timer";
 import UseSpriteRenderer from "../../2B2D/Components/UseSpriteRenderer";
+import Vec2 from "../../2B2D/Math/Vec2";
 import Update from "../../2B2D/Update";
 import { CurtainsClosedSignal, closeCurtains, openCurtains } from "../Curtains/CurtainsPlugin";
 import GameAssets from "../GameAssets";
 import GameStateResouce from "../GameStateResource";
+import { InitializationComplete } from "../Init/InitPlugin";
 import Layers from "../Layers";
 import PlayerTouchedFlag from "../Player/Signals/PlayerTouchedFlag";
 import States from "../States";
-import Camera from '../../2B2D/Components/Camera';
-import Component from "../../2B2D/Component";
-import Vec2 from "../../2B2D/Math/Vec2";
-import { InitializationComplete } from "../Init/InitPlugin";
 
 const WinPluginFirstClose = 'WinPluginFirstClose';
 const TransitionToNextPhase = 'TransitionToNextPhase';
@@ -26,7 +26,7 @@ const WinScreenState = 'WinScreenState';
 
 const WinPluginName = 'WinPlugin';
 
-export default function WinPlugin(builder:Builder) {
+export default function WinPlugin(builder: Builder) {
   builder.handle(PlayerTouchedFlag, playerTouchedFlag);
   builder.handleFrom(CurtainsClosedSignal, WinPluginFirstClose, beginTransitionToNextStage);
   builder.handleFrom(TransitionToNextPhase, WinPluginName, transitionToNextPhase);
@@ -37,11 +37,11 @@ export default function WinPlugin(builder:Builder) {
   builder.cleanup(WinScreenState, WinPluginCleanupTag);
 }
 
-function playerTouchedFlag(update:Update) {
+function playerTouchedFlag(update: Update) {
   closeCurtains(update, WinPluginFirstClose);
 }
 
-function beginTransitionToNextStage(update:Update) {
+function beginTransitionToNextStage(update: Update) {
   // Allow everything to despawn
   update.exit(States.Gameloop);
 
@@ -51,18 +51,18 @@ function beginTransitionToNextStage(update:Update) {
   ]);
 }
 
-function transitionToNextPhase(update:Update) {
+function transitionToNextPhase(update: Update) {
   const gameState = update.resource<GameStateResouce>(GameStateResouce.NAME);
   gameState.level += 1;
-  
+
   const assets = update.assets();
   const ldtk = assets.assume<LdtkData>(GameAssets.LevelData.LdtkData.Handle);
 
   if (gameState.level >= ldtk.levels.length) {
     // Reset the camera to 0, 0
-    const camera = update.single([ Camera, Position.NAME ]);
+    const camera = update.single([Camera, Position.NAME]);
     if (camera) {
-      const [ _cam, position ] = camera.components as [ Component, Position ];
+      const [_cam, position] = camera.components as [Component, Position];
       position.pos = Vec2.ZERO;
     }
 
@@ -90,11 +90,11 @@ function transitionToNextPhase(update:Update) {
   openCurtains(update);
 }
 
-function secondCurtainClose(update:Update) {
+function secondCurtainClose(update: Update) {
   closeCurtains(update, TransitionToMenu);
 }
 
-function transtionToMenu(update:Update) {
+function transtionToMenu(update: Update) {
   update.exit(WinScreenState);
   update.signals.send(InitializationComplete);
 }

@@ -3,11 +3,11 @@ import Update from "../../../2B2D/Update";
 import Player from "../Components/Player";
 
 export default function HandleInvincibility(update: Update) {
-  const query = update.single([ Player.NAME, Sprite.NAME ]);
+  const query = update.single([Player.NAME, Sprite.NAME]);
   if (!query)
     return;
 
-  const [ player, sprite ] = query.components as [ Player, Sprite ];
+  const [player, sprite] = query.components as [Player, Sprite];
   if (player.invincibleTimeRemaining <= 0)
     return;
 

@@ -8,15 +8,15 @@ import GameAssets from "../../GameAssets";
 import GameStateResouce from "../../GameStateResource";
 import Player from "../Components/Player";
 
-let levelId:number | undefined = undefined;
+let levelId: number | undefined = undefined;
 let topLeft = Vec2.ZERO;
 let bottomRight = Vec2.ZERO;
 
 
-export default function cameraFollowPlayer(update:Update) {
+export default function cameraFollowPlayer(update: Update) {
 
-  const player = update.single([ Player.NAME, Position.NAME ]);
-  const camera = update.single([ Camera, Position.NAME ]);
+  const player = update.single([Player.NAME, Position.NAME]);
+  const camera = update.single([Camera, Position.NAME]);
 
   if (!player || !camera)
     return;
@@ -37,9 +37,9 @@ export default function cameraFollowPlayer(update:Update) {
 
     levelId = gameState.level;
   }
-  
-  const [ _player, playerPosition ] = player.components as [ Component, Position ];
-  const [ _camera, cameraPosition ] = camera.components as [ Component, Position ];
+
+  const [_player, playerPosition] = player.components as [Component, Position];
+  const [_camera, cameraPosition] = camera.components as [Component, Position];
 
   cameraPosition.pos = playerPosition.pos.max(topLeft).min(bottomRight);
 }

@@ -19,7 +19,7 @@ export default function InitPlugin(builder: Builder) {
   builder.update(States.Init, waitForLoad);
 }
 
-function enterInit(update:Update) {
+function enterInit(update: Update) {
   const assets = update.assets();
   const audio = update.audio();
 
@@ -39,7 +39,7 @@ function enterInit(update:Update) {
   update.signals.send(InitializationStarted);
 }
 
-function waitForLoad(update:Update) {
+function waitForLoad(update: Update) {
   const assets = update.assets();
 
   const allLoaded = GameAssets.IsLoaded(assets);

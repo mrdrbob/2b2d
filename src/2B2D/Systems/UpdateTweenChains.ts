@@ -3,13 +3,13 @@ import Sprite from "../Components/Sprite";
 import TweenChain from "../Components/TweenChain";
 import Update from "../Update";
 
-export default function UpdateTweenChains(update:Update) {
-  const query = update.query([ TweenChain.NAME ]);
+export default function UpdateTweenChains(update: Update) {
+  const query = update.query([TweenChain.NAME]);
 
   const delta = update.delta();
 
   for (const item of query) {
-    const [ chain ] = item.components as [ TweenChain ];
+    const [chain] = item.components as [TweenChain];
     if (chain.steps.length === 0)
       continue;
 

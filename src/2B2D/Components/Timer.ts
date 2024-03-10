@@ -2,8 +2,8 @@ import Component from "../Component";
 import Signal from "../Signal";
 
 export default class Timer implements Component {
-  static readonly NAME:string = 'Timer';
-  readonly name:string = Timer.NAME;
+  static readonly NAME: string = 'Timer';
+  readonly name: string = Timer.NAME;
 
   /** A Timer component countds down `totalTime` milliseconds, and then despawns the entity 
    * it's attached to. If `completed` is provided, that signal will be sent at the end of 
@@ -11,9 +11,9 @@ export default class Timer implements Component {
    * properties, or as a simple delay.
    */
   constructor(
-    public totalTime: number, 
+    public totalTime: number,
     public completed?: Signal
-  ) {}
+  ) { }
 
-  currentTime:number = 0;
+  currentTime: number = 0;
 }

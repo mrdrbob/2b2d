@@ -15,14 +15,14 @@ const MainMenuTag = 'MainMenuTag';
 const MainMenuSender = 'MainMenuSender';
 export const ExitMenuSignal = 'ExitMenuSignal';
 
-export default function MainMenuPlugin(builder:Builder) {
+export default function MainMenuPlugin(builder: Builder) {
   builder.handle(InitializationComplete, spawnMenu);
   builder.handle(CurtainsClosedSignal, exitMenu);
-  
+
   builder.update(WaitForInputState, waitForInput);
 }
 
-function spawnMenu(update:Update) {
+function spawnMenu(update: Update) {
   update.spawn([
     new Sprite(
       GameAssets.Menu.Texture.Handle,
@@ -37,7 +37,7 @@ function spawnMenu(update:Update) {
   update.enter(WaitForInputState);
 }
 
-function waitForInput(update:Update) {
+function waitForInput(update: Update) {
   const keys = update.keys();
 
   if (keys.keyJustReleased(' ')) {
@@ -46,16 +46,16 @@ function waitForInput(update:Update) {
   }
 }
 
-function exitMenu(update:Update, signals:Signal[]) {
+function exitMenu(update: Update, signals: Signal[]) {
   if (signals[0].sender !== MainMenuSender)
     return;
 
   // Despawn the main menu graphic
-  const query = update.query([ MainMenuTag ]);
+  const query = update.query([MainMenuTag]);
   for (const entity of query) {
     update.despawn(entity.entity);
   }
-  
+
   // Leave the menu state and let the main game loop know it's time to start.
   update.exit(WaitForInputState);
   update.signals.send(ExitMenuSignal);

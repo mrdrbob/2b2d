@@ -7,17 +7,17 @@ export type Handle = string;
 
 // An "asset" is basically anything that can be loaded
 export interface UntypedAsset {
-  name:Handle;
-  isLoaded():boolean;
-  getError():any;
+  name: Handle;
+  isLoaded(): boolean;
+  getError(): any;
 }
 
 export default class Asset<T> implements UntypedAsset {
-  private promise:Promise<T>;
-  private asset:T | null = null;
-  private error:any = null;
+  private promise: Promise<T>;
+  private asset: T | null = null;
+  private error: any = null;
 
-  constructor(public name:Handle, promise:Promise<T>) {
+  constructor(public name: Handle, promise: Promise<T>) {
     this.promise = promise;
     this.promise.then(x => {
       this.asset = x;

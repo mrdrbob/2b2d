@@ -8,7 +8,7 @@ import PlayerDied from "../Player/Signals/PlayerDiedSignal";
 import PlayerTouchedFlag from "../Player/Signals/PlayerTouchedFlag";
 import { PlayerDamangedSignal } from "../Player/Systems/TakeEnemyDamage";
 
-export default function SoundPlugin(builder:Builder) {
+export default function SoundPlugin(builder: Builder) {
   builder.handle(PlayerJumpedSignal, playerJumped);
   builder.handle(PlayerDamangedSignal, playerHurt);
   builder.handle(PlayerDied.NAME, playerDied);
@@ -21,22 +21,22 @@ function playerJumped(update: Update) {
   audio.play(update, GameAssets.Sounds.Jump.Handle);
 }
 
-function playerHurt(update:Update) {
+function playerHurt(update: Update) {
   const audio = update.audio();
   audio.play(update, GameAssets.Sounds.Hurt.Handle);
 }
 
-function playerDied(update:Update) {
+function playerDied(update: Update) {
   const audio = update.audio();
   audio.play(update, GameAssets.Sounds.Died.Handle);
 }
 
-function touchedFlag(update:Update) {
+function touchedFlag(update: Update) {
   const audio = update.audio();
   audio.play(update, GameAssets.Sounds.Flag.Handle);
 }
 
-function stomps(update:Update, signals:Signal[]) {
+function stomps(update: Update, signals: Signal[]) {
   for (const collision of signals as EnemyCollision[]) {
     if (!collision.isStomp)
       continue;

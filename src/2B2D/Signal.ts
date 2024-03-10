@@ -5,4 +5,4 @@ export default interface Signal {
   sender: string | undefined
 }
 
-export type SignalHandler = (update:Update, signals:Signal[]) => void;
+export type SignalHandler = (update: Update, signals: Signal[]) => void;

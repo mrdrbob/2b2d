@@ -18,18 +18,18 @@ export interface Step {
 }
 
 export default class TweenChain implements Component {
-  static readonly NAME:string = 'TweenChain';
-  readonly name:string = TweenChain.NAME;
+  static readonly NAME: string = 'TweenChain';
+  readonly name: string = TweenChain.NAME;
 
   constructor(
     public steps: Step[],
     public entity?: ResolvableEntity,
     public signal?: Signal,
-  ) {}
+  ) { }
 
   time: number = 0;
 
-  static build(step?:(builder:TweenStepItemBuilder) => void) {
+  static build(step?: (builder: TweenStepItemBuilder) => void) {
     const builder = new TweenStepItemBuilder({ time: 0, color: undefined, position: undefined, scale: undefined, radians: undefined });
     if (step)
       step(builder);
@@ -41,11 +41,11 @@ export class ChainBuilder {
   steps: Step[] = [];
   time: number = 0;
 
-  constructor(private last:StepItem) {
+  constructor(private last: StepItem) {
 
   }
 
-  andThen(time:number, step?:(builder:TweenStepItemBuilder) => void) {
+  andThen(time: number, step?: (builder: TweenStepItemBuilder) => void) {
     const startTime = this.time;
     this.time += time;
     const builder = new TweenStepItemBuilder({ time: this.time, color: this.last.color, position: this.last.position, scale: this.last.scale, radians: this.last.radians });
@@ -65,7 +65,7 @@ export class ChainBuilder {
     return this;
   }
 
-  chain(entity?:ResolvableEntity, signal?:Signal) : TweenChain { return  new TweenChain(this.steps, entity, signal); }
+  chain(entity?: ResolvableEntity, signal?: Signal): TweenChain { return new TweenChain(this.steps, entity, signal); }
 }
 
 export class TweenStepItemBuilder {
@@ -73,8 +73,8 @@ export class TweenStepItemBuilder {
 
   }
 
-  pos(pos:Vec2) { this.item.position = pos; return this; }
-  color(color:Color) { this.item.color = color; return this; }
-  scale(scale:Vec2) { this.item.scale = scale; return this; }
-  rotation(radians:number) { this.item.radians = radians; return this; }
+  pos(pos: Vec2) { this.item.position = pos; return this; }
+  color(color: Color) { this.item.color = color; return this; }
+  scale(scale: Vec2) { this.item.scale = scale; return this; }
+  rotation(radians: number) { this.item.radians = radians; return this; }
 }

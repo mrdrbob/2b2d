@@ -1,4 +1,4 @@
-import Position, { PositionComponent } from "../../../2B2D/Components/Position";
+import Position from "../../../2B2D/Components/Position";
 import Sprite from "../../../2B2D/Components/Sprite";
 import TweenChain from "../../../2B2D/Components/TweenChain";
 import UseSpriteRenderer from "../../../2B2D/Components/UseSpriteRenderer";
@@ -6,24 +6,24 @@ import Color from "../../../2B2D/Math/Color";
 import Vec2 from "../../../2B2D/Math/Vec2";
 import Signal from "../../../2B2D/Signal";
 import Update from "../../../2B2D/Update";
-import { EnemyCollisionSignal } from "../../Enemy/Signals/EnemyCollisionSignal";
+import EnemyCollisionSignal from "../../Enemy/Signals/EnemyCollisionSignal";
 import GameAssets from "../../GameAssets";
 import Layers from "../../Layers";
-import Bat, { BatComponent } from "../Components/Bat";
+import Bat from "../Components/Bat";
 
-export default function ReactToStomps(update:Update, signals:Signal[]) {
+export default function ReactToStomps(update: Update, signals: Signal[]) {
   for (const collision of signals as EnemyCollisionSignal[]) {
     // Don't care about non-stomps. The player systems will handle that.
     if (!collision.isStomp)
       continue;
 
     // We only care about bats
-    const bat = update.get<BatComponent>(collision.enemy, Bat.NAME);
+    const bat = update.get<Bat>(collision.enemy, Bat.NAME);
     if (!bat)
       continue;
 
     // Get this bat's position, despawn, and spawn a ghost that floats up and does a sweet 360 flip
-    const position = update.get<PositionComponent>(collision.enemy, Position.NAME)!;
+    const position = update.get<Position>(collision.enemy, Position.NAME)!;
     const globalPosition = update.resolvePosition(collision.enemy, position);
 
     update.despawn(collision.enemy);

@@ -2,7 +2,7 @@ import Resource from "../Resource";
 import Ticker from "../Ticker";
 
 export default class KeysResource implements Resource, Ticker {
-  static readonly NAME:string = 'KeysResource';
+  static readonly NAME: string = 'KeysResource';
   readonly name = KeysResource.NAME;
 
   private dirty: boolean = false;
@@ -27,11 +27,11 @@ export default class KeysResource implements Resource, Ticker {
     this.dirty = false;
   }
 
-  isKeyDown(key:string) {
+  isKeyDown(key: string) {
     return this.thisFrame.has(key);
   }
 
-  keyJustReleased(key:string): boolean {
+  keyJustReleased(key: string): boolean {
     return !this.thisFrame.has(key) && this.lastFrame.has(key);
   }
 }

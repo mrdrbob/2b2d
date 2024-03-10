@@ -8,7 +8,7 @@ import PlayerDied from "../Signals/PlayerDiedSignal";
 
 export const PlayerDamangedSignal = 'PlayerDamangedSignal';
 
-export default function TakeEnemyDamage(update:Update, signals:Signal[]) {
+export default function TakeEnemyDamage(update: Update, signals: Signal[]) {
   if (signals.length === 0)
     return;
 
@@ -17,17 +17,17 @@ export default function TakeEnemyDamage(update:Update, signals:Signal[]) {
   if (signal.isStomp)
     return;
 
-  const query = update.single([ Player.NAME, Position.NAME ]);
+  const query = update.single([Player.NAME, Position.NAME]);
   if (!query)
     return;
-  const [ player, position ] = query.components as [ Player, Position ];
+  const [player, position] = query.components as [Player, Position];
 
   if (player.invincibleTimeRemaining > 0)
     return;
 
   const gameState = update.resource<GameStateResouce>(GameStateResouce.NAME);
   gameState.health -= signal.damage;
-  
+
   if (gameState.health <= 0) {
     // Oh we dead. Send a signal to trigger the ghost and level end.
     const globalPos = update.resolvePosition(query.entity, position);

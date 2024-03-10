@@ -12,13 +12,13 @@ import TakeEnemyDamage from "./Systems/TakeEnemyDamage";
 
 export const PlayerJumpedSignal = 'PlayerJumpedSignal';
 
-export default function PlayerPlugin(builder:Builder) {
+export default function PlayerPlugin(builder: Builder) {
   builder.enter(States.Gameloop, spawnPlayer);
   builder.update(States.Gameloop, cameraFollowPlayer);
   builder.update(States.Gameloop, MovePlayer);
   builder.update(States.Gameloop, HandleInvincibility);
-  
-  
+
+
   builder.handle(EnemyCollision.NAME, BounceOnStomps);
   builder.handle(EnemyCollision.NAME, TakeEnemyDamage);
   builder.handle(PlayerDied.NAME, SpawnGhost);

@@ -3,7 +3,7 @@ import Update from "../../../2B2D/Update";
 import Player from "../../Player/Components/Player";
 import PlayerTouchedFlag from "../../Player/Signals/PlayerTouchedFlag";
 
-export default function HandleFlagTileCollisions(update:Update, signal:CollsisionTargetHitSignal) {
+export default function HandleFlagTileCollisions(update: Update, signal: CollsisionTargetHitSignal) {
   const assets = update.assets();
 
   // Disable player controls
@@ -12,6 +12,6 @@ export default function HandleFlagTileCollisions(update:Update, signal:Collsisio
     player.controlsEnabled = false;
 
   update.despawn(signal.target);
-  
+
   update.signals.send(PlayerTouchedFlag);
 }

@@ -8,7 +8,7 @@ import SpawnLevel from "./Systems/SpawnLevel";
 export const DeathTileTarget = 'DeathTileTarget';
 export const FlagTileTarget = 'FlagTileTarget';
 
-export default function LevelPlugin(builder:Builder) {
+export default function LevelPlugin(builder: Builder) {
   builder.handleFromTyped<CollsisionTargetHit>(CollsisionTargetHit.NAME, DeathTileTarget, HandleDeathTileTileCollisions);
   builder.handleFromTyped<CollsisionTargetHit>(CollsisionTargetHit.NAME, FlagTileTarget, HandleFlagTileCollisions);
 

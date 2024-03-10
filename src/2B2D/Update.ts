@@ -1,21 +1,20 @@
 import { Command } from "./Command";
-import Resource from "./Resource";
-import World from "./World";
-import Signal from "./Signal";
-import { State } from "./State";
 import Component from "./Component";
+import Parent from "./Components/Parent";
+import Position from "./Components/Position";
+import Visible from "./Components/Visible";
 import { Entity, ResolvableEntity } from "./Entity";
+import { Layer } from "./Layer";
+import Vec2 from "./Math/Vec2";
 import Renderer from "./Rendering/Renderer";
 import RenderingSystem, { CreateRenderer } from "./Rendering/RenderingSystem";
-import { Layer } from "./Layer";
-import Position from "./Components/Position";
-import Parent from "./Components/Parent";
-import Vec2 from "./Math/Vec2";
-import Visible from "./Components/Visible";
-import Keys from "./Resources/KeysResource";
-import AudioResource from "./Resources/AudioResource";
+import Resource from "./Resource";
 import AssetsResource from "./Resources/AssetsResource";
+import AudioResource from "./Resources/AudioResource";
 import KeysResource from "./Resources/KeysResource";
+import Signal from "./Signal";
+import { State } from "./State";
+import World from "./World";
 
 export type UpdateData = {
   world: World,
@@ -29,7 +28,7 @@ export type UpdateData = {
 };
 
 export default class Update {
-  constructor(public data:UpdateData) { }
+  constructor(public data: UpdateData) { }
 
   /** Returns the time difference since last frame, in ms */
   delta() { return this.data.delta; }
@@ -52,7 +51,7 @@ export default class Update {
   queryLive(components: string[]) { return this.data.world.queryLive(components); }
 
   /** Returns an individual component of an entity if it exists, `undefined` otherwise. */
-  get<T>(entity:Entity, component:string) { 
+  get<T>(entity: Entity, component: string) {
     const instance = this.data.world.get(entity, component);
     if (!instance)
       return;
@@ -60,7 +59,7 @@ export default class Update {
   }
 
   /** Gets a resource and assumes it exists and is of the correct type. */
-  resource<T extends Resource>(name:string): T {
+  resource<T extends Resource>(name: string): T {
     return this.data.resources.get(name)! as T;
   }
 
@@ -77,46 +76,46 @@ export default class Update {
   keys() { return this.resource<KeysResource>(KeysResource.NAME); }
 
   /** Exits the `state` by sending an `exit-state` command. */
-  exit(state:State) { this.data.commands.push({ type: 'exit-state', state }) };
+  exit(state: State) { this.data.commands.push({ type: 'exit-state', state }) };
 
   /** Enters the `state` by sending an `enter-state` command. */
-  enter(state:State) { this.data.commands.push({ type: 'enter-state', state }) };
+  enter(state: State) { this.data.commands.push({ type: 'enter-state', state }) };
 
   /** Spawns an entity by sending a `spawn` command, and returns a resolvable entity reference 
    * that can be resolved next frame.
    */
-  spawn(components:Array<Component | string>) { 
+  spawn(components: Array<Component | string>) {
     const resolvable = new ResolvableEntity();
     this.data.commands.push({ type: 'spawn', components, resolvable });
     return resolvable;
   };
 
   /** Despawns an entity by sending a `despawn` command. */
-  despawn(entity:Entity) { this.data.commands.push({ type: 'despawn', entity }) };
+  despawn(entity: Entity) { this.data.commands.push({ type: 'despawn', entity }) };
 
   signals = {
     /** Sends a signal. If `signal` is a string, a default signal type with no sender is sent */
-    send: (signal:Signal | string) => {
+    send: (signal: Signal | string) => {
       if (typeof signal === 'string') {
-        this.data.commands.push({ type: 'signal', signal: { name: signal, sender: undefined } }) 
+        this.data.commands.push({ type: 'signal', signal: { name: signal, sender: undefined } })
       } else {
-        this.data.commands.push({ type: 'signal', signal }) 
+        this.data.commands.push({ type: 'signal', signal })
       }
     },
 
     /** Returns true if a Signal of type `signal` is in the queue for this frame. */
-    has: (name:string) => {
+    has: (name: string) => {
       return this.data.signals.has(name);
     },
 
     /** Returns any signals matching `signal` type that are queued for this frame. */
-    get: (name:string) => {
+    get: (name: string) => {
       return this.data.signals.get(name);
     }
   }
 
   /** Registers a new Renderer system via a `add-renderer` command.  */
-  addRenderer(create: CreateRenderer) { this.data.commands.push({ type: 'add-renderer', create  }) };
+  addRenderer(create: CreateRenderer) { this.data.commands.push({ type: 'add-renderer', create }) };
 
   /** Removes a  Renderer system via a `remove-renderer` command.  */
   removeRenderer(name: string) { this.data.commands.push({ type: 'remove-renderer', name }) };
@@ -142,7 +141,7 @@ export default class Update {
   /** Will recursively resolve a chain of `Parent` components to work out the final 
    * global position of an entity with a `Position` component.
    */
-  resolvePosition(entity:Entity, pos:Position) : Vec2 {
+  resolvePosition(entity: Entity, pos: Position): Vec2 {
     const parent = this.get<Parent>(entity, Parent.NAME);
     if (!parent)
       return pos.pos;
@@ -167,7 +166,7 @@ export default class Update {
    * have a Visible component, the entity is assumed to be visible.* To hide a component,
    * you need a `Visible` component set to `false`.
    */
-  resolveVisibility(entity:Entity): boolean {
+  resolveVisibility(entity: Entity): boolean {
     const visibleComponent = this.get<Visible>(entity, Visible.NAME);
     if (visibleComponent)
       return visibleComponent.visible;
@@ -175,17 +174,17 @@ export default class Update {
     const parent = this.get<Parent>(entity, Parent.NAME);
     if (!parent)
       return true;
-    
+
     let parentEntity = this.resolveEntity(parent.entity);
     if (!parentEntity)
       return true;
-    
+
     return this.resolveVisibility(parentEntity);
   }
 
   /** Will despawn any entities with the `tag` component. */
-  cleanUpTag(tag:string) {
-    const query = this.query([ tag ]);
+  cleanUpTag(tag: string) {
+    const query = this.query([tag]);
     for (const entity of query) {
       this.despawn(entity.entity);
     }

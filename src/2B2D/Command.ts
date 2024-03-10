@@ -1,17 +1,17 @@
-import Signal from "./Signal";
 import Component from "./Component";
+import { ResolvableEntity } from "./Entity";
 import { CreateRenderer } from "./Rendering/RenderingSystem";
 import Resource from "./Resource";
+import Signal from "./Signal";
 import Ticker from "./Ticker";
-import { ResolvableEntity } from "./Entity";
 
-export type Command = 
-  SpawnEntityCommand | 
-  DespawnEntityCommand | 
-  ExitStateCommand | 
-  EnterStateCommand | 
-  TriggerSignalCommand | 
-  AddRendererCommand | 
+export type Command =
+  SpawnEntityCommand |
+  DespawnEntityCommand |
+  ExitStateCommand |
+  EnterStateCommand |
+  TriggerSignalCommand |
+  AddRendererCommand |
   RemoveRendererCommand |
   AddResource |
   AddTicker;

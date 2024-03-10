@@ -2,8 +2,8 @@ import Component from "../../../2B2D/Component";
 import Vec2 from "../../../2B2D/Math/Vec2";
 
 export default class Bat implements Component {
-  static readonly NAME:string = 'Bat';
-  readonly name:string = Bat.NAME;
+  static readonly NAME: string = 'Bat';
+  readonly name: string = Bat.NAME;
 
   constructor(bottom: Vec2, top: Vec2) {
     this.transitions = [

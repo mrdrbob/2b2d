@@ -1,11 +1,7 @@
-import { Handle } from "../Asset";
-import LdtkData from "../Assets/LdtkData";
 import { TilemapData } from "../Assets/TilemapData";
 import Position from "../Components/Position";
 import Tilemap from "../Components/Tilemap";
-import { Entity } from "../Entity";
 import { Layer } from "../Layer";
-import Vec2 from "../Math/Vec2";
 import Update from "../Update";
 import BufferFiller from "../Utils/BufferFiller";
 import AbstractRenderer from "./AbstractRenderer";
@@ -40,7 +36,7 @@ export class TilemapRenderer extends AbstractRenderer {
     });
 
     // Batch specific bind layout (bind happens later)
-    this.batchBindGroupLayout= this.parent.device.createBindGroupLayout({
+    this.batchBindGroupLayout = this.parent.device.createBindGroupLayout({
       label: `${this.name} batch bind group`,
       entries: this.getBatchBindGroupLayoutEntries()
     });
@@ -57,7 +53,7 @@ export class TilemapRenderer extends AbstractRenderer {
       vertex: {
         module: this.module,
         entryPoint: 'vs',
-        buffers: [ this.parent.vertexBufferLayout ]
+        buffers: [this.parent.vertexBufferLayout]
       },
       fragment: {
         module: this.module,
@@ -77,7 +73,7 @@ export class TilemapRenderer extends AbstractRenderer {
 
   protected getWgsl() { return wgsl; }
 
-  protected getBatchBindGroupLayoutEntries() : GPUBindGroupLayoutEntry[] {
+  protected getBatchBindGroupLayoutEntries(): GPUBindGroupLayoutEntry[] {
     return [
       { binding: 0, visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT, buffer: { type: 'uniform' } }, // Quad details
       { binding: 1, visibility: GPUShaderStage.FRAGMENT, texture: { sampleType: 'uint' } }, // Atlas texture
@@ -85,7 +81,7 @@ export class TilemapRenderer extends AbstractRenderer {
     ];
   }
 
-  protected getPipelineGroupLayoutEntries() : GPUBindGroupLayout[] {
+  protected getPipelineGroupLayoutEntries(): GPUBindGroupLayout[] {
     return [
       this.sharedBindGroupLayout,
       this.batchBindGroupLayout
@@ -93,7 +89,7 @@ export class TilemapRenderer extends AbstractRenderer {
   }
 
   // Will load texture atlas into the GPU and cache.
-  ensureAtlasTexture(name:string, tilemap:TilemapData) {
+  ensureAtlasTexture(name: string, tilemap: TilemapData) {
     const cached = this.textureCache.get(name);
     if (cached)
       return cached;
@@ -123,7 +119,7 @@ export class TilemapRenderer extends AbstractRenderer {
   beginFrame(update: Update): void {
     // First prep all the batch bind groups
     const assets = update.assets();
-    const query = update.query([ Tilemap.NAME, Position.NAME ]);
+    const query = update.query([Tilemap.NAME, Position.NAME]);
 
     if (query.length === 0) {
       this.frameBatch.clear();
@@ -139,7 +135,7 @@ export class TilemapRenderer extends AbstractRenderer {
     // so you can set `checkGenerations = false` on the Tilemap renderer.
     if (this.checkGenerations) {
       const nextGeneration = query.map(entity => {
-        const [ tilemap, position ] = entity.components as [ Tilemap, Position ];
+        const [tilemap, position] = entity.components as [Tilemap, Position];
         return `${entity.entity}|${tilemap.generation}|${position.pos.x}|${position.pos.y}`
       });
       nextGeneration.sort();
@@ -152,7 +148,7 @@ export class TilemapRenderer extends AbstractRenderer {
     this.frameBatch.clear();
 
     for (const entity of query) {
-      const [ tilemap, position ] = entity.components as [ Tilemap, Position ];
+      const [tilemap, position] = entity.components as [Tilemap, Position];
       const tileData = assets.assume<TilemapData>(tilemap.tilemap);
       const texture = this.ensureTextureLoadedToGpu(assets, tilemap.texture);
       const atlas = this.ensureAtlasTexture(tilemap.tilemap, tileData);
@@ -163,7 +159,7 @@ export class TilemapRenderer extends AbstractRenderer {
       let bindGroup = this.bindGroupCache.get(key);
       if (!bindGroup) {
         // Need to create this bind group
-        
+
         // First create and fill the buffer
         const buffer = new BufferFiller(new Float32Array(3 * 2));
         buffer.push(pos);
@@ -188,7 +184,7 @@ export class TilemapRenderer extends AbstractRenderer {
           ]
         });
 
-        bindGroup = [ batchBindGroup, gpuBuffer, buffer.buffer ];
+        bindGroup = [batchBindGroup, gpuBuffer, buffer.buffer];
         this.bindGroupCache.set(key, bindGroup);
       }
 
@@ -232,7 +228,7 @@ export class TilemapRenderer extends AbstractRenderer {
 
 }
 
-export default function RenderTilemaps(system:RenderingSystem) {
+export default function RenderTilemaps(system: RenderingSystem) {
   const renderer = new TilemapRenderer(system);
   renderer.initialize();
   return renderer;

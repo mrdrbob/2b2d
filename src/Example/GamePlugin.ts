@@ -21,7 +21,7 @@ import WinPlugin from "./Win/WinPlugin";
 export const GameloopCleanupTag = 'GameloopCleanupTag';
 export const ExitingGameLoopSignal = 'ExitingGameLoopSignal';
 
-export default function GamePlugin(builder:Builder) {
+export default function GamePlugin(builder: Builder) {
   Layers.add(builder);
 
   builder.resource(new GameStateResouce());
@@ -66,7 +66,7 @@ export default function GamePlugin(builder:Builder) {
   builder.cleanup(States.Gameloop, GameloopCleanupTag);
 }
 
-function startGameLoop(update:Update) {
+function startGameLoop(update: Update) {
   const res = update.resource<GameStateResouce>(GameStateResouce.NAME);
 
   res.health = Config.MaxHealth;

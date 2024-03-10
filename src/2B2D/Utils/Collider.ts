@@ -4,11 +4,11 @@
 // rectangles. For example, three square colliders in a row would 
 // become one 3x1 collider rectangle.
 export default class Collider {
-  public static readonly NEAR:number = 0; // Near the origin of the box (south west)
-  public static readonly FAR:number = 1;  // Far from the origin (north east)
+  public static readonly NEAR: number = 0; // Near the origin of the box (south west)
+  public static readonly FAR: number = 1;  // Far from the origin (north east)
 
-  public static readonly HORIZONTAL:number = 0; // Index of the X axis
-  public static readonly VERTICAL:number = 1;   // Index of the y axis
+  public static readonly HORIZONTAL: number = 0; // Index of the X axis
+  public static readonly VERTICAL: number = 1;   // Index of the y axis
 
   readonly pos: [number, number];
   readonly size: [number, number];

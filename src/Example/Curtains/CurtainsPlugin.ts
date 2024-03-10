@@ -8,11 +8,9 @@ import Timer from "../../2B2D/Components/Timer";
 import Visible from "../../2B2D/Components/Visible";
 import Color from "../../2B2D/Math/Color";
 import Vec2 from "../../2B2D/Math/Vec2";
-import Signal from "../../2B2D/Signal";
 import Update from "../../2B2D/Update";
 import { InitializationComplete, InitializationStarted } from "../Init/InitPlugin";
 import Layers from "../Layers";
-import States from "../States";
 
 let SCREEN_SIZE = Vec2.ZERO;
 const ParentTag = 'Curtains';
@@ -22,7 +20,7 @@ const CurtainCloserTag = 'CurtainCloserTag';
 export const CurtainsClosedSignal = 'CurtainsClosed';
 export const CurtainsOpenedSignal = 'CurtainsOpened';
 
-export default function CurtainsPlugin(builder:Builder) {
+export default function CurtainsPlugin(builder: Builder) {
   // builder.enter(States.Init, initializeCurtains);
   builder.handle(InitializationStarted, initializeCurtains);
   builder.handle(InitializationComplete, initializationComplete);
@@ -42,7 +40,7 @@ function initializeCurtains(update: Update) {
   SCREEN_SIZE = new Vec2(update.data.rendering.width, update.data.rendering.height)
     .scalarMultiply(2 / update.data.rendering.zoom);
 
-  const camera = update.single([ Camera ]);
+  const camera = update.single([Camera]);
   if (!camera) {
     console.warn('Could not spawn curtains without camera');
     return;
@@ -69,7 +67,7 @@ function initializeCurtains(update: Update) {
     Position.fromXY(0, 0),
     new Parent(parent)
   ]);
-  
+
   // Bottom of the curtain
   update.spawn([
     new Gradient(Layers.Curtains, Color.Black(0), Color.Black(0), Color.Black(1), Color.Black(1), SCREEN_SIZE),
@@ -80,25 +78,25 @@ function initializeCurtains(update: Update) {
 
 // Handles the initialization complete signal.
 // Tweens the curtain to move down, out of site.
-function initializationComplete(update:Update) {
+function initializationComplete(update: Update) {
   openCurtains(update);
 }
 
 // Tweens the curtains down, out of sight.
 function curtainsOpen(update: Update) {
-  const timerQuery = update.single([ CurtainOpenerTag, Timer.NAME ]);
+  const timerQuery = update.single([CurtainOpenerTag, Timer.NAME]);
   if (!timerQuery)
     return;
 
-  const curtainQuery = update.single([ ParentTag, Position.NAME ]);
+  const curtainQuery = update.single([ParentTag, Position.NAME]);
   if (!curtainQuery)
     return;
 
-  const [ _timer, timer ] = timerQuery.components as [ Component, Timer ];
+  const [_timer, timer] = timerQuery.components as [Component, Timer];
   const progress = timer.currentTime / timer.totalTime;
 
 
-  const [ _tag, position ] = curtainQuery.components as [ Component, Position ];
+  const [_tag, position] = curtainQuery.components as [Component, Position];
   const start = 0;
   const dest = -SCREEN_SIZE.y * 2;
   const len = dest - start;
@@ -109,18 +107,18 @@ function curtainsOpen(update: Update) {
 
 // Tweens the curtains down, into sight.
 function curtainsClose(update: Update) {
-  const timerQuery = update.single([ CurtainCloserTag, Timer.NAME ]);
+  const timerQuery = update.single([CurtainCloserTag, Timer.NAME]);
   if (!timerQuery)
     return;
 
-  const curtainQuery = update.single([ ParentTag, Position.NAME ]);
+  const curtainQuery = update.single([ParentTag, Position.NAME]);
   if (!curtainQuery)
     return;
 
-  const [ _timer, timer ] = timerQuery.components as [ Component, Timer ];
+  const [_timer, timer] = timerQuery.components as [Component, Timer];
   const progress = timer.currentTime / timer.totalTime;
 
-  const [ _tag, position ] = curtainQuery.components as [ Component, Position ];
+  const [_tag, position] = curtainQuery.components as [Component, Position];
   const start = SCREEN_SIZE.y * 2;
   const dest = 0;
   const len = dest - start;
@@ -132,16 +130,16 @@ function curtainsClose(update: Update) {
 // Once the curtains are out of site, then can be hidden so we're not
 // rendering stuff off-screen.
 function hideCurtains(update: Update) {
-  const curtain = update.single([ ParentTag, Visible.NAME ]);
+  const curtain = update.single([ParentTag, Visible.NAME]);
   if (!curtain)
     return;
 
-  const [ _tag, visible ] = curtain.components as [ Component, Visible ];
+  const [_tag, visible] = curtain.components as [Component, Visible];
 
   visible.visible = false;
 }
 
-export function openCurtains(update: Update, sender?:string) {
+export function openCurtains(update: Update, sender?: string) {
   // Tween curtains down, hiden them when no longer visible, send signal
   // if appropriate.
   update.spawn([
@@ -150,13 +148,13 @@ export function openCurtains(update: Update, sender?:string) {
   ]);
 }
 
-export function closeCurtains(update:Update, sender?:string) {
-   // Make sure curtains are visible and appropriately placed.
-  const curtain = update.single([ ParentTag, Visible.NAME, Position.NAME ]);
+export function closeCurtains(update: Update, sender?: string) {
+  // Make sure curtains are visible and appropriately placed.
+  const curtain = update.single([ParentTag, Visible.NAME, Position.NAME]);
   if (!curtain)
     return;
 
-  const [ _tag, visible, position ] = curtain.components as [ Component, Visible, Position ];
+  const [_tag, visible, position] = curtain.components as [Component, Visible, Position];
   position.pos = new Vec2(position.pos.x, SCREEN_SIZE.y * 2);
   visible.visible = true;
 

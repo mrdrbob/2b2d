@@ -20,7 +20,7 @@ export interface AnimationData {
 // easier.
 const animationDataCache = new Map<Handle, Map<string, AnimationData>>();
 
-function generateAnimationData(atlas:SpriteAtlas) {
+function generateAnimationData(atlas: SpriteAtlas) {
   let tagMap = new Map<string, AnimationData>();
 
   for (const tag of atlas.meta.frameTags) {
@@ -36,7 +36,7 @@ function generateAnimationData(atlas:SpriteAtlas) {
       totalTime += frame.duration;
     }
 
-    let data:AnimationData = { totalTime, frames };
+    let data: AnimationData = { totalTime, frames };
     tagMap.set(tag.name, data);
   }
 
@@ -44,26 +44,26 @@ function generateAnimationData(atlas:SpriteAtlas) {
 }
 
 export default function AnimateSprites(update: Update) {
-  const query = update.query([ Animated.NAME, Sprite.NAME ]);
+  const query = update.query([Animated.NAME, Sprite.NAME]);
   const assets = update.assets();
-  
+
   for (const entity of query) {
-    const [ animation, sprite ] = entity.components as [ Animated, Sprite ];
+    const [animation, sprite] = entity.components as [Animated, Sprite];
 
     if (!animation.tag)
       continue;
 
     let precomputedAnimations = animationDataCache.get(sprite.atlas);
     if (!precomputedAnimations) {
-      const atlas  = assets.assume<SpriteAtlas>(sprite.atlas);
-      precomputedAnimations = generateAnimationData(atlas); 
+      const atlas = assets.assume<SpriteAtlas>(sprite.atlas);
+      precomputedAnimations = generateAnimationData(atlas);
       animationDataCache.set(sprite.atlas, precomputedAnimations);
     }
-    
+
     const animations = precomputedAnimations.get(animation.tag);
     if (!animations)
       continue;
-    
+
     if (!animation.previousTag || animation.previousTag != animation.tag) {
       animation.time = 0;
       animation.previousTag = animation.tag;

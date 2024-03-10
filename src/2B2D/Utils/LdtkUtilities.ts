@@ -3,11 +3,11 @@ import Vec2 from "../Math/Vec2";
 import Collider from "./Collider";
 
 export default function processLdtkIntGrid(
-  ldtk: LdtkData, 
-  levelName: string, 
-  layerName: string, 
-  valueType: number, 
-  process:(position:Vec2, size:Vec2) => void
+  ldtk: LdtkData,
+  levelName: string,
+  layerName: string,
+  valueType: number,
+  process: (position: Vec2, size: Vec2) => void
 ) {
   const level = ldtk.levels.find((x: any) => x.identifier === levelName)!;
   const layer = level.layerInstances.find((x: any) => x.__identifier === layerName)!;
@@ -23,7 +23,7 @@ export default function processLdtkIntGrid(
 
   const simplified = Collider.simplifyColliders(colliders);
   const offset = new Vec2(level.pxWid, level.pxHei).scalarMultiply(-0.5);
-  
+
   for (const collider of simplified) {
     const width = collider.getLength(Collider.HORIZONTAL) * layer.__gridSize;
     const height = collider.getLength(Collider.VERTICAL) * layer.__gridSize;

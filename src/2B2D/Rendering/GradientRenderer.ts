@@ -65,8 +65,8 @@ export class GradientRenderer implements Renderer {
   vertexBuffer!: Float32Array;
   vertexGpuBuffer!: GPUBuffer;
 
-  constructor(public parent:RenderingSystem) {
-    
+  constructor(public parent: RenderingSystem) {
+
   }
 
   initialize() {
@@ -113,7 +113,7 @@ export class GradientRenderer implements Renderer {
       vertex: {
         module: module,
         entryPoint: 'vs',
-        buffers: [ createVetexBufferLayout() ]
+        buffers: [createVetexBufferLayout()]
       },
       fragment: {
         module: module,
@@ -146,14 +146,14 @@ export class GradientRenderer implements Renderer {
   beginFrame(update: Update): void {
     this.batches.clear();
 
-    const query = update.query([ Gradient.NAME, Position.NAME ]);
+    const query = update.query([Gradient.NAME, Position.NAME]);
     if (query.length === 0)
       return;
 
     // First, we sort these into layers to draw.
     const layerBatches = new Map<Layer, GradientData[]>();
     for (const entity of query) {
-      const [ gradient, position ] = entity.components as [ Gradient, Position ];
+      const [gradient, position] = entity.components as [Gradient, Position];
       const isVisible = update.resolveVisibility(entity.entity);
       if (!isVisible)
         continue;
@@ -176,37 +176,37 @@ export class GradientRenderer implements Renderer {
 
     // Now we fill the vertex buffer with the values and store offset/count for rendering each layer.
     let builder = new BufferFiller(this.vertexBuffer);
-    for (const [ layer, data ] of layerBatches) {
+    for (const [layer, data] of layerBatches) {
       const start = builder.offset;
       for (const grad of data) {
         // First triangle
-        builder.push([ WEST, SOUTH ]);
+        builder.push([WEST, SOUTH]);
         builder.push(grad.colors.sw.array());
         builder.push(grad.position);
         builder.push(grad.size);
 
-        builder.push([ EAST, NORTH ]);
+        builder.push([EAST, NORTH]);
         builder.push(grad.colors.ne.array());
         builder.push(grad.position);
         builder.push(grad.size);
 
-        builder.push([ EAST, SOUTH ]);
+        builder.push([EAST, SOUTH]);
         builder.push(grad.colors.se.array());
         builder.push(grad.position);
         builder.push(grad.size);
 
         // Second triangle
-        builder.push([ WEST, SOUTH ]);
+        builder.push([WEST, SOUTH]);
         builder.push(grad.colors.sw.array());
         builder.push(grad.position);
         builder.push(grad.size);
 
-        builder.push([ WEST, NORTH ]);
+        builder.push([WEST, NORTH]);
         builder.push(grad.colors.nw.array());
         builder.push(grad.position);
         builder.push(grad.size);
 
-        builder.push([ EAST, NORTH ]);
+        builder.push([EAST, NORTH]);
         builder.push(grad.colors.ne.array());
         builder.push(grad.position);
         builder.push(grad.size);
@@ -233,8 +233,8 @@ export class GradientRenderer implements Renderer {
     // Draw. The Vertex buffer already has all the data it needs.
     passEncoder.setPipeline(this.pipeline);
     passEncoder.setBindGroup(0, this.sharedBindGroup);
-    passEncoder.setVertexBuffer(0, this.vertexGpuBuffer, 
-      batch.offset * VERTEX_PER_INSTANCE * VECS_PER_VERTEX * VALUES_PER_VEC2 * Float32Array.BYTES_PER_ELEMENT, 
+    passEncoder.setVertexBuffer(0, this.vertexGpuBuffer,
+      batch.offset * VERTEX_PER_INSTANCE * VECS_PER_VERTEX * VALUES_PER_VEC2 * Float32Array.BYTES_PER_ELEMENT,
       batch.count * VERTEX_PER_INSTANCE * VECS_PER_VERTEX * VALUES_PER_VEC2 * Float32Array.BYTES_PER_ELEMENT
     );
     passEncoder.draw(VERTEX_PER_INSTANCE * batch.count);
@@ -247,7 +247,7 @@ export class GradientRenderer implements Renderer {
   }
 }
 
-export default function RenderGradients(system:RenderingSystem) {
+export default function RenderGradients(system: RenderingSystem) {
   const renderer = new GradientRenderer(system);
   renderer.initialize();
   return renderer;

@@ -14,7 +14,7 @@ import GameStateResouce from "../../GameStateResource";
 import Layers from "../../Layers";
 import Player from "../Components/Player";
 
-export default function spawnPlayer(update:Update) {
+export default function spawnPlayer(update: Update) {
   const gameState = update.resource<GameStateResouce>(GameStateResouce.NAME);
   const assets = update.assets();
 

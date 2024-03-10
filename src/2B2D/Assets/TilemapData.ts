@@ -37,7 +37,7 @@ export default function createTilemapFromLdtkJson(
     }
   }
 
-  
+
   const totalElements = mapTileCount.x * mapTileCount.y * 2;
   const data = new Uint32Array(totalElements);
   let offset = 0;

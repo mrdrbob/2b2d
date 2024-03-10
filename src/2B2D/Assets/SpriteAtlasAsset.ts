@@ -1,6 +1,6 @@
 import Asset, { Handle } from "../Asset";
 import Vec2 from "../Math/Vec2";
-import loadJsonAsset from "./JsonAsset"
+import loadJsonAsset from "./JsonAsset";
 
 export interface AtlasFrame {
   frame: { x: number, y: number, w: number, h: number },

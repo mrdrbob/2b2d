@@ -12,14 +12,14 @@ import GameStateResouce from "../../GameStateResource";
 import Layers from "../../Layers";
 import { DeathTileTarget, FlagTileTarget } from "../LevelPlugin";
 
-export default function SpawnLevel(update:Update) {
+export default function SpawnLevel(update: Update) {
   const gameState = update.resource<GameStateResouce>(GameStateResouce.NAME);
 
   // Spawn background tilemap
   update.spawn([
     new Tilemap(
-      Layers.BG, 
-      GameAssets.LevelData.Background.Texture.Handle, 
+      Layers.BG,
+      GameAssets.LevelData.Background.Texture.Handle,
       GameAssets.LevelData.Background.Tilemap.Handle(gameState.level)
     ),
     Position.fromXY(0, 0),
@@ -29,14 +29,14 @@ export default function SpawnLevel(update:Update) {
   // The "middle" tiles
   update.spawn([
     new Tilemap(
-      Layers.BG, 
-      GameAssets.LevelData.Tiles.Texture.Handle, 
+      Layers.BG,
+      GameAssets.LevelData.Tiles.Texture.Handle,
       GameAssets.LevelData.Tiles.Tilemap.Handle(gameState.level, 0)
     ),
     Position.fromXY(0, 0),
     new AnimatedTilemap(
-      [GameAssets.LevelData.Tiles.Tilemap.Handle(gameState.level, 0), 
-        GameAssets.LevelData.Tiles.Tilemap.Handle(gameState.level, 1)], 
+      [GameAssets.LevelData.Tiles.Tilemap.Handle(gameState.level, 0),
+      GameAssets.LevelData.Tiles.Tilemap.Handle(gameState.level, 1)],
       300
     ),
     GameloopCleanupTag
@@ -45,8 +45,8 @@ export default function SpawnLevel(update:Update) {
   // Foreground tiles
   update.spawn([
     new Tilemap(
-      Layers.FG, 
-      GameAssets.LevelData.Tiles.Texture.Handle, 
+      Layers.FG,
+      GameAssets.LevelData.Tiles.Texture.Handle,
       GameAssets.LevelData.Foreground.Tilemap.Handle(gameState.level)
     ),
     Position.fromXY(0, 0),
@@ -65,7 +65,7 @@ export default function SpawnLevel(update:Update) {
       GameloopCleanupTag
     ]);
   });
-  
+
   // Flag Tiles
   processLdtkIntGrid(ldtk, levelName, 'Collisions', 2, (pos, size) => {
     update.spawn([

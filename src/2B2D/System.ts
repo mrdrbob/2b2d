@@ -1,4 +1,4 @@
-import { Update } from "./Update";
+import Update from "./Update";
 
 export type System = (args: Update) => void;
 

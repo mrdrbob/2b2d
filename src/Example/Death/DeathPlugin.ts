@@ -26,37 +26,37 @@ const DeathScreenState = 'DeathScreenState';
 
 const DeathPluginName = 'DeathPluginName';
 
-export default function DeathPlugin(builder:Builder) {
+export default function DeathPlugin(builder: Builder) {
   builder.handle(PlayerDied.NAME, delayBeforeCurtainClose);
   builder.handleFrom(ExitingGameLoopSignal, DeathPluginName, exitingToDeath);
   builder.handleFrom(CurtainsClosedSignal, DeathPluginName, curatinsClosed);
   builder.handleFrom(CurtainsOpenedSignal, DeathPluginName, curtainsOpened);
   builder.handleFrom(CloseFinalCurtains, DeathPluginName, closeFinalCurtains);
   builder.handleFrom(CurtainsClosedSignal, FinalCurtainClose, moveBackToGameLoop);
-  
+
   builder.cleanup(DeathScreenState, DeathScreenCleanupTag);
 }
 
 // Player has been killed. Wait a couple seconds before closing the curtains.
-function delayBeforeCurtainClose(update:Update) {
+function delayBeforeCurtainClose(update: Update) {
   update.spawn([
     new Timer(2000, { name: ExitingGameLoopSignal, sender: DeathPluginName })
   ]);
 }
 
 // After a delay close the curtains
-function exitingToDeath(update:Update) {
+function exitingToDeath(update: Update) {
   closeCurtains(update, DeathPluginName);
 }
 
 // Curtains are closed, so spawn in BG, and oipen curtains.
-function curatinsClosed(update:Update) {
-  const camera = update.single([ Camera, Position.NAME ]);
+function curatinsClosed(update: Update) {
+  const camera = update.single([Camera, Position.NAME]);
   if (!camera)
     return;
 
   // Center the camera back on 0,0 (so we don't have to parent everything to the camera)
-  const [ _cam, position ] = camera.components as [ Component, Position ];
+  const [_cam, position] = camera.components as [Component, Position];
   position.pos = Vec2.ZERO;
 
   // Spawn the BG
@@ -78,14 +78,14 @@ function curatinsClosed(update:Update) {
 }
 
 // Curtains are now opened, spawn in message and guy and tween into view.
-function curtainsOpened(update:Update) {
+function curtainsOpened(update: Update) {
   update.spawn([
     new Sprite(
       GameAssets.Death.Guy.Texture.Handle,
       GameAssets.Death.Guy.Atlas.Handle,
       Layers.BG,
       undefined,
-      undefined, 
+      undefined,
       Color.White(0)
     ),
     Position.fromXY(0, -30),
@@ -103,7 +103,7 @@ function curtainsOpened(update:Update) {
       GameAssets.Death.Message.Texture.Handle,
       GameAssets.Death.Message.Atlas.Handle,
       Layers.FG,
-      undefined, 
+      undefined,
       new Vec2(0.8, 0.8),
       Color.White(0)
     ),
@@ -130,7 +130,7 @@ function curtainsOpened(update:Update) {
     )
     .chain(message);
 
-  update.spawn([ animation ]);
+  update.spawn([animation]);
 
   // Spawn another timer to just delay closing the curtains again.
   update.spawn([
@@ -139,11 +139,11 @@ function curtainsOpened(update:Update) {
 }
 
 // Death message has been shown, and a delay has passed, close the curtains and relaunch the game loop.
-function closeFinalCurtains(update:Update) {
+function closeFinalCurtains(update: Update) {
   closeCurtains(update, FinalCurtainClose);
 }
 
-function moveBackToGameLoop(update:Update) {
+function moveBackToGameLoop(update: Update) {
   update.exit(DeathScreenState);
 
   const res = update.resource<GameStateResouce>(GameStateResouce.NAME);

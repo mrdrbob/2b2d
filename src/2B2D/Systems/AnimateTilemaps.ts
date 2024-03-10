@@ -5,18 +5,18 @@ import Update from "../Update";
 const MAX_GENERATION = 10000;
 
 export default function AnimateTilemaps(update: Update) {
-  const query = update.query([ Tilemap.NAME, AnimatedTilemap.NAME ]);
+  const query = update.query([Tilemap.NAME, AnimatedTilemap.NAME]);
   if (query.length == 0)
     return;
 
   const delta = update.delta();
 
   for (const entity of query) {
-    const [ tilemap, animation ] = entity.components as [ Tilemap, AnimatedTilemap ];
+    const [tilemap, animation] = entity.components as [Tilemap, AnimatedTilemap];
 
     animation.time += delta;
     while (animation.time > animation.rate) {
-      
+
       animation.time -= animation.rate
       animation.frame += 1;
       while (animation.frame >= animation.tags.length) {

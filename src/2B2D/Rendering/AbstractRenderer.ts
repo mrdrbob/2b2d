@@ -1,5 +1,5 @@
 import { Handle } from "../Asset";
-import { AssetsResource } from "../Resources/AssetsResource";
+import AssetsResource from "../Resources/AssetsResource";
 import Update from "../Update";
 import Renderer from "./Renderer";
 import RenderingSystem from "./RenderingSystem";
@@ -7,12 +7,12 @@ import RenderingSystem from "./RenderingSystem";
 export default abstract class AbstractRenderer implements Renderer {
   abstract name: string;
 
-  constructor (protected parent:RenderingSystem) {
+  constructor(protected parent: RenderingSystem) {
   }
 
   textureCache = new Map<Handle, GPUTextureView>();
 
-  ensureTextureLoadedToGpu(assets:AssetsResource, handle:Handle) {
+  ensureTextureLoadedToGpu(assets: AssetsResource, handle: Handle) {
     const cachedGpuTexture = this.textureCache.get(handle);
     if (cachedGpuTexture)
       return cachedGpuTexture;
@@ -34,7 +34,7 @@ export default abstract class AbstractRenderer implements Renderer {
     return view;
   }
 
-  protected getSharedBindGroupLayoutEntries() : GPUBindGroupLayoutEntry[] {
+  protected getSharedBindGroupLayoutEntries(): GPUBindGroupLayoutEntry[] {
     return [
       { binding: 0, visibility: GPUShaderStage.VERTEX, buffer: { type: 'uniform' } }, // World
       { binding: 1, visibility: GPUShaderStage.VERTEX, buffer: { type: 'uniform' } }, // Frame
@@ -50,9 +50,9 @@ export default abstract class AbstractRenderer implements Renderer {
     ];
   }
 
-  protected getFragmentColorTargets() : GPUColorTargetState[] {
+  protected getFragmentColorTargets(): GPUColorTargetState[] {
     return [
-      { 
+      {
         format: this.parent.presentationFormat,
         blend: {
           color: {
@@ -60,7 +60,7 @@ export default abstract class AbstractRenderer implements Renderer {
             dstFactor: 'one-minus-src-alpha',
             operation: 'add'
           },
-          alpha:{
+          alpha: {
             srcFactor: 'one',
             dstFactor: 'one-minus-src-alpha',
             operation: 'add'

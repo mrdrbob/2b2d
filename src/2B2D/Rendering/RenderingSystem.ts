@@ -7,15 +7,15 @@ import Renderer from "./Renderer";
 
 const quadTriangles = new Float32Array(
   [-0.5, -0.5,
-    0.5, 0.5,
+    0.5,  0.5,
     0.5, -0.5,
 
    -0.5, -0.5,
-   -0.5, 0.5,
-    0.5, 0.5]
+   -0.5,  0.5,
+    0.5,  0.5]
 );
 
-export type CreateRenderer = (system:RenderingSystem) => Renderer;
+export type CreateRenderer = (system: RenderingSystem) => Renderer;
 
 export default class RenderingSystem {
   device!: GPUDevice;
@@ -79,13 +79,13 @@ export default class RenderingSystem {
       ],
       stepMode: 'vertex'
     };
-  
+
     this.vertexBuffer = this.device.createBuffer({
       size: quadTriangles.byteLength,
       usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
       mappedAtCreation: true
     });
-  
+
     new Float32Array(this.vertexBuffer.getMappedRange()).set(quadTriangles);
     this.vertexBuffer.unmap();
   }
@@ -124,16 +124,16 @@ export default class RenderingSystem {
     })
   }
 
-  draw(update:Update) {
+  draw(update: Update) {
     // Get a list of renderers that are ready to execute
     const renderers = Array.from(update.data.renderers.values());
     if (renderers.length === 0)
       return;
 
     let cameraPosition = new Vec2(0, 0);
-    const camera = update.single([ Camera, Position.NAME ]);
+    const camera = update.single([Camera, Position.NAME]);
     if (camera) {
-      const [ _, position ] = camera.components as [ Component, Position ];
+      const [_, position] = camera.components as [Component, Position];
       cameraPosition = update.resolvePosition(camera.entity, position);
     }
 
@@ -150,7 +150,7 @@ export default class RenderingSystem {
         },
       ],
     };
-  
+
     const passEncoder = commandEncoder.beginRenderPass(renderPassDescriptor);
 
     this.frameUniformBufferValues.set([cameraPosition.x, cameraPosition.y]);

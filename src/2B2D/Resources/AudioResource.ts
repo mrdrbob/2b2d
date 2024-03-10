@@ -8,14 +8,14 @@ interface PlayingAudio {
 }
 
 export default class AudioResource implements Resource {
-  public static readonly NAME:string = 'AudioResource';
+  public static readonly NAME: string = 'AudioResource';
   readonly name = AudioResource.NAME;
 
   audioContext: AudioContext;
   gainNode: GainNode;
 
-  private playingAudios:Map<number, PlayingAudio> = new Map<number, PlayingAudio>();
-  private currentId:number = 0;
+  private playingAudios: Map<number, PlayingAudio> = new Map<number, PlayingAudio>();
+  private currentId: number = 0;
 
   constructor() {
     this.audioContext = new AudioContext();
@@ -23,7 +23,7 @@ export default class AudioResource implements Resource {
     this.gainNode.connect(this.audioContext.destination);
   }
 
-  private async _loadAudio(url:string) {
+  private async _loadAudio(url: string) {
     const res = await fetch(url);
     const blob = await res.blob();
     const arrayBuffer = await blob.arrayBuffer();
@@ -31,17 +31,17 @@ export default class AudioResource implements Resource {
     return audioBuffer;
   }
 
-  loadAudio(handle:string, url:string) {
+  loadAudio(handle: string, url: string) {
     const promise = this._loadAudio(url);
     const asset = new Asset(handle, promise);
     return asset;
   }
 
-  setGain(vol:number) {
+  setGain(vol: number) {
     this.gainNode.gain.setValueAtTime(vol, this.audioContext.currentTime);
   }
 
-  play(update:Update, handle:Handle, gain?:number, loop?:boolean) {
+  play(update: Update, handle: Handle, gain?: number, loop?: boolean) {
     const assets = update.assets();
 
     const asset = assets.get<AudioBuffer>(handle);
@@ -74,13 +74,13 @@ export default class AudioResource implements Resource {
       gainNode,
       source
     });
-    
+
     source.addEventListener('ended', (_ev) => {
       this.playingAudios.delete(id);
     });
-  
+
     source.start(this.audioContext.currentTime);
-    
+
     return id;
   }
 }

@@ -11,12 +11,12 @@ import { GameloopCleanupTag } from "../../GamePlugin";
 import Layers from "../../Layers";
 import PlayerDiedSignal from "../Signals/PlayerDiedSignal";
 
-export default function SpawnGhost(update:Update, signals:Signal[]) {
+export default function SpawnGhost(update: Update, signals: Signal[]) {
   if (signals.length === 0)
     return;
 
   const death = signals[0] as PlayerDiedSignal;
-  
+
   update.spawn([
     new Sprite(
       GameAssets.Characters.Texture.Handle,

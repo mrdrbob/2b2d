@@ -10,17 +10,17 @@ import EnemyCollision from "../Signals/EnemyCollisionSignal";
 const ENEMY_HIT_COOLDOWN = 1000;
 
 export default function DetectEnemyCollisions(update: Update) {
-  const player = update.single([ Player.NAME, Position.NAME, Velocity.NAME, KineticBody.NAME ]);
+  const player = update.single([Player.NAME, Position.NAME, Velocity.NAME, KineticBody.NAME]);
   if (!player)
     return;
 
-  const enemies = update.query([ Enemy.NAME, Position.NAME ]);
+  const enemies = update.query([Enemy.NAME, Position.NAME]);
 
-  const [ _player, playerPosition, playerVelocity, playerBody ] = player.components as [ Player, Position, Velocity, KineticBody ];
+  const [_player, playerPosition, playerVelocity, playerBody] = player.components as [Player, Position, Velocity, KineticBody];
   const playerGlobalPos = update.resolvePosition(player.entity, playerPosition);
 
   for (const entity of enemies) {
-    const [enemy, enemyPos] = entity.components as [ Enemy, Position ];
+    const [enemy, enemyPos] = entity.components as [Enemy, Position];
     if (enemy.hitCoolDown > 0) {
       enemy.hitCoolDown -= update.delta();
       continue;

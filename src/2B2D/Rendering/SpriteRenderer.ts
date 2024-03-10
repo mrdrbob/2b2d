@@ -57,7 +57,7 @@ export class SpriteRenderer extends AbstractRenderer {
       vertex: {
         module: this.module,
         entryPoint: 'vs',
-        buffers: [ this.parent.vertexBufferLayout ]
+        buffers: [this.parent.vertexBufferLayout]
       },
       fragment: {
         module: this.module,
@@ -77,14 +77,14 @@ export class SpriteRenderer extends AbstractRenderer {
 
   protected getWgsl() { return wgsl; }
 
-  protected getBatchBindGroupLayoutEntries() : GPUBindGroupLayoutEntry[] {
+  protected getBatchBindGroupLayoutEntries(): GPUBindGroupLayoutEntry[] {
     return [
       { binding: 0, visibility: GPUShaderStage.FRAGMENT, texture: {} }, // Texture
       { binding: 1, visibility: GPUShaderStage.VERTEX, buffer: { type: 'read-only-storage' } }, // Sprites
     ];
   }
 
-  protected getPipelineGroupLayoutEntries() : GPUBindGroupLayout[] {
+  protected getPipelineGroupLayoutEntries(): GPUBindGroupLayout[] {
     return [
       this.sharedBindGroupLayout,
       this.batchBindGroupLayout
@@ -101,7 +101,7 @@ export class SpriteRenderer extends AbstractRenderer {
     this.frameBatch.clear();
 
     // Now pull renderable instances and sort for frame.
-    const renderableEntities = update.query([ Sprite.NAME, Position.NAME, UseSpriteRenderer ]);
+    const renderableEntities = update.query([Sprite.NAME, Position.NAME, UseSpriteRenderer]);
 
     // Going to sort these then turn into bind groups
     var sorting = new Map<Layer, Map<Handle, Array<QueryResult>>>();
@@ -111,9 +111,9 @@ export class SpriteRenderer extends AbstractRenderer {
     // Each texture will be batched so all instances of that texture (on that layer)
     // are drawn in a single draw call.
     for (const entity of renderableEntities) {
-      const components = entity.components as [ Sprite, Position, Component ];
-      
-      const [ sprite, _position, _rendering ] = components;
+      const components = entity.components as [Sprite, Position, Component];
+
+      const [sprite, _position, _rendering] = components;
 
       let textureSort = sorting.get(sprite.layer);
       if (!textureSort) {
@@ -132,10 +132,10 @@ export class SpriteRenderer extends AbstractRenderer {
 
     // Now that we've sorted, going to put these into an arrays
     // for rendering
-    for (const [ layer, textureSort ] of sorting) {
+    for (const [layer, textureSort] of sorting) {
       const layerBatches = new Array<{ group: GPUBindGroup, count: number }>();
 
-      for (const [ texture, components ] of textureSort) {
+      for (const [texture, components] of textureSort) {
 
         let bindGroup = this.bindGroupCache.get(texture);
         if (!bindGroup) {
@@ -153,23 +153,23 @@ export class SpriteRenderer extends AbstractRenderer {
           const createdBindGroup = this.parent.device.createBindGroup({
             label: `Srite batch bind group ${texture}`,
             layout: this.batchBindGroupLayout,
-              entries: [
-                { binding: 0, resource: gpuTexture }, // Texture
-                { binding: 1, resource: { buffer: gpuBuffer } }, // Instances
+            entries: [
+              { binding: 0, resource: gpuTexture }, // Texture
+              { binding: 1, resource: { buffer: gpuBuffer } }, // Instances
             ]
           });
 
-          bindGroup = [ createdBindGroup, gpuBuffer, buffer ];
+          bindGroup = [createdBindGroup, gpuBuffer, buffer];
           this.bindGroupCache.set(texture, bindGroup);
         }
 
         // Now fill the buffers
-        const [ grp, gpuBuffer, buffer ] = bindGroup;
+        const [grp, gpuBuffer, buffer] = bindGroup;
         const builder = new BufferFiller(buffer);
 
         // Add each instance to the buffer
         for (const comp of components) {
-          const [ sprite, position, _rendering ] = comp.components as [ Sprite, Position, Component ];
+          const [sprite, position, _rendering] = comp.components as [Sprite, Position, Component];
           const atlas = assets.assume<SpriteAtlas>(sprite.atlas);
 
           const pos = update.resolvePosition(comp.entity, position);
@@ -192,7 +192,7 @@ export class SpriteRenderer extends AbstractRenderer {
       }
 
       this.frameBatch.set(layer, layerBatches);
-  }
+    }
 
   }
 
