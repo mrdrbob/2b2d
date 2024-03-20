@@ -1,6 +1,6 @@
 import LdtkData from "../../../2B2D/Assets/LdtkData";
 import AnimatedTilemap from "../../../2B2D/Components/AnimatedTilemap";
-import CollsisionTarget from "../../../2B2D/Components/CollissionTarget";
+import CollisionTarget from "../../../2B2D/Components/CollisionTarget";
 import Position from "../../../2B2D/Components/Position";
 import StaticBody from "../../../2B2D/Components/StaticBody";
 import Tilemap from "../../../2B2D/Components/Tilemap";
@@ -70,7 +70,7 @@ export default function SpawnLevel(update: Update) {
   processLdtkIntGrid(ldtk, levelName, 'Collisions', 2, (pos, size) => {
     update.spawn([
       new Position(pos),
-      new CollsisionTarget(FlagTileTarget, size),
+      new CollisionTarget(FlagTileTarget, size),
       GameloopCleanupTag,
     ]);
   });
@@ -79,7 +79,7 @@ export default function SpawnLevel(update: Update) {
   processLdtkIntGrid(ldtk, levelName, 'Collisions', 3, (pos, size) => {
     update.spawn([
       new Position(pos),
-      new CollsisionTarget(DeathTileTarget, size),
+      new CollisionTarget(DeathTileTarget, size),
       GameloopCleanupTag,
     ]);
   });

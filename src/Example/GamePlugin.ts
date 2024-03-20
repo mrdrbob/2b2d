@@ -1,6 +1,6 @@
 import Builder from "../2B2D/Builder";
 import ApplyAabbPhysics from "../2B2D/Systems/ApplyAabbPhysics";
-import DetectCollissionTargetHits from "../2B2D/Systems/DetectCollissionTargetHits";
+import DetectCollisionTargetHits from "../2B2D/Systems/DetectCollisionTargetHits";
 import Update from "../2B2D/Update";
 import BatPlugin from "./Bat/BatPlugin";
 import Config from "./Config";
@@ -61,7 +61,7 @@ export default function GamePlugin(builder: Builder) {
 
   // Global systems and events
   builder.update(States.Gameloop, ApplyAabbPhysics);
-  builder.update(States.Gameloop, DetectCollissionTargetHits);
+  builder.update(States.Gameloop, DetectCollisionTargetHits);
   builder.handle(ExitMenuSignal, startGameLoop);
   builder.cleanup(States.Gameloop, GameloopCleanupTag);
 }

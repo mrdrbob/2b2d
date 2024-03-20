@@ -1,9 +1,9 @@
-import CollsisionTargetHitSignal from "../../../2B2D/Signals/CollsisionTargetHit";
+import CollisionTargetHitSignal from "../../../2B2D/Signals/CollisionTargetHit";
 import Update from "../../../2B2D/Update";
 import Player from "../../Player/Components/Player";
 import PlayerTouchedFlag from "../../Player/Signals/PlayerTouchedFlag";
 
-export default function HandleFlagTileCollisions(update: Update, signal: CollsisionTargetHitSignal) {
+export default function HandleFlagTileCollisions(update: Update, signal: CollisionTargetHitSignal) {
   const assets = update.assets();
 
   // Disable player controls

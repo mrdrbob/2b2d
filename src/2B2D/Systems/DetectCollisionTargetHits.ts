@@ -1,11 +1,11 @@
-import CollsisionTarget from "../Components/CollissionTarget";
+import CollisionTarget from "../Components/CollisionTarget";
 import KineticBody from "../Components/KineticBody";
 import Position from "../Components/Position";
-import CollsisionTargetHit from "../Signals/CollsisionTargetHit";
+import CollisionTargetHit from "../Signals/CollisionTargetHit";
 import Update from "../Update";
 import AABB from "../Utils/AABB";
 
-export default function DetectCollissionTargetHits(update: Update) {
+export default function DetectCollisionTargetHittHits(update: Update) {
   const player = update.single([Position.NAME, KineticBody.NAME]);
   if (!player)
     return;
@@ -13,9 +13,9 @@ export default function DetectCollissionTargetHits(update: Update) {
   const [playerPosition, body] = player.components as [Position, KineticBody];
   const playerGlobalPosition = update.resolvePosition(player.entity, playerPosition);
 
-  const query = update.query([CollsisionTarget.NAME, Position.NAME]);
+  const query = update.query([CollisionTarget.NAME, Position.NAME]);
   for (const entity of query) {
-    const [collider, pos] = entity.components as [CollsisionTarget, Position];
+    const [collider, pos] = entity.components as [CollisionTarget, Position];
 
     if (collider.ticks > 0) {
       collider.ticks -= 1;
@@ -25,7 +25,7 @@ export default function DetectCollissionTargetHits(update: Update) {
     const globalPos = update.resolvePosition(entity.entity, pos);
     const aabb = new AABB(globalPos, collider.size.add(body.size));
     if (aabb.contains(playerGlobalPosition)) {
-      const signal = new CollsisionTargetHit(
+      const signal = new CollisionTargetHit(
         collider.type,
         entity.entity,
         player.entity,
