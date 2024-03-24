@@ -6,7 +6,6 @@ export default class Player implements Component {
   readonly name: string = Player.NAME;
 
   facing: Vec2 = new Vec2(1, 0);
-  jumpTimeRemaining: number = 0;
   invincibleTimeRemaining: number = 0;
   controlsEnabled: boolean = true;
 }

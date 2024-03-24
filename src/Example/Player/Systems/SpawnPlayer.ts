@@ -3,6 +3,7 @@ import Animated from "../../../2B2D/Components/Animated";
 import KineticBody from "../../../2B2D/Components/KineticBody";
 import Position from "../../../2B2D/Components/Position";
 import Sprite from "../../../2B2D/Components/Sprite";
+import StateMachine from "../../../2B2D/Components/StateMachine";
 import UseSpriteRenderer from "../../../2B2D/Components/UseSpriteRenderer";
 import Velocity from "../../../2B2D/Components/Velocity";
 import Weight from "../../../2B2D/Components/Weight";
@@ -13,6 +14,7 @@ import { GameloopCleanupTag } from "../../GamePlugin";
 import GameStateResouce from "../../GameStateResource";
 import Layers from "../../Layers";
 import Player from "../Components/Player";
+import IdleState from "../Machines/IdleState";
 
 export default function spawnPlayer(update: Update) {
   const gameState = update.resource<GameStateResouce>(GameStateResouce.NAME);
@@ -41,5 +43,6 @@ export default function spawnPlayer(update: Update) {
     new Weight(-0.05),
     new Player(),
     GameloopCleanupTag,
+    new StateMachine(IdleState.Instance)
   ]);
 }

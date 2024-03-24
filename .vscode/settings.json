@@ -12,5 +12,7 @@
         "unorm",
         "webgpu",
         "wgsl"
-    ]
+    ],
+    "javascript.referencesCodeLens.enabled": true,
+    "typescript.referencesCodeLens.enabled": true
 }

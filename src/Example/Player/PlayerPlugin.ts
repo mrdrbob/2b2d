@@ -5,7 +5,6 @@ import PlayerDied from "./Signals/PlayerDiedSignal";
 import BounceOnStomps from "./Systems/BounceOnStomps";
 import cameraFollowPlayer from "./Systems/CameraFollowPlayer";
 import HandleInvincibility from "./Systems/HandleInvincibility";
-import MovePlayer from "./Systems/MovePlayer";
 import SpawnGhost from "./Systems/SpawnGhost";
 import spawnPlayer from "./Systems/SpawnPlayer";
 import TakeEnemyDamage from "./Systems/TakeEnemyDamage";
@@ -15,7 +14,6 @@ export const PlayerJumpedSignal = 'PlayerJumpedSignal';
 export default function PlayerPlugin(builder: Builder) {
   builder.enter(States.Gameloop, spawnPlayer);
   builder.update(States.Gameloop, cameraFollowPlayer);
-  builder.update(States.Gameloop, MovePlayer);
   builder.update(States.Gameloop, HandleInvincibility);
 
 
