@@ -18,10 +18,8 @@ export default function cameraFollowPlayer(update: Update) {
   const player = update.single([Player.NAME, Position.NAME]);
   const camera = update.single([CameraParent, Position.NAME]);
 
-  if (!player || !camera) {
-    console.log(player, camera);
+  if (!player || !camera)
     return;
-  }
 
   const gameState = update.resource<GameStateResouce>(GameStateResouce.NAME);
   const assets = update.assets();

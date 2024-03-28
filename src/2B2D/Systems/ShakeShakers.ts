@@ -21,7 +21,6 @@ export default function ShakeShakers(update:Update) {
 
     const x = getLameNoise(0, period) * shaker.strength * percent;
     const y = getLameNoise(1, period)  * shaker.strength * percent;
-    console.log([ x, y ]); 
 
     pos.pos = new Vec2(x, y);
   }
