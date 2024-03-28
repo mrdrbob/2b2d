@@ -1,6 +1,5 @@
 import Builder from "../../2B2D/Builder";
 import Component from "../../2B2D/Component";
-import Camera from "../../2B2D/Components/Camera";
 import Gradient from "../../2B2D/Components/Gradient";
 import Parent from "../../2B2D/Components/Parent";
 import Position from "../../2B2D/Components/Position";
@@ -9,7 +8,7 @@ import Visible from "../../2B2D/Components/Visible";
 import Color from "../../2B2D/Math/Color";
 import Vec2 from "../../2B2D/Math/Vec2";
 import Update from "../../2B2D/Update";
-import { InitializationComplete, InitializationStarted } from "../Init/InitPlugin";
+import { CameraParent, InitializationComplete, InitializationStarted } from "../Init/InitPlugin";
 import Layers from "../Layers";
 
 let SCREEN_SIZE = Vec2.ZERO;
@@ -40,7 +39,7 @@ function initializeCurtains(update: Update) {
   SCREEN_SIZE = new Vec2(update.data.rendering.width, update.data.rendering.height)
     .scalarMultiply(2 / update.data.rendering.zoom);
 
-  const camera = update.single([Camera]);
+  const camera = update.single([CameraParent]);
   if (!camera) {
     console.warn('Could not spawn curtains without camera');
     return;

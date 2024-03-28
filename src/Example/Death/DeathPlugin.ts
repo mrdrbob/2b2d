@@ -1,6 +1,5 @@
 import Builder from "../../2B2D/Builder";
 import Component from "../../2B2D/Component";
-import Camera from '../../2B2D/Components/Camera';
 import Position from "../../2B2D/Components/Position";
 import Sprite from "../../2B2D/Components/Sprite";
 import Timer from "../../2B2D/Components/Timer";
@@ -14,6 +13,7 @@ import { CurtainsClosedSignal, CurtainsOpenedSignal, closeCurtains, openCurtains
 import GameAssets from "../GameAssets";
 import { ExitingGameLoopSignal } from "../GamePlugin";
 import GameStateResouce from "../GameStateResource";
+import { CameraParent } from "../Init/InitPlugin";
 import Layers from "../Layers";
 import PlayerDied from "../Player/Signals/PlayerDiedSignal";
 import States from "../States";
@@ -51,7 +51,7 @@ function exitingToDeath(update: Update) {
 
 // Curtains are closed, so spawn in BG, and oipen curtains.
 function curatinsClosed(update: Update) {
-  const camera = update.single([Camera, Position.NAME]);
+  const camera = update.single([CameraParent, Position.NAME]);
   if (!camera)
     return;
 

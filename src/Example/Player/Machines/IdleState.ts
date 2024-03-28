@@ -19,7 +19,7 @@ export default class IdleState extends BasePlayerState {
   public static readonly Instance = new IdleState();
 
   protected onEnter(update: Update, components: { entity: number; player: Player; velocity: Velocity; animation: Animated; sprite: Sprite; body: KineticBody; }): void {
-    const { animation, sprite } = components;
+    const { animation } = components;
     animation.tag = 'Idle';
   }
 

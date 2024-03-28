@@ -10,6 +10,7 @@ import { State } from "./State";
 import { Schedule, System } from "./System";
 import AnimateSprites from "./Systems/AnimateSprites";
 import AnimateTilemaps from "./Systems/AnimateTilemaps";
+import ShakeShakers from "./Systems/ShakeShakers";
 import UpdateStateMachines from "./Systems/UpdateStateMachines";
 import UpdateTimers from "./Systems/UpdateTimers";
 import UpdateTweenChains from "./Systems/UpdateTweenChains";
@@ -130,6 +131,7 @@ export default class Builder {
       this.always(UpdateTimers);
       this.always(UpdateTweenChains);
       this.always(UpdateStateMachines);
+      this.always(ShakeShakers);
 
       // Default commands
       this.commands.push({

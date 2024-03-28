@@ -1,7 +1,6 @@
 import LdtkData from "../../2B2D/Assets/LdtkData";
 import Builder from "../../2B2D/Builder";
 import Component from "../../2B2D/Component";
-import Camera from '../../2B2D/Components/Camera';
 import Position from "../../2B2D/Components/Position";
 import Sprite from "../../2B2D/Components/Sprite";
 import Timer from "../../2B2D/Components/Timer";
@@ -11,7 +10,7 @@ import Update from "../../2B2D/Update";
 import { CurtainsClosedSignal, closeCurtains, openCurtains } from "../Curtains/CurtainsPlugin";
 import GameAssets from "../GameAssets";
 import GameStateResouce from "../GameStateResource";
-import { InitializationComplete } from "../Init/InitPlugin";
+import { CameraParent, InitializationComplete } from "../Init/InitPlugin";
 import Layers from "../Layers";
 import PlayerTouchedFlag from "../Player/Signals/PlayerTouchedFlag";
 import States from "../States";
@@ -60,7 +59,7 @@ function transitionToNextPhase(update: Update) {
 
   if (gameState.level >= ldtk.levels.length) {
     // Reset the camera to 0, 0
-    const camera = update.single([Camera, Position.NAME]);
+    const camera = update.single([CameraParent, Position.NAME]);
     if (camera) {
       const [_cam, position] = camera.components as [Component, Position];
       position.pos = Vec2.ZERO;

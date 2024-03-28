@@ -1,6 +1,5 @@
 import Builder from "../../2B2D/Builder";
 import Component from "../../2B2D/Component";
-import Camera from "../../2B2D/Components/Camera";
 import Parent from "../../2B2D/Components/Parent";
 import Position from "../../2B2D/Components/Position";
 import Sprite from "../../2B2D/Components/Sprite";
@@ -9,6 +8,7 @@ import Update from "../../2B2D/Update";
 import GameAssets from "../GameAssets";
 import { GameloopCleanupTag } from "../GamePlugin";
 import GameStateResouce from "../GameStateResource";
+import { CameraParent } from "../Init/InitPlugin";
 import Layers from "../Layers";
 import States from "../States";
 
@@ -32,7 +32,7 @@ interface HealthDisplayComponent extends Component {
 }
 
 function spawnHud(update: Update) {
-  const camera = update.single([Camera, Position.NAME]);
+  const camera = update.single([CameraParent, Position.NAME]);
   if (!camera) {
     console.warn('HUD could not spawn. No camera');
     return;

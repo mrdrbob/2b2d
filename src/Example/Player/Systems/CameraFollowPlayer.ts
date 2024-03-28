@@ -1,11 +1,11 @@
 import LdtkData from "../../../2B2D/Assets/LdtkData";
 import Component from "../../../2B2D/Component";
-import Camera from "../../../2B2D/Components/Camera";
 import Position from "../../../2B2D/Components/Position";
 import Vec2 from "../../../2B2D/Math/Vec2";
 import Update from "../../../2B2D/Update";
 import GameAssets from "../../GameAssets";
 import GameStateResouce from "../../GameStateResource";
+import { CameraParent } from "../../Init/InitPlugin";
 import Player from "../Components/Player";
 
 let levelId: number | undefined = undefined;
@@ -16,10 +16,12 @@ let bottomRight = Vec2.ZERO;
 export default function cameraFollowPlayer(update: Update) {
 
   const player = update.single([Player.NAME, Position.NAME]);
-  const camera = update.single([Camera, Position.NAME]);
+  const camera = update.single([CameraParent, Position.NAME]);
 
-  if (!player || !camera)
+  if (!player || !camera) {
+    console.log(player, camera);
     return;
+  }
 
   const gameState = update.resource<GameStateResouce>(GameStateResouce.NAME);
   const assets = update.assets();
