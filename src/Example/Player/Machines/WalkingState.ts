@@ -1,5 +1,6 @@
 import Animated from "../../../2B2D/Components/Animated";
 import KineticBody from "../../../2B2D/Components/KineticBody";
+import MappedInput from "../../../2B2D/Components/MappedInput";
 import Sprite from "../../../2B2D/Components/Sprite";
 import Velocity from "../../../2B2D/Components/Velocity";
 import MachineState from "../../../2B2D/MachineState";
@@ -24,9 +25,9 @@ export default class WalkingState extends BasePlayerState {
     animation.tag = 'Walk';
   }
 
-  protected onUpdate(update: Update, components: { entity: number; player: Player; velocity: Velocity; animation: Animated; sprite: Sprite; body: KineticBody; }): MachineState | undefined {
+  protected onUpdate(update: Update, components: { entity: number; player: Player; input:MappedInput, velocity: Velocity; animation: Animated; sprite: Sprite; body: KineticBody; }): MachineState | undefined {
     const { body } = components;
-    const { space, left, right } = this.getKeys(update);
+    const { space, left, right } = this.getKeys(update, components);
     if (!body.isGrounded) {
       return FallingState.Instance;
     }

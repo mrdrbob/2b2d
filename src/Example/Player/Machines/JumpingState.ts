@@ -1,5 +1,6 @@
 import Animated from "../../../2B2D/Components/Animated";
 import KineticBody from "../../../2B2D/Components/KineticBody";
+import MappedInput from "../../../2B2D/Components/MappedInput";
 import Sprite from "../../../2B2D/Components/Sprite";
 import Velocity from "../../../2B2D/Components/Velocity";
 import MachineState from "../../../2B2D/MachineState";
@@ -36,14 +37,14 @@ export default class JumpingState extends BasePlayerState {
       update.signals.send(PlayerJumpedSignal);
   }
 
-  protected onUpdate(update: Update, components: { entity: number; player: Player; velocity: Velocity; animation: Animated; sprite: Sprite; body: KineticBody; }): MachineState | undefined {
+  protected onUpdate(update: Update, components: { entity: number; player: Player; input: MappedInput, velocity: Velocity; animation: Animated; sprite: Sprite; body: KineticBody; }): MachineState | undefined {
     const { player, velocity } = components;
     this.jumpTimeRemaining -= update.delta();
     if (this.jumpTimeRemaining < 0) {
       return FallingState.Instance;
     }
 
-    const { space } = this.getKeys(update);
+    const { space } = this.getKeys(update, components);
     if (!player.controlsEnabled || !space) {
       return FallingState.Instance;
     }

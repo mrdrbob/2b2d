@@ -1,4 +1,5 @@
 import Builder from "../../2B2D/Builder";
+import MappedInput, { PressEvent } from "../../2B2D/Components/MappedInput";
 import Position from "../../2B2D/Components/Position";
 import Sprite from "../../2B2D/Components/Sprite";
 import UseSpriteRenderer from "../../2B2D/Components/UseSpriteRenderer";
@@ -23,6 +24,16 @@ export default function MainMenuPlugin(builder: Builder) {
 }
 
 function spawnMenu(update: Update) {
+  const inputMap = new Map<string, PressEvent[]>();
+  inputMap.set('continue', [
+    { type: 'keyboard-press', code: ' ' },
+    { type: 'gamepad-button-press', button: 0 },
+    { type: 'gamepad-button-press', button: 1 },
+    { type: 'gamepad-button-press', button: 2 },
+    { type: 'gamepad-button-press', button: 3 },
+  ]);
+
+
   update.spawn([
     new Sprite(
       GameAssets.Menu.Texture.Handle,
@@ -32,15 +43,21 @@ function spawnMenu(update: Update) {
     Position.fromXY(0, 0),
     UseSpriteRenderer,
     MainMenuTag,
+    new MappedInput(0, inputMap)
   ]);
 
   update.enter(WaitForInputState);
 }
 
 function waitForInput(update: Update) {
-  const keys = update.keys();
+  const entity = update.single([ MappedInput.NAME, MainMenuTag ]);
+  if (!entity)
+    return;
 
-  if (keys.keyJustReleased(' ')) {
+  const [ input ] = entity.components as [ MappedInput ];
+  const continuePressed = input.isPressed(update, 'continue');
+
+  if (continuePressed) {
     update.exit(WaitForInputState);
     closeCurtains(update, MainMenuSender);
   }
