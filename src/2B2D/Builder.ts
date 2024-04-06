@@ -118,6 +118,14 @@ export default class Builder {
     return this;
   }
 
+
+  /** Set a state to be active (entered) when the engine first boots up. Can
+   * be called multiple times for multiple states
+   */
+  startState(state:State) {
+    this.command({ type: 'enter-state', state });
+  }
+
   /**
    * Builds an engine, ready to run.
    * @param skipDefaults If true, no default systems or resources will be added to the engine instance.

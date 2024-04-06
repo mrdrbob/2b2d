@@ -24,15 +24,15 @@ export default function MainMenuPlugin(builder: Builder) {
 }
 
 function spawnMenu(update: Update) {
-  const inputMap = new Map<string, PressEvent[]>();
-  inputMap.set('continue', [
-    { type: 'keyboard-press', code: ' ' },
-    { type: 'gamepad-button-press', button: 0 },
-    { type: 'gamepad-button-press', button: 1 },
-    { type: 'gamepad-button-press', button: 2 },
-    { type: 'gamepad-button-press', button: 3 },
-  ]);
-
+  const inputMap = MappedInput.build(0, b => {
+    b.for('continue', a => {
+      a.keyboard(' ');
+      a.button(0);
+      a.button(1);
+      a.button(2);
+      a.button(3);
+    });
+  });
 
   update.spawn([
     new Sprite(
@@ -43,7 +43,7 @@ function spawnMenu(update: Update) {
     Position.fromXY(0, 0),
     UseSpriteRenderer,
     MainMenuTag,
-    new MappedInput(0, inputMap)
+    inputMap,
   ]);
 
   update.enter(WaitForInputState);

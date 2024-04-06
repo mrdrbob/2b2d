@@ -15,4 +15,8 @@ export default class Gradient implements Component {
     public se: Color,
     public size: Vec2
   ) { }
+
+  static SolidBox(layer: string, color:Color, size:Vec2) {
+    return new Gradient(layer, color, color, color, color, size);
+  }
 }

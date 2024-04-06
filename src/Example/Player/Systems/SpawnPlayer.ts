@@ -32,25 +32,26 @@ export default function spawnPlayer(update: Update) {
   const offset = new Vec2(level.pxWid, level.pxHei).scalarMultiply(-0.5);
   const position = new Vec2(player.px[0], level.pxHei - player.px[1]).add(offset);
 
-  const inputMap = new Map<string, Array<PressEvent>>();
-  inputMap.set(PlayerActions.Jump, [
-    { type: 'keyboard-press', code: ' ' },
-    { type: 'keyboard-press', code: 'w' },
-    { type: 'gamepad-button-press', button: 0 },
-    { type: 'keyboard-press', code: 'W' }, // Whoops! Capslock is on.
-  ]);
-  inputMap.set(PlayerActions.Left, [
-    { type: 'keyboard-press', code: 'ArrowLeft' },
-    { type: 'keyboard-press', code: 'a' },
-    { type: 'gamepad-axis-press', axis: 0, direction: Direction.Negative, threshold: 0.25 },
-    { type: 'keyboard-press', code: 'A' },
-  ]);
-  inputMap.set(PlayerActions.Right, [
-    { type: 'keyboard-press', code: 'ArrowRight' },
-    { type: 'keyboard-press', code: 'd' },
-    { type: 'gamepad-axis-press', axis: 0, direction: Direction.Positive, threshold: 0.25 },
-    { type: 'keyboard-press', code: 'D' },
-  ]);
+  const inputMap = MappedInput.build(0, b => {
+    b.for(PlayerActions.Jump, a => {
+      a.keyboard(' ');
+      a.keyboard('w');
+      a.button(0);
+      a.keyboard('W'); // Whoops! Capslock is on.
+    });
+    b.for(PlayerActions.Left, a => {
+      a.keyboard('ArrowLeft');
+      a.keyboard('a');
+      a.negative(0, 0.25);
+      a.keyboard('A');
+    });
+    b.for(PlayerActions.Right, a => {
+      a.keyboard('ArrowRight');
+      a.keyboard('d');
+      a.positive(0, 0.25);
+      a.keyboard('D');
+    });
+  });
 
   update.spawn([
     new Position(position),
@@ -67,6 +68,6 @@ export default function spawnPlayer(update: Update) {
     new Player(),
     GameloopCleanupTag,
     new StateMachine(IdleState.Instance),
-    new MappedInput(0, inputMap),
+    inputMap,
   ]);
 }

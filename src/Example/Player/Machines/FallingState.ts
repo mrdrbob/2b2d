@@ -1,5 +1,6 @@
 import Animated from "../../../2B2D/Components/Animated";
 import KineticBody from "../../../2B2D/Components/KineticBody";
+import MappedInput from "../../../2B2D/Components/MappedInput";
 import Sprite from "../../../2B2D/Components/Sprite";
 import Velocity from "../../../2B2D/Components/Velocity";
 import MachineState from "../../../2B2D/MachineState";
@@ -10,7 +11,7 @@ import IdleState from "./IdleState";
 
 /** Player is not grounded, not jumping */
 export default class FallingState extends BasePlayerState {
-  readonly updateImmediately = false;
+  readonly updateImmediately = true;
 
   private constructor() { super(); }
 
@@ -22,7 +23,7 @@ export default class FallingState extends BasePlayerState {
     animation.tag = 'Jump';
   }
 
-  protected onUpdate(update: Update, components: { entity: number; player: Player; velocity: Velocity; animation: Animated; sprite: Sprite; body: KineticBody; }): MachineState | undefined {
+  protected onUpdate(update: Update, components: { entity: number; player: Player; input: MappedInput; velocity: Velocity; animation: Animated; sprite: Sprite; body: KineticBody; }): MachineState | undefined {
     const { body } = components;
 
     if (body.isGrounded) {

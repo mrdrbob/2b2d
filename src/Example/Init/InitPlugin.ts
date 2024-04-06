@@ -21,6 +21,8 @@ export const CameraParent = 'CameraParent';
 export default function InitPlugin(builder: Builder) {
   builder.enter(States.Init, enterInit);
   builder.update(States.Init, waitForLoad);
+
+  builder.startState(States.Init);
 }
 
 function enterInit(update: Update) {

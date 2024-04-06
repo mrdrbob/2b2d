@@ -29,6 +29,12 @@ export default class MappedInput implements Component {
   static readonly NAME: string = 'MappedInput';
   readonly name: string = MappedInput.NAME;
 
+  static build(gampeadIndex:number, action:(builder: MappedInputBuilder) => void) {
+    var builder = new MappedInputBuilder();
+    action(builder);
+    return builder.asComponent(gampeadIndex);
+  }
+
   constructor(public gamepadIndex: number, public inputMap: Map<string, Array<PressEvent>>) { }
 
   isPressed(update: Update, action: string) {
@@ -56,5 +62,59 @@ export default class MappedInput implements Component {
     }
 
     return false;
+  }
+}
+
+export class MappedInputBuilder {
+  private map = new Map<string, Array<PressEvent>>();
+
+  set(action:string, press:PressEvent) {
+    const presses = this.map.get(action);
+    if (!presses) {
+      this.map.set(action, [ press ]);
+    } else {
+      presses.push(press);
+    }
+
+    return this;
+  }
+
+  for(action:string, config:(builder: MappedInputActionBuilder) => void) {
+    var builder =  new MappedInputActionBuilder(this, action);
+    config(builder);
+    return this;
+  }
+
+  get() { return this.map; }
+
+  asComponent(gamepadIndex:number) {
+    return new MappedInput(gamepadIndex, this.map);
+  }
+}
+
+export class MappedInputActionBuilder {
+  constructor(private parent:MappedInputBuilder, private action:string) { }
+
+  keyboard(code:string) {
+    this.parent.set(this.action, { type: 'keyboard-press', code: code });
+    return this;
+  }
+
+  button(button: number) {
+    this.parent.set(this.action, { type: "gamepad-button-press", button });
+    return this;
+  }
+
+  axis(axis: number, threshold:number, direction: Direction) {
+    this.parent.set(this.action, { type: 'gamepad-axis-press', axis, threshold, direction });
+    return this;
+  }
+
+  negative(axis:number, threshold: number) {
+    return this.axis(axis, threshold, Direction.Negative);
+  }
+
+  positive(axis:number, threshold: number) {
+    return this.axis(axis, threshold, Direction.Positive);
   }
 }
