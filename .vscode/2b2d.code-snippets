@@ -1,0 +1,46 @@
+{
+	// Place your 2b2d-robots workspace snippets here. Each snippet is defined under a snippet name and has a scope, prefix, body and 
+	// description. Add comma separated ids of the languages where the snippet is applicable in the scope field. If scope 
+	// is left empty or omitted, the snippet gets applied to all languages. The prefix is what is 
+	// used to trigger the snippet and the body will be expanded and inserted. Possible variables are: 
+	// $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders. 
+	// Placeholders with the same ids are connected.
+	// Example:
+	// "Print to console": {
+	// 	"scope": "javascript,typescript",
+	// 	"prefix": "log",
+	// 	"body": [
+	// 		"console.log('$1');",
+	// 		"$2"
+	// 	],
+	// 	"description": "Log output to console"
+	// }
+	"plugin": {
+		"scope": "typescript",
+		"prefix": "plug",
+		"body": [
+			"export default function ${1:name}(builder: Builder) {",
+			"",
+			"}"
+		]
+	},
+	"system": {
+		"scope": "typescript",
+		"prefix": "system",
+		"body": [
+			"export default function ${1:name}(update: Update) {",
+			"",
+			"}"
+		]
+	},
+	"component": {
+		"scope": "typescript",
+		"prefix": "comp",
+		"body": [
+			"export default class ${1:name} implements Component {",
+			"\tstatic readonly NAME:string = '${1:name}';",
+			"\treadonly name:string = ${1:name}.NAME;",
+			"}"
+		]
+	}
+}
