@@ -26,17 +26,17 @@ export default class WalkingState extends BasePlayerState {
   }
 
   protected onUpdate(update: Update, components: { entity: number; player: Player; input:MappedInput, velocity: Velocity; animation: Animated; sprite: Sprite; body: KineticBody; }): MachineState | undefined {
-    const { body } = components;
+    const { body, player } = components;
     const { space, left, right } = this.getKeys(update, components);
     if (!body.isGrounded) {
       return FallingState.Instance;
     }
 
-    if (space) {
+    if (player.controlsEnabled && space) {
       return JumpingState.Instance;
     }
 
-    if (!left && !right) {
+    if (!player.controlsEnabled || (!left && !right)) {
       return IdleState.Instance;
     }
 
