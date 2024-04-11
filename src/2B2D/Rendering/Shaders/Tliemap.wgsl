@@ -56,13 +56,13 @@ fn vs (
 
     let atlas_pos = vertex.uv * vec2f(textureDimensions(atlas_texture));
     let tile_coords = vec2u(atlas_pos);
+    let base_source_pos = vec2f(textureLoad(atlas_texture, tile_coords, 0).xy);
 
     // 256 is invisible.
-    if (tile_coords.x == 256 && tile_coords.y == 256) {
+    if (base_source_pos.x == 256 && base_source_pos.y == 256) {
         discard;
     }
 
-    let base_source_pos = vec2f(textureLoad(atlas_texture, tile_coords, 0).xy);
     let remainder = fract(atlas_pos);
     let texture_pos = ((base_source_pos + remainder) * quad.tile_size);
 
