@@ -168,7 +168,7 @@ export default class Engine {
 
     // Tick anything that requires a tick
     for (const ticker of this.tickers) {
-      ticker.tick();
+      ticker.tick(update);
     }
 
     // Process state changes

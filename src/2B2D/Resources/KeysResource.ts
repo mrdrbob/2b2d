@@ -1,6 +1,7 @@
 import { Direction } from "../Components/MappedInput";
 import Resource from "../Resource";
 import Ticker from "../Ticker";
+import Update from "../Update";
 
 export default class KeysResource implements Resource, Ticker {
   static readonly NAME: string = 'KeysResource';
@@ -32,7 +33,7 @@ export default class KeysResource implements Resource, Ticker {
     });
   }
 
-  tick() {
+  tick(_update: Update) {
     if (!this.dirty) { return; }
     this.lastFrame = new Set<string>(this.thisFrame);
     this.dirty = false;

@@ -1,4 +1,5 @@
 import Builder from "../../2B2D/Builder";
+import Component from "../../2B2D/Component";
 import MappedInput, { PressEvent } from "../../2B2D/Components/MappedInput";
 import Position from "../../2B2D/Components/Position";
 import Sprite from "../../2B2D/Components/Sprite";
@@ -23,6 +24,13 @@ export default function MainMenuPlugin(builder: Builder) {
   builder.update(WaitForInputState, waitForInput);
 }
 
+class MenuMusic implements Component {
+  static readonly NAME:string = 'MenuMusic';
+  readonly name:string = MenuMusic.NAME;
+
+  constructor(public audio:number) { }
+}
+
 function spawnMenu(update: Update) {
   const inputMap = MappedInput.build(0, b => {
     b.for('continue', a => {
@@ -45,6 +53,14 @@ function spawnMenu(update: Update) {
     MainMenuTag,
     inputMap,
   ]);
+
+  const music = update.audio();
+  const audio = music.play(GameAssets.Menu.Music.Handle, true, 0.9, true);
+  if (audio) {
+    update.spawn([
+      new MenuMusic(audio)
+    ]);
+  }
 
   update.enter(WaitForInputState);
 }
@@ -77,4 +93,14 @@ function exitMenu(update: Update, signals: Signal[]) {
   update.exit(WaitForInputState);
   update.signals.send(ExitMenuSignal);
   openCurtains(update);
+
+  const music = update.single([ MenuMusic.NAME ]);
+  if (music) {
+    const [ sound ] = music.components as [ MenuMusic ];
+
+    const audio = update.audio();
+    audio.fadeOut(sound.audio, 3);
+
+    update.despawn(music.entity);
+  }
 }

@@ -1,3 +1,4 @@
+import loadArrayBufferAsset from "../2B2D/Assets/ArrayBufferAsset";
 import loadJsonAsset from "../2B2D/Assets/JsonAsset";
 import LdtkData from "../2B2D/Assets/LdtkData";
 import loadSpriteAtlasAsset, { generateSingleSpriteAtlas, generateTiledSpriteAtlas } from "../2B2D/Assets/SpriteAtlasAsset";
@@ -16,6 +17,10 @@ const GameAssets = {
     Atlas: {
       Handle: 'menu-atlas',
       Generate: () => generateSingleSpriteAtlas(GameAssets.Menu.Atlas.Handle, new Vec2(200, 150))
+    },
+    Music: {
+      Handle: 'menu-music',
+      Load: () => loadArrayBufferAsset(GameAssets.Menu.Music.Handle, 'assets/menu.opus')
     }
   },
   Characters: {
@@ -112,28 +117,29 @@ const GameAssets = {
   Sounds: {
     Jump: {
       Handle: 'jump-audio',
-      Load: (audio: AudioResource) => audio.loadAudio(GameAssets.Sounds.Jump.Handle, 'assets/jump.opus')
+      Load: () => loadArrayBufferAsset(GameAssets.Sounds.Jump.Handle, 'assets/jump.opus')
     },
     Hurt: {
       Handle: 'hurt-audio',
-      Load: (audio: AudioResource) => audio.loadAudio(GameAssets.Sounds.Hurt.Handle, 'assets/hurt.opus')
+      Load: () => loadArrayBufferAsset(GameAssets.Sounds.Hurt.Handle, 'assets/hurt.opus')
     },
     Died: {
       Handle: 'died-audio',
-      Load: (audio: AudioResource) => audio.loadAudio(GameAssets.Sounds.Died.Handle, 'assets/died.opus')
+      Load: () => loadArrayBufferAsset(GameAssets.Sounds.Died.Handle, 'assets/died.opus')
     },
     Flag: {
       Handle: 'flag-audio',
-      Load: (audio: AudioResource) => audio.loadAudio(GameAssets.Sounds.Flag.Handle, 'assets/flag.opus')
+      Load: () => loadArrayBufferAsset(GameAssets.Sounds.Flag.Handle, 'assets/flag.opus')
     },
     Drop: {
       Handle: 'drop-audio',
-      Load: (audio: AudioResource) => audio.loadAudio(GameAssets.Sounds.Drop.Handle, 'assets/drop.opus')
+      Load: () => loadArrayBufferAsset(GameAssets.Sounds.Drop.Handle, 'assets/drop.opus')
     }
   },
-  Init: (assets: AssetsResource, audio: AudioResource) => {
+  Init: (assets: AssetsResource) => {
     assets.add(GameAssets.Menu.Texture.Load());
     assets.add(GameAssets.Menu.Atlas.Generate());
+    assets.add(GameAssets.Menu.Music.Load());
     assets.add(GameAssets.Characters.Texture.Load());
     assets.add(GameAssets.Characters.Atlas.Load());
     assets.add(GameAssets.LevelData.LdtkData.Load());
@@ -148,15 +154,16 @@ const GameAssets = {
     assets.add(GameAssets.Death.Message.Atlas.Generate());
     assets.add(GameAssets.WinScreen.Texture.Load());
     assets.add(GameAssets.WinScreen.Atlas.Generate());
-    assets.add(GameAssets.Sounds.Jump.Load(audio));
-    assets.add(GameAssets.Sounds.Hurt.Load(audio));
-    assets.add(GameAssets.Sounds.Died.Load(audio));
-    assets.add(GameAssets.Sounds.Flag.Load(audio));
-    assets.add(GameAssets.Sounds.Drop.Load(audio));
+    assets.add(GameAssets.Sounds.Jump.Load());
+    assets.add(GameAssets.Sounds.Hurt.Load());
+    assets.add(GameAssets.Sounds.Died.Load());
+    assets.add(GameAssets.Sounds.Flag.Load());
+    assets.add(GameAssets.Sounds.Drop.Load());
   },
   IsLoaded: (assets: AssetsResource) => {
     return assets.loaded([
       GameAssets.Menu.Texture.Handle,
+      GameAssets.Menu.Music.Handle,
       GameAssets.Menu.Atlas.Handle,
       GameAssets.Characters.Texture.Handle,
       GameAssets.Characters.Atlas.Handle,

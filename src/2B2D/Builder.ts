@@ -147,9 +147,14 @@ export default class Builder {
         resource: new AssetsResource()
       });
 
+      const audioResource = new AudioResource();
       this.commands.push({
         type: 'add-resource',
-        resource: new AudioResource()
+        resource: audioResource
+      });
+      this.commands.push({
+        type: 'add-ticker',
+        ticker: audioResource
       });
 
       const keysResource = new KeysResource();
@@ -161,10 +166,6 @@ export default class Builder {
         type: 'add-ticker',
         ticker: keysResource
       });
-      this.commands.push({
-        type: "add-resource",
-        resource: new AudioResource()
-      })
     }
 
     this.engine.processCommands(this.commands);

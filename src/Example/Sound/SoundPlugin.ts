@@ -18,22 +18,22 @@ export default function SoundPlugin(builder: Builder) {
 
 function playerJumped(update: Update) {
   const audio = update.audio();
-  audio.play(update, GameAssets.Sounds.Jump.Handle);
+  audio.play(GameAssets.Sounds.Jump.Handle, true, 0.5);
 }
 
 function playerHurt(update: Update) {
   const audio = update.audio();
-  audio.play(update, GameAssets.Sounds.Hurt.Handle);
+  audio.play(GameAssets.Sounds.Hurt.Handle, true, 0.7);
 }
 
 function playerDied(update: Update) {
   const audio = update.audio();
-  audio.play(update, GameAssets.Sounds.Died.Handle);
+  audio.play(GameAssets.Sounds.Died.Handle, true, 0.7);
 }
 
 function touchedFlag(update: Update) {
   const audio = update.audio();
-  audio.play(update, GameAssets.Sounds.Flag.Handle);
+  audio.play(GameAssets.Sounds.Flag.Handle, true, 0.7);
 }
 
 function stomps(update: Update, signals: Signal[]) {
@@ -42,7 +42,7 @@ function stomps(update: Update, signals: Signal[]) {
       continue;
 
     const audio = update.audio();
-    audio.play(update, GameAssets.Sounds.Drop.Handle);
+    audio.play(GameAssets.Sounds.Drop.Handle, true, 0.7);
     return;
   }
 }
