@@ -1,33 +1,37 @@
+import { LevelsAsset } from "../Assets/LevelsAsset";
 import AnimatedTilemap from "../Components/AnimatedTilemap";
 import Tilemap from "../Components/Tilemap";
 import Update from "../Update";
 
-const MAX_GENERATION = 10000;
-
 export default function AnimateTilemaps(update: Update) {
-  const query = update.query([Tilemap.NAME, AnimatedTilemap.NAME]);
+  const query = update.ecs.query(Tilemap, AnimatedTilemap);
   if (query.length == 0)
     return;
 
-  const delta = update.delta();
+  const delta = update.delta;
 
   for (const entity of query) {
     const [tilemap, animation] = entity.components as [Tilemap, AnimatedTilemap];
 
     animation.time += delta;
     while (animation.time > animation.rate) {
+      
+      if (animation.totalFrames == undefined) {
+        const assets = update.assets();
+        const levels = assets.assume<LevelsAsset>(tilemap.handle)!;
+        const level = levels.levels.get(tilemap.level)!;
+        const layer = level.layers.get(tilemap.layer)!;
+        const frameCount = layer.frames.length;
+        animation.totalFrames = frameCount;
+      }
 
       animation.time -= animation.rate
       animation.frame += 1;
-      while (animation.frame >= animation.tags.length) {
-        animation.frame -= animation.tags.length;
+      while (animation.frame >= animation.totalFrames) {
+        animation.frame -= animation.totalFrames;
       }
 
-      tilemap.generation += 1;
-      if (tilemap.generation > MAX_GENERATION)
-        tilemap.generation = 0;
-      tilemap.tilemap = animation.tags[animation.frame];
+      tilemap.frame = animation.frame;
     }
   }
-
 }

@@ -1,4 +1,4 @@
-import Component from "../Component";
+import Component from "./Component";
 
 export default class Animated implements Component {
   static readonly NAME: string = 'Animated';

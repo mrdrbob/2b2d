@@ -1,22 +1,28 @@
-
-import Asset, { Handle } from "../Asset";
-import Resource from "../Resource";
-import Ticker from "../Ticker";
+import Asset from "../Assets/Asset";
+import { Handle } from "../Handle";
+import { System } from "../System";
 import Update from "../Update";
+import Future from "../Util/Future";
+import IndexCounter from "../Util/IndexCounter";
+import Resource from "./Resource";
 
-type DecodeAudio = {
-  type: 'decode',
-  handle: Handle
-}
-
+// Commands
 type PlayAudio = {
   type: 'play',
   handle: Handle,
   gain: number,
   loop: boolean,
+  offset: number | undefined,
+  duration: number | undefined
 }
 
-type AudioCommand = DecodeAudio | PlayAudio;
+type LoadAudio = {
+  type: 'load',
+  path: string,
+  asset: Asset<AudioBuffer>
+}
+
+type AudioCommand = LoadAudio | PlayAudio;
 
 interface AudioRequest {
   waitForReady: boolean,
@@ -24,23 +30,24 @@ interface AudioRequest {
   command: AudioCommand
 }
 
-
 interface PlayingAudio {
   source: AudioBufferSourceNode,
   gainNode: GainNode
 }
 
-export default class AudioResource implements Resource, Ticker {
-  public static readonly NAME: string = 'AudioResource';
-  readonly name = AudioResource.NAME;
 
-  private index = 0;
+
+export default class AudioResource implements Resource {
+  static readonly NAME:string = 'AudioResource';
+  readonly name:string = AudioResource.NAME;
+
+  private index = new IndexCounter();
   audioContext: AudioContext;
   gainNode: GainNode;
 
   private queue = new Array<AudioRequest>();
   private playingAudio = new Map<number, PlayingAudio>();
-  private decodedAudio = new Map<Handle, Asset<AudioBuffer>>();
+
 
   constructor() {
     this.audioContext = new AudioContext();
@@ -49,15 +56,19 @@ export default class AudioResource implements Resource, Ticker {
     this.gainNode.connect(this.audioContext.destination);
   }
 
-  decodeAudio(handle:Handle) {
-    const id = ++this.index;
-    this.queue.push({ id, waitForReady: true, command: { type: 'decode', handle } });
-    return id;
+  load(handle:Handle, path:string) {
+    const asset = new Asset<AudioBuffer>(handle);
+    this.queue.push({
+      command: { type: 'load', path, asset: asset },
+      id: this.index.next(),
+      waitForReady: true
+    });
+    return asset;
   }
 
-  play(handle:Handle, waitForReady:boolean = false, gain: number = 1, loop: boolean = false) {
-    const id = ++this.index;
-    this.queue.push({ id, waitForReady, command: { type: 'play', handle, gain, loop } });
+  play(handle:Handle, waitForReady:boolean = false, gain: number = 1, loop: boolean = false, offset: number | undefined = undefined, duration: number | undefined = undefined) {
+    const id = this.index.next();
+    this.queue.push({ id, waitForReady, command: { type: 'play', handle, gain, loop, offset, duration } });
     return id;
   }
 
@@ -90,50 +101,27 @@ export default class AudioResource implements Resource, Ticker {
     this.playingAudio.delete(soundId);
   }
 
-  private _decodeAudio(update: Update, handle:string) {
-    let decodedAudio = this.decodedAudio.get(handle);
-    if (decodedAudio) {
-      return decodedAudio;
-    }
-
-    const assets = update.assets();
-    const asset = assets.get<ArrayBuffer>(handle);
-    if (!asset || !asset.isLoaded())
-      return;
-
-    const decodedName = `${asset.name}-decoded-audio`;
-    const buffer = asset.get()!;
-    const promise = this.audioContext.decodeAudioData(buffer);
-    decodedAudio = new Asset<AudioBuffer>(decodedName, promise);
-    this.decodedAudio.set(asset.name, decodedAudio);
-
-    return decodedAudio;
+  private async _load(command:LoadAudio) {
+    const res = await fetch(command.path);
+    const blob = await res.blob();
+    const arrayBuffer = await blob.arrayBuffer();
+    const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer);
+    command.asset.complete(audioBuffer);
   }
 
-  _play(update:Update, id:number, waitForReady:boolean, command:PlayAudio) {
+  private _play(update: Update, id: number, waitForReady: boolean, command: PlayAudio) {
     const assets = update.assets();
 
-    const asset = assets.get<ArrayBuffer>(command.handle);
+    const asset = assets.get<AudioBuffer>(command.handle);
     if (!asset)
       return false;
 
-    const isLoaded = asset.isLoaded();
-    if (!isLoaded) {
+    const audio = asset.get();
+    if (!audio)
       return waitForReady;
-    }
-
-
-    let decodedAudio = this._decodeAudio(update, command.handle);
-    if (!decodedAudio)
-      return false;
-    
-    const audioBuffer = decodedAudio.get();
-    if (!audioBuffer) {
-      return waitForReady;
-    }
 
     let source = this.audioContext.createBufferSource();
-    source.buffer = audioBuffer;
+    source.buffer = audio;
 
     source.addEventListener('ended', (_ev) => {
       this.playingAudio.delete(id);
@@ -147,11 +135,18 @@ export default class AudioResource implements Resource, Ticker {
     
     source.loop = command.loop;
 
-    source.start(this.audioContext.currentTime);
+    source.start(this.audioContext.currentTime, command.offset, command.duration);
 
     this.playingAudio.set(id, { gainNode, source });
+
+    return false;
   }
 
+  system() : System {
+    return (_update) => {
+      this.tick(_update);
+    };
+  }
 
   tick(update: Update) {
     if (this.queue.length === 0)
@@ -170,14 +165,12 @@ export default class AudioResource implements Resource, Ticker {
 
     for (const request of this.queue) {
       switch (request.command.type) {
-        case 'decode':
-          const decoded = this._decodeAudio(update, request.command.handle);
-          if (!decoded)
-            next.push(request);
+        case 'load':
+          this._load(request.command);
           break;
         case 'play':
-          const readd = this._play(update, request.id, request.waitForReady, request.command);
-          if (readd)
+          const reAdd = this._play(update, request.id, request.waitForReady, request.command);
+          if (reAdd)
             next.push(request);
           break;
         default:
@@ -187,4 +180,4 @@ export default class AudioResource implements Resource, Ticker {
 
     this.queue = next;
   }
-}
+}  

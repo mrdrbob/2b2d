@@ -1,5 +1,5 @@
-import Component from "../Component";
 import Update from "../Update";
+import Component from "./Component";
 
 export enum Direction {
   Positive,

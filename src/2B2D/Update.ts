@@ -1,192 +1,159 @@
-import { Command } from "./Command";
-import Component from "./Component";
+import { Layer } from "./Assets/LevelsAsset";
+import Component from "./Components/Component";
+import Depth from "./Components/Depth";
 import Parent from "./Components/Parent";
 import Position from "./Components/Position";
-import Visible from "./Components/Visible";
-import { Entity, ResolvableEntity } from "./Entity";
-import { Layer } from "./Layer";
+import RenderOrder from "./Components/RenderOrder";
+import Visible from "./Components/Visibility";
+import Engine from "./Engine";
+import { Entity } from "./Entity";
 import Vec2 from "./Math/Vec2";
-import Renderer from "./Rendering/Renderer";
-import RenderingSystem, { CreateRenderer } from "./Rendering/RenderingSystem";
-import Resource from "./Resource";
+import { NamedTypeClass } from "./NamedType";
+import { CreateRenderer } from "./Rendering/Renderer";
 import AssetsResource from "./Resources/AssetsResource";
 import AudioResource from "./Resources/AudioResource";
 import KeysResource from "./Resources/KeysResource";
+import Resource from "./Resources/Resource";
 import Signal from "./Signal";
-import { State } from "./State";
-import World from "./World";
-
-export type UpdateData = {
-  world: World,
-  commands: Array<Command>,
-  resources: Map<string, Resource>,
-  signals: Map<string, Signal[]>,
-  delta: number,
-  renderers: Map<string, Renderer>,
-  rendering: RenderingSystem,
-  layers: Array<Layer>
-};
+import Future from "./Util/Future";
 
 export default class Update {
-  constructor(public data: UpdateData) { }
+  delta = 0;
 
-  /** Returns the time difference since last frame, in ms */
-  delta() { return this.data.delta; }
+  constructor(public engine: Engine) { }
 
-  /** Execute a query against the ECS world and return the results as an array of 
-   * entities and components. Query results will be cached. */
-  query(components: string[]) { return this.data.world.query(components); }
 
-  /** Executes a query for a signle entity. If at least one entity matches, the
-   * first is returned, otherwise undefined.
-   */
-  single(components: string[]) {
-    const query = this.query(components);
-    if (query.length === 0)
-      return undefined;
-    return query[0];
+  next(delta:number) {
+    this.delta = delta;
   }
 
-  /** Query the ECS world bypassing the cache. */
-  queryLive(components: string[]) { return this.data.world.queryLive(components); }
-
-  /** Returns an individual component of an entity if it exists, `undefined` otherwise. */
-  get<T>(entity: Entity, component: string) {
-    const instance = this.data.world.get(entity, component);
-    if (!instance)
-      return;
-    return instance as T;
+  ecs = {
+    query: <T extends NamedTypeClass[]>(...components: T): { entity: Entity, components: { [K in keyof T]: InstanceType<T[K]> } }[] => {
+      return this.engine.world.query(...components);
+    },
+    single: <T extends NamedTypeClass[]>(...components: T): { entity: Entity, components: { [K in keyof T]: InstanceType<T[K]> } } | undefined => {
+      return this.engine.world.single(...components);
+    },
+    get: <T extends Component>(entity: Entity, component: NamedTypeClass<T>) => {
+      return this.engine.world.get(entity, component);
+    }
   }
 
-  /** Gets a resource and assumes it exists and is of the correct type. */
-  resource<T extends Resource>(name: string): T {
-    return this.data.resources.get(name)! as T;
+  spawn(...components: Array<Component>) {
+    const future = new Future<Entity>();
+    this.engine.commands.push({ type: 'spawn', components, future: future });
+    return future;
   }
 
-  /** Convenience method to get the `AssetsResource` instance (for loading and accessing
-   * assets). Assumes it exists and is registered. */
-  assets() { return this.resource<AssetsResource>(AssetsResource.NAME); }
-
-  /** Convenience method to get the `AudioResource` instance (for loading and playing
-   * audio). Assumes it exists and is registered. */
-  audio() { return this.resource<AudioResource>(AudioResource.NAME); }
-
-  /** Convenience method to get the `KeysResource` instance (for getting and responding 
-   * to keyboard inputes). Assumes it exists and is registered. */
-  keys() { return this.resource<KeysResource>(KeysResource.NAME); }
-
-  /** Exits the `state` by sending an `exit-state` command. */
-  exit(state: State) { this.data.commands.push({ type: 'exit-state', state }) };
-
-  /** Enters the `state` by sending an `enter-state` command. */
-  enter(state: State) { this.data.commands.push({ type: 'enter-state', state }) };
-
-  /** Spawns an entity by sending a `spawn` command, and returns a resolvable entity reference 
-   * that can be resolved next frame.
-   */
-  spawn(components: Array<Component | string>) {
-    const resolvable = new ResolvableEntity();
-    this.data.commands.push({ type: 'spawn', components, resolvable });
-    return resolvable;
-  };
-
-  /** Despawns an entity by sending a `despawn` command. */
-  despawn(entity: Entity) { this.data.commands.push({ type: 'despawn', entity }) };
+  despawn(entity: Entity) { this.engine.commands.push({ type: 'despawn', entity }) };
 
   signals = {
-    /** Sends a signal. If `signal` is a string, a default signal type with no sender is sent */
     send: (signal: Signal | string) => {
       if (typeof signal === 'string') {
-        this.data.commands.push({ type: 'signal', signal: { name: signal, sender: undefined } })
+        this.engine.commands.push({ type: 'signal', signal: { name: signal, sender: undefined } });
       } else {
-        this.data.commands.push({ type: 'signal', signal })
+        this.engine.commands.push({ type: 'signal', signal });
       }
-    },
-
-    /** Returns true if a Signal of type `signal` is in the queue for this frame. */
-    has: (name: string) => {
-      return this.data.signals.has(name);
-    },
-
-    /** Returns any signals matching `signal` type that are queued for this frame. */
-    get: (name: string) => {
-      return this.data.signals.get(name);
     }
   }
 
-  /** Registers a new Renderer system via a `add-renderer` command.  */
-  addRenderer(create: CreateRenderer) { this.data.commands.push({ type: 'add-renderer', create }) };
+  // TODO
+  renderers = {
+    add: (create: CreateRenderer) => { 
+      this.engine.commands.push({ type: 'add-renderer', create });
+    },
 
-  /** Removes a  Renderer system via a `remove-renderer` command.  */
-  removeRenderer(name: string) { this.data.commands.push({ type: 'remove-renderer', name }) };
+    remove: (name: string) => {
+      this.engine.commands.push({ type: 'remove-renderer', name });
+    }
+  }
 
-  /** Resolves a resolvable entity reference to an entity ID if the entity exists.
-   * Spawning returns a resolvable reference that can be resovled to the entity ID in the 
-   * next frame. This is because spawning is done via command which is executed at the end 
-   * of the frame. Will return `undefined` if no entity could be resolved.
-   */
-  resolveEntity(entity: Entity | ResolvableEntity) {
-    if (typeof entity === 'number') {
-      // A direct reference
-      return entity;
-    } else {
-      if (!entity.isResolved()) {
+  resolve = {
+    entity: (entity:Entity | Future<Entity>) => {
+      if (typeof entity === 'number') {
+        // A direct reference
+        return entity;
+      } else {
+        return entity.get();
+      }
+    },
+    position: (entity: Entity, position: Position) : Vec2 => {
+      const parent = this.ecs.get(entity, Parent);
+      if (!parent)
+        return position.position;
+  
+      let parentEntity = this.resolve.entity(parent.entity);
+      if (!parentEntity) {
+        console.warn(`Attempt to resovle an unresolvable entity reference. Child: ${entity}. Parent: ${parentEntity}`);
+        return position.position;
+      }
+  
+      const parentPosition = this.ecs.get(parentEntity, Position);
+      if (parentPosition) {
+        return position.position.add(
+          this.resolve.position(parentEntity, parentPosition)
+        );
+      }
+      return position.position;
+    },
+    visibility: (entity: Entity) : boolean => {
+      const visibleComponent = this.ecs.get(entity, Visible);
+      if (visibleComponent)
+        return visibleComponent.visible;
+  
+      const parent = this.ecs.get(entity, Parent);
+      if (!parent)
+        return true;
+  
+      let parentEntity = this.resolve.entity(parent.entity);
+      if (!parentEntity)
+        return true;
+  
+      return this.resolve.visibility(parentEntity);
+    },
+    renderOrder: (entity: Entity) : string | undefined => {
+      const component = this.ecs.get(entity, RenderOrder);
+      if (component)
+        return component.layer;
+  
+      const parent = this.ecs.get(entity, Parent);
+      if (!parent)
         return undefined;
-      }
-
-      return entity.entity;
+  
+      let parentEntity = this.resolve.entity(parent.entity);
+      if (!parentEntity)
+        return undefined;
+  
+      return this.resolve.renderOrder(parentEntity);
+    },
+    depth: (entity: Entity) : number => {
+      const component = this.ecs.get(entity, Depth);
+      if (component)
+        return component.depth;
+  
+      const parent = this.ecs.get(entity, Parent);
+      if (!parent)
+        return this.engine.rendering.defaultDepth;
+  
+      let parentEntity = this.resolve.entity(parent.entity);
+      if (!parentEntity)
+        return this.engine.rendering.defaultDepth;
+  
+      return this.resolve.depth(parentEntity);
     }
   }
 
-  /** Will recursively resolve a chain of `Parent` components to work out the final 
-   * global position of an entity with a `Position` component.
-   */
-  resolvePosition(entity: Entity, pos: Position): Vec2 {
-    const parent = this.get<Parent>(entity, Parent.NAME);
-    if (!parent)
-      return pos.pos;
-
-    let parentEntity = this.resolveEntity(parent.entity);
-    if (!parentEntity) {
-      console.warn(`Attempt to resovle an unresolvable entity reference. Child: ${entity}`);
-      return pos.pos;
-    }
-
-    const parentPosition = this.get<Position>(parentEntity, Position.NAME);
-    if (parentPosition) {
-      return pos.pos.add(
-        this.resolvePosition(parentEntity, parentPosition)
-      );
-    }
-    return pos.pos;
-  }
-
-  /** Will recursively resolve a chain of `Parent` components to work out the final 
-   * visibility of an entity with a `Visible` component. *If ehe entity and no parents
-   * have a Visible component, the entity is assumed to be visible.* To hide a component,
-   * you need a `Visible` component set to `false`.
-   */
-  resolveVisibility(entity: Entity): boolean {
-    const visibleComponent = this.get<Visible>(entity, Visible.NAME);
-    if (visibleComponent)
-      return visibleComponent.visible;
-
-    const parent = this.get<Parent>(entity, Parent.NAME);
-    if (!parent)
-      return true;
-
-    let parentEntity = this.resolveEntity(parent.entity);
-    if (!parentEntity)
-      return true;
-
-    return this.resolveVisibility(parentEntity);
-  }
-
-  /** Will despawn any entities with the `tag` component. */
-  cleanUpTag(tag: string) {
-    const query = this.query([tag]);
-    for (const entity of query) {
-      this.despawn(entity.entity);
+  schedule = {
+    enter: (state:string) => {
+      this.engine.commands.push({ type: 'enter-state', state });
+    },
+    exit: (state:string) => {
+      this.engine.commands.push({ type: 'exit-state', state });
     }
   }
+
+  resource<T extends Resource>(resource: NamedTypeClass<T>) { return this.engine.resources.get(resource.NAME)! as T; }
+  assets() { return this.engine.resources.get(AssetsResource.NAME)! as AssetsResource; }
+  audio() { return this.engine.resources.get(AudioResource.NAME)! as AudioResource; }
+  keys() { return this.engine.resources.get(KeysResource.NAME)! as KeysResource; }
 }

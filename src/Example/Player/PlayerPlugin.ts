@@ -1,23 +1,20 @@
 import Builder from "../../2B2D/Builder";
-import EnemyCollision from "../Enemy/Signals/EnemyCollisionSignal";
-import States from "../States";
-import PlayerDied from "./Signals/PlayerDiedSignal";
-import BounceOnStomps from "./Systems/BounceOnStomps";
-import cameraFollowPlayer from "./Systems/CameraFollowPlayer";
+import BatStompedSignal from "../Bat/Signals/BatStompedSignal";
+import GameLoopState from "../States/GameLoopState";
+import PlayerDiedSignal from "./Signals/PlayerDiedSignal";
+import PlayerCollisionSignal from "./Signals/PlayerCollisionSignal";
+import CameraFollowsPlayer from "./Systems/CameraFollowsPlayer";
 import HandleInvincibility from "./Systems/HandleInvincibility";
+import HandlePain from "./Systems/HandlePain";
+import HandleStomp from "./Systems/HandleStomp";
 import SpawnGhost from "./Systems/SpawnGhost";
-import spawnPlayer from "./Systems/SpawnPlayer";
-import TakeEnemyDamage from "./Systems/TakeEnemyDamage";
-
-export const PlayerJumpedSignal = 'PlayerJumpedSignal';
+import SpawnPlayer from "./Systems/SpawnPlayer";
 
 export default function PlayerPlugin(builder: Builder) {
-  builder.enter(States.Gameloop, spawnPlayer);
-  builder.update(States.Gameloop, cameraFollowPlayer);
-  builder.update(States.Gameloop, HandleInvincibility);
-
-
-  builder.handle(EnemyCollision.NAME, BounceOnStomps);
-  builder.handle(EnemyCollision.NAME, TakeEnemyDamage);
-  builder.handle(PlayerDied.NAME, SpawnGhost);
+  builder.schedule.enter(GameLoopState, SpawnPlayer);
+  builder.schedule.update(GameLoopState, CameraFollowsPlayer);
+  builder.schedule.update(GameLoopState, HandleInvincibility);
+  builder.signals.handle(PlayerDiedSignal, SpawnGhost);
+  builder.signals.handle(PlayerCollisionSignal, HandlePain);
+  builder.signals.handle(BatStompedSignal, HandleStomp);
 }

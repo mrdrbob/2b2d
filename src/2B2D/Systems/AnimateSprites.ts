@@ -1,5 +1,4 @@
-import { Handle } from "../Asset";
-import { SpriteAtlas } from "../Assets/SpriteAtlasAsset";
+import TextureAsset, { Atlas } from "../Assets/TextureAsset";
 import Animated from "../Components/Animated";
 import Sprite from "../Components/Sprite";
 import Update from "../Update";
@@ -18,9 +17,9 @@ export interface AnimationData {
 // A map of animation data for each tag in the sprite
 // Makes looking up which frame should be showing for a given timeframe
 // easier.
-const animationDataCache = new Map<Handle, Map<string, AnimationData>>();
+const animationDataCache = new Map<string, Map<string, AnimationData>>();
 
-function generateAnimationData(atlas: SpriteAtlas) {
+function generateAnimationData(atlas: Atlas) {
   let tagMap = new Map<string, AnimationData>();
 
   for (const tag of atlas.meta.frameTags) {
@@ -44,20 +43,20 @@ function generateAnimationData(atlas: SpriteAtlas) {
 }
 
 export default function AnimateSprites(update: Update) {
-  const query = update.query([Animated.NAME, Sprite.NAME]);
+  const query = update.ecs.query(Animated, Sprite);
   const assets = update.assets();
 
   for (const entity of query) {
-    const [animation, sprite] = entity.components as [Animated, Sprite];
+    const [animation, sprite] = entity.components;
 
     if (!animation.tag)
       continue;
 
-    let precomputedAnimations = animationDataCache.get(sprite.atlas);
+    let precomputedAnimations = animationDataCache.get(sprite.handle);
     if (!precomputedAnimations) {
-      const atlas = assets.assume<SpriteAtlas>(sprite.atlas);
-      precomputedAnimations = generateAnimationData(atlas);
-      animationDataCache.set(sprite.atlas, precomputedAnimations);
+      const texture = assets.assume<TextureAsset>(sprite.handle);
+      precomputedAnimations = generateAnimationData(texture.atlas);
+      animationDataCache.set(sprite.handle, precomputedAnimations);
     }
 
     const animations = precomputedAnimations.get(animation.tag);
@@ -68,7 +67,7 @@ export default function AnimateSprites(update: Update) {
       animation.time = 0;
       animation.previousTag = animation.tag;
     } else {
-      animation.time += update.delta();
+      animation.time += update.delta;
     }
     while (animation.time >= animations.totalTime) {
       animation.time -= animations.totalTime;

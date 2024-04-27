@@ -1,6 +1,6 @@
-import Component from "../Component";
 import MachineState from "../MachineState";
 import Update from "../Update";
+import Component from "./Component";
 
 export default class StateMachine implements Component {
   static readonly NAME:string = 'StateMachine';

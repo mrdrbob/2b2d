@@ -1,6 +1,6 @@
-import Component from "../Component";
 import Color from "../Math/Color";
 import Vec2 from "../Math/Vec2";
+import Component from "./Component";
 
 export default class Gradient implements Component {
   static readonly NAME: string = 'Gradient';
@@ -8,7 +8,6 @@ export default class Gradient implements Component {
 
   /** Generates a gradient. Colors are given for each corner. */
   constructor(
-    public layer: string,
     public nw: Color,
     public ne: Color,
     public sw: Color,
@@ -16,7 +15,7 @@ export default class Gradient implements Component {
     public size: Vec2
   ) { }
 
-  static SolidBox(layer: string, color:Color, size:Vec2) {
-    return new Gradient(layer, color, color, color, color, size);
+  static SolidBox(color:Color, size:Vec2) {
+    return new Gradient(color, color, color, color, size);
   }
 }

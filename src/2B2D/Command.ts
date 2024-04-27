@@ -1,9 +1,10 @@
-import Component from "./Component";
-import { ResolvableEntity } from "./Entity";
-import { CreateRenderer } from "./Rendering/RenderingSystem";
-import Resource from "./Resource";
+import Component from "./Components/Component";
+import { Entity } from "./Entity";
+import Renderer, { CreateRenderer } from "./Rendering/Renderer";
+import Resource from "./Resources/Resource";
 import Signal from "./Signal";
-import Ticker from "./Ticker";
+import { System } from "./System";
+import Future from "./Util/Future";
 
 export type Command =
   SpawnEntityCommand |
@@ -14,17 +15,17 @@ export type Command =
   AddRendererCommand |
   RemoveRendererCommand |
   AddResource |
-  AddTicker;
+  AddFixedSystem;
 
 export type SpawnEntityCommand = {
   type: 'spawn',
-  components: Array<Component | string>,
-  resolvable: ResolvableEntity
+  components: Array<Component>,
+  future: Future<Entity>
 }
 
 export type DespawnEntityCommand = {
   type: 'despawn',
-  entity: number;
+  entity: Entity;
 }
 
 export type ExitStateCommand = {
@@ -57,7 +58,7 @@ export type AddResource = {
   resource: Resource
 }
 
-export type AddTicker = {
-  type: 'add-ticker',
-  ticker: Ticker
+export type AddFixedSystem = {
+  type: 'add-fixed-system',
+  system: System
 }

@@ -2,10 +2,10 @@ import Shaker from "../../../2B2D/Components/Shaker";
 import Update from "../../../2B2D/Update";
 
 export default function ReactToHits(update:Update) {
-  const entity = update.single([ Shaker.NAME ]);
+  const entity = update.ecs.single(Shaker);
   if (!entity)
     return;
 
-  const [ shaker ] = entity.components as [ Shaker ];
+  const [ shaker ] = entity.components;
   shaker.shake();
 }

@@ -1,48 +1,35 @@
 import Builder from "../../2B2D/Builder";
-import Signal from "../../2B2D/Signal";
 import Update from "../../2B2D/Update";
-import EnemyCollision from "../Enemy/Signals/EnemyCollisionSignal";
+import BatStompedSignal from "../Bat/Signals/BatStompedSignal";
 import GameAssets from "../GameAssets";
-import { PlayerJumpedSignal } from "../Player/PlayerPlugin";
-import PlayerDied from "../Player/Signals/PlayerDiedSignal";
-import PlayerTouchedFlag from "../Player/Signals/PlayerTouchedFlag";
-import { PlayerDamangedSignal } from "../Player/Systems/TakeEnemyDamage";
+import PlayerDamagedSignal from "../Player/Signals/PlayerDamagedSignal";
+import PlayerDiedSignal from "../Player/Signals/PlayerDiedSignal";
+import PlayerJumpedSignal from "../Player/Signals/PlayerJumpedSignal";
+import PlayerTouchedFlagSignal from "../Player/Signals/PlayerTouchedFlagSignal";
 
 export default function SoundPlugin(builder: Builder) {
-  builder.handle(PlayerJumpedSignal, playerJumped);
-  builder.handle(PlayerDamangedSignal, playerHurt);
-  builder.handle(PlayerDied.NAME, playerDied);
-  builder.handle(PlayerTouchedFlag, touchedFlag);
-  builder.handle(EnemyCollision.NAME, stomps);
-}
-
-function playerJumped(update: Update) {
-  const audio = update.audio();
-  audio.play(GameAssets.Sounds.Jump.Handle, true, 0.5);
-}
-
-function playerHurt(update: Update) {
-  const audio = update.audio();
-  audio.play(GameAssets.Sounds.Hurt.Handle, true, 0.7);
-}
-
-function playerDied(update: Update) {
-  const audio = update.audio();
-  audio.play(GameAssets.Sounds.Died.Handle, true, 0.7);
-}
-
-function touchedFlag(update: Update) {
-  const audio = update.audio();
-  audio.play(GameAssets.Sounds.Flag.Handle, true, 0.7);
-}
-
-function stomps(update: Update, signals: Signal[]) {
-  for (const collision of signals as EnemyCollision[]) {
-    if (!collision.isStomp)
-      continue;
-
+  builder.signals.handle(PlayerJumpedSignal, (update: Update) => {
     const audio = update.audio();
-    audio.play(GameAssets.Sounds.Drop.Handle, true, 0.7);
-    return;
-  }
+    audio.play(GameAssets.sound.jump.handle, true, 0.5);  
+  });
+
+  builder.signals.handle(PlayerDiedSignal, (update: Update) => {
+    const audio = update.audio();
+    audio.play(GameAssets.sound.died.handle, true, 0.7);  
+  });
+
+  builder.signals.handle(PlayerTouchedFlagSignal, (update: Update) => {
+    const audio = update.audio();
+    audio.play(GameAssets.sound.flag.handle, true, 0.7);  
+  });
+
+  builder.signals.handle(BatStompedSignal, (update: Update) => {
+    const audio = update.audio();
+    audio.play(GameAssets.sound.drop.handle, true, 0.7);  
+  });
+
+  builder.signals.handle(PlayerDamagedSignal, (update: Update) => {
+    const audio = update.audio();
+    audio.play(GameAssets.sound.hurt.handle, true, 0.7);  
+  });
 }

@@ -8,5 +8,3 @@ export default interface MachineState {
 
   update(update: Update): MachineState | undefined;
 }
-
-
