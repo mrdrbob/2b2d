@@ -1,6 +1,6 @@
 import Component from "./Components/Component";
 import { Entity } from "./Entity";
-import Renderer, { CreateRenderer } from "./Rendering/Renderer";
+import { CreateRenderer } from "./Rendering/Renderer";
 import Resource from "./Resources/Resource";
 import Signal from "./Signal";
 import { System } from "./System";

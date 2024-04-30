@@ -44,34 +44,34 @@ export default function SpawnLevel(update: Update) {
   // Spawn collision targets
   const ldtk = assets.assume<LdktLevelsAsset>(GameAssets.ldkt.handle);
   const tiles = ldtk.getIntGrid(level, 'Collisions');
-  
+
   // Static bodies (that the player should not be able to pass through)
   const staticBodies = AABB.simplify(tiles.filter(x => x.type == 1).map(x => x.aabb));
   for (const tile of staticBodies) {
-   update.spawn(
-    new Position(tile.pos),
-    new StaticBody(tile.size),
-    GameStateCleanup.Tag
-   );
+    update.spawn(
+      new Position(tile.pos),
+      new StaticBody(tile.size),
+      GameStateCleanup.Tag
+    );
   }
 
   // Our Flag Means YOU WIN!
   const flagTiles = AABB.simplify(tiles.filter(x => x.type == 2).map(x => x.aabb));
   for (const tile of flagTiles) {
-   update.spawn(
-    new Position(tile.pos),
-    new CollisionTarget(FlagTarget, tile.size),
-    GameStateCleanup.Tag
-   );
+    update.spawn(
+      new Position(tile.pos),
+      new CollisionTarget(FlagTarget, tile.size),
+      GameStateCleanup.Tag
+    );
   }
 
   // Water and bottomless pits = death
   const deathTiles = AABB.simplify(tiles.filter(x => x.type == 3).map(x => x.aabb));
   for (const tile of deathTiles) {
-   update.spawn(
-    new Position(tile.pos),
-    new CollisionTarget(DeathTarget, tile.size),
-    GameStateCleanup.Tag
-   );
+    update.spawn(
+      new Position(tile.pos),
+      new CollisionTarget(DeathTarget, tile.size),
+      GameStateCleanup.Tag
+    );
   }
 }

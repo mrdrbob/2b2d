@@ -1,9 +1,9 @@
-import Component from "./Component";
-import Color from "../Math/Color"
-import Vec2 from "../Math/Vec2"
+import { Entity } from "../Entity";
+import Color from "../Math/Color";
+import Vec2 from "../Math/Vec2";
 import Signal from "../Signal";
 import Future from "../Util/Future";
-import { Entity } from "../Entity";
+import Component from "./Component";
 
 export interface StepItem {
   time: number,
@@ -24,7 +24,7 @@ export class ChainBuilder {
   time: number = 0;
   private _entity: Entity | Future<Entity> | undefined = undefined;
   private _signal: Signal | undefined = undefined;
-  private _loop : boolean = false;
+  private _loop: boolean = false;
 
   constructor(private last: StepItem) {
 

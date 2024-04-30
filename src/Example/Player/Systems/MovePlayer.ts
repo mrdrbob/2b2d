@@ -1,5 +1,4 @@
 import MappedInput from "../../../2B2D/Components/MappedInput";
-import Position from "../../../2B2D/Components/Position";
 import Velocity from "../../../2B2D/Components/Velocity";
 import Vec2 from "../../../2B2D/Math/Vec2";
 import Update from "../../../2B2D/Update";
@@ -15,9 +14,9 @@ export default function MovePlayer(update: Update) {
   if (!query)
     return;
 
-  const [ _p, velocity ] = query.components;
+  const [_p, velocity] = query.components;
 
-  const [ input ] = controller.components;
+  const [input] = controller.components;
   const left = input.isPressed(update, PlayerActions.left);
   const right = input.isPressed(update, PlayerActions.right);
 

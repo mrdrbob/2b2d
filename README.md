@@ -7,9 +7,11 @@
 Some features of the engine:
 
 * Purely ECS-driven.
-* Works (somewhat) well with LDtk and Aseprite
+* Works (somewhat) well with LDtk and Aseprite.
 * Supports TypeScript and browsers with WebGPU support.
+* Basic gamepad / input mapping support
 * Has a limited, rudimentary AABB-based physics system—just about enough to support a Mario-style platformer game.
+* Self-contained, no runtime dependencies.
 * MIT Licensed.
 
 ## Example Game
@@ -197,6 +199,7 @@ This documentation is far from complete. Your best bet is to read through the `E
 
 ## Important Caveats
 
+* 2B2D uses WebGPU for rendering, which is currently only available in Chrome, Edge, and Firefox nightlies (must be enabled).
 * The source textures for tilemaps do not currently support padding or spacing between tiles.
 * Levels in LDtk should be aligned to the grid. Sometimes the levels get off the grid spacing a bit, and it can confuse the position of colliders and entities.
 * The physics engine only has two body types: `StaticBody` which does not move, and `KenticBody` which does move but can't pass through any `StaticBody`. `KineticBody` entities, however, do not interact with each other and can pass through.
@@ -217,6 +220,10 @@ This engine has not been heavily performance tested, though there was an attempt
 By default, all sprites are drawn at a depth of `0.5`. You can control this by adding a `Depth` component to your sprite entity. Valid depth values must be below one and greater than zero (anything outside this range will not appear). Higher numbers are "further back", smaller numbers are closer to the camera ("on top").
 
 Depth is handled by a depth stencil on the GPU. For fully opaque/transparent objects, this just works. For semi-opaque objects, you will want to use a `RenderOrder` component to force the object on top (nearer the camera) to render after any objects it renders on top of. (If a semi-transparent object renders first, you'll see the background through it because of how the depth stencil works). Entities with no `RenderOrder` component are rendered first, then entities are rendered in the order set by the `engine.rendering.renderOrder` array.
+
+## Games built in 2B2D
+
+* [Echo Chronos: The Broken Timepiece](https://nhawdge.itch.io/echo-chronos-the-broken-timepiece) - A simple game made for the [Mini Jame Gam #29](https://itch.io/jam/mini-jame-gam-29/rate/2640937) game jam in just over a day (in V2 of 2B2D).
 
 ## Acknowledgements
 

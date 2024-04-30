@@ -3,7 +3,7 @@ import { Handle } from "../Handle";
 export default class GpuTextureCache {
   constructor(private device: GPUDevice) { }
 
-  cache = new Map<Handle, [ GPUTextureView, GPUTexture ]>();
+  cache = new Map<Handle, [GPUTextureView, GPUTexture]>();
 
   ensure(handle: Handle, bitmap: ImageBitmap): GPUTextureView {
     let view = this.cache.get(handle);
@@ -21,7 +21,7 @@ export default class GpuTextureCache {
       { width: bitmap.width, height: bitmap.height },
     );
 
-    view = [ gpuTexture.createView(), gpuTexture ];
+    view = [gpuTexture.createView(), gpuTexture];
     this.cache.set(handle, view);
     return view[0];
   }
@@ -30,7 +30,7 @@ export default class GpuTextureCache {
     for (const view of this.cache.values()) {
       view[1].destroy();
     }
-    
+
     this.cache.clear();
   }
 }

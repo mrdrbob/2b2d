@@ -4,8 +4,8 @@ const quadTriangles = new Float32Array(
     0.5,  0.5,
     0.5, -0.5,
 
-   -0.5, -0.5,
-   -0.5,  0.5,
+    -0.5, -0.5,
+    -0.5, 0.5,
     0.5,  0.5]
 );
 
@@ -56,7 +56,7 @@ export function createDepthStencil(device: GPUDevice, width: number, height: num
     usage: GPUTextureUsage.RENDER_ATTACHMENT,
   });
 
-  const attachment:GPURenderPassDepthStencilAttachment = {
+  const attachment: GPURenderPassDepthStencilAttachment = {
     view: texture.createView(),
     depthLoadOp: 'clear',
     depthStoreOp: 'store',
@@ -66,7 +66,7 @@ export function createDepthStencil(device: GPUDevice, width: number, height: num
     stencilStoreOp: 'store',
   };
 
-  const state:GPUDepthStencilState = {
+  const state: GPUDepthStencilState = {
     format: 'depth24plus-stencil8',
     depthWriteEnabled: true,
     depthCompare: 'less',
@@ -75,7 +75,7 @@ export function createDepthStencil(device: GPUDevice, width: number, height: num
   return { texture, attachment, state };
 }
 
-export function createColorTargets(presentationFormat:GPUTextureFormat): GPUColorTargetState[] {
+export function createColorTargets(presentationFormat: GPUTextureFormat): GPUColorTargetState[] {
   return [
     {
       format: presentationFormat,

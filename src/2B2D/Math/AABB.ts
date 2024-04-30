@@ -79,24 +79,24 @@ export default class AABB {
     return output;
   }
 
-  getSide(axis:number, side:number) {
+  getSide(axis: number, side: number) {
     const pos = axis == 0 ? this.pos.x : this.pos.y;
     const size = axis == 0 ? this.size.x : this.size.y;
     return pos + (size * side);
   }
 
-  getLength(axis:number) { return (axis == 0 ? this.size.x : this.size.y) * 2; }
+  getLength(axis: number) { return (axis == 0 ? this.size.x : this.size.y) * 2; }
 
-  static combineAxis(left:AABB, right:AABB, axis:number) {
+  static combineAxis(left: AABB, right: AABB, axis: number) {
     const near = Math.min(left.getSide(axis, this.NEAR), right.getSide(axis, this.NEAR));
     const far = Math.max(left.getSide(axis, this.FAR), right.getSide(axis, this.FAR));
     const size = (far - near) * 0.5;
-    const pos  = near + size;
+    const pos = near + size;
 
     return { size, pos };
   }
 
-  static combine(left:AABB, right:AABB) {
+  static combine(left: AABB, right: AABB) {
     const x = AABB.combineAxis(left, right, this.HORIZONTAL);
     const y = AABB.combineAxis(left, right, this.VERTICAL);
 
@@ -105,7 +105,7 @@ export default class AABB {
     return new AABB(pos, size);
   }
 
-  static matchingEdge(left:AABB, right:AABB, axis:number, side:number) {
+  static matchingEdge(left: AABB, right: AABB, axis: number, side: number) {
     const otherAxis = axis == 0 ? 1 : 0;
 
     let nearEdge = left.getSide(otherAxis, this.NEAR) == right.getSide(otherAxis, this.NEAR);
@@ -126,14 +126,14 @@ export default class AABB {
     const solved = new Array<AABB>();
 
     for (const unsolved of colliders) {
-      const solvedItem = [ this.NEAR, this.FAR ].reduce((acc, side) => {
+      const solvedItem = [this.NEAR, this.FAR].reduce((acc, side) => {
 
         let matched = solved.findIndex(x => AABB.matchingEdge(x, acc, axis, side));
         if (matched < 0)
           return acc;
 
         let removedItem = solved.splice(matched, 1)[0];
-        
+
         return AABB.combine(acc, removedItem);
       }, unsolved);
 

@@ -3,7 +3,7 @@ import { Entity } from "./Entity";
 import { NamedTypeClass } from "./NamedType";
 import IndexCounter from "./Util/IndexCounter";
 
-const EmptySet:ReadonlySet<Entity> = new Set<Entity>();
+const EmptySet: ReadonlySet<Entity> = new Set<Entity>();
 
 export class LiveWorld {
   private entities = new IndexCounter(1);
@@ -67,7 +67,7 @@ export class LiveWorld {
   }
 
   queryEntities<T extends NamedTypeClass[]>(...components: T): ReadonlySet<Entity> {
-      if (components.length === 0)
+    if (components.length === 0)
       return EmptySet;
 
     const first = this.componentEntities.get(components[0].NAME);

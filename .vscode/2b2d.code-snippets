@@ -22,8 +22,8 @@
 		"prefix": "comp",
 		"body": [
 			"export default class ${1:name} implements Component {",
-			"\tstatic readonly NAME:string = '${1:name}';",
-			"\treadonly name:string = ${1:name}.NAME;",
+			"\tstatic readonly NAME: string = '${1:name}';",
+			"\treadonly name: string = ${1:name}.NAME;",
 			"}"
 		]
 	},
@@ -32,10 +32,10 @@
 		"prefix": "signal",
 		"body": [
 			"export default class ${1:name} implements Signal {",
-			"\tstatic readonly NAME:string = '${1:name}';",
-			"\treadonly name:string = ${1:name}.NAME;",
+			"\tstatic readonly NAME: string = '${1:name}';",
+			"\treadonly name: string = ${1:name}.NAME;",
 			"",
-			"\tconstructor(public sender:string) { }",
+			"\tconstructor(public sender: string) { }",
 			"}"
 		]
 	},
@@ -44,8 +44,8 @@
 		"prefix": "res",
 		"body": [
 			"export default class ${1:name} implements Resource {",
-			"\tstatic readonly NAME:string = '${1:name}';",
-			"\treadonly name:string = ${1:name}.NAME;",
+			"\tstatic readonly NAME: string = '${1:name}';",
+			"\treadonly name: string = ${1:name}.NAME;",
 			"",
 			"}"
 		]

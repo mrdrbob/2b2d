@@ -29,7 +29,7 @@ export default class MappedInput implements Component {
   static readonly NAME: string = 'MappedInput';
   readonly name: string = MappedInput.NAME;
 
-  static build(gampeadIndex:number, action:(builder: MappedInputBuilder) => void) {
+  static build(gampeadIndex: number, action: (builder: MappedInputBuilder) => void) {
     var builder = new MappedInputBuilder();
     action(builder);
     return builder.asComponent(gampeadIndex);
@@ -68,10 +68,10 @@ export default class MappedInput implements Component {
 export class MappedInputBuilder {
   private map = new Map<string, Array<PressEvent>>();
 
-  set(action:string, press:PressEvent) {
+  set(action: string, press: PressEvent) {
     const presses = this.map.get(action);
     if (!presses) {
-      this.map.set(action, [ press ]);
+      this.map.set(action, [press]);
     } else {
       presses.push(press);
     }
@@ -79,23 +79,23 @@ export class MappedInputBuilder {
     return this;
   }
 
-  for(action:string, config:(builder: MappedInputActionBuilder) => void) {
-    var builder =  new MappedInputActionBuilder(this, action);
+  for(action: string, config: (builder: MappedInputActionBuilder) => void) {
+    var builder = new MappedInputActionBuilder(this, action);
     config(builder);
     return this;
   }
 
   get() { return this.map; }
 
-  asComponent(gamepadIndex:number) {
+  asComponent(gamepadIndex: number) {
     return new MappedInput(gamepadIndex, this.map);
   }
 }
 
 export class MappedInputActionBuilder {
-  constructor(private parent:MappedInputBuilder, private action:string) { }
+  constructor(private parent: MappedInputBuilder, private action: string) { }
 
-  keyboard(code:string) {
+  keyboard(code: string) {
     this.parent.set(this.action, { type: 'keyboard-press', code: code });
     return this;
   }
@@ -105,16 +105,16 @@ export class MappedInputActionBuilder {
     return this;
   }
 
-  axis(axis: number, threshold:number, direction: Direction) {
+  axis(axis: number, threshold: number, direction: Direction) {
     this.parent.set(this.action, { type: 'gamepad-axis-press', axis, threshold, direction });
     return this;
   }
 
-  negative(axis:number, threshold: number) {
+  negative(axis: number, threshold: number) {
     return this.axis(axis, threshold, Direction.Negative);
   }
 
-  positive(axis:number, threshold: number) {
+  positive(axis: number, threshold: number) {
     return this.axis(axis, threshold, Direction.Positive);
   }
 }

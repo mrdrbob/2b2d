@@ -46,7 +46,7 @@ export default function SpawnCurtains(update: Update, signals: CameraSpawnedSign
     new Parent(controller),
     Position.from(0, 0, 0),
     Gradient.SolidBox(
-      Color.Black(1), 
+      Color.Black(1),
       size
     )
   );

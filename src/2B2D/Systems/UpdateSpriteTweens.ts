@@ -28,7 +28,7 @@ export default function UpdateSpriteTweens(update: Update) {
         chain.time = 0;
         continue;
       }
-      
+
       update.despawn(item.entity);
       if (chain.signal)
         update.signals.send(chain.signal);

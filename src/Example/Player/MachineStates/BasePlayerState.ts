@@ -24,21 +24,21 @@ export default abstract class BasePlayerState implements MachineState {
 
   prep(update: Update) {
     this.delta = update.delta;
-    
+
     const player = update.ecs.single(Player, Velocity, Animated, Sprite, KineticBody);
     const input = update.ecs.single(MappedInput);
     if (!player || !input)
       return;
 
-    const [ _player, velocity, animated, sprite, body ] = player.components;
-    this.player = {  player: _player, velocity, animated, sprite, body };
+    const [_player, velocity, animated, sprite, body] = player.components;
+    this.player = { player: _player, velocity, animated, sprite, body };
 
-    const [ mapped ] = input.components;
+    const [mapped] = input.components;
 
     const left = mapped.isPressed(update, PlayerActions.left);
     const right = mapped.isPressed(update, PlayerActions.right);
     const space = mapped.isPressed(update, PlayerActions.jump);
-    
+
     this.input = { left, right, space };
   }
 
@@ -48,7 +48,7 @@ export default abstract class BasePlayerState implements MachineState {
     return this.onUpdate(update);
   }
 
-  protected abstract onUpdate(update: Update) : MachineState | undefined;
+  protected abstract onUpdate(update: Update): MachineState | undefined;
 
   applyLeftAndRightVelocity() {
     let newVel = this.player.velocity.velocity;

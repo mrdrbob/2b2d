@@ -13,7 +13,7 @@ import WinState from "../States/WinState";
 export default function SpawnWinScreen(update: Update) {
   const camera = update.ecs.single(CameraParent, Position);
   if (camera) {
-    const [ _c, cameraPos ] = camera.components;
+    const [_c, cameraPos] = camera.components;
     cameraPos.position = Vec2.ZERO;
   }
 
@@ -28,10 +28,12 @@ export default function SpawnWinScreen(update: Update) {
   update.spawn(
     new Timeline([
       { time: 2000, action: (u) => Curtains.Close(u, 'Win') },
-      { time: 3000, action: (u) => {
-        u.schedule.exit(WinState);
-        u.signals.send(WinScreenExitSignal);
-      }}
+      {
+        time: 3000, action: (u) => {
+          u.schedule.exit(WinState);
+          u.signals.send(WinScreenExitSignal);
+        }
+      }
     ])
   )
 }

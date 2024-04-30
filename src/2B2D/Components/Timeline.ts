@@ -7,11 +7,11 @@ export interface TimelineStep {
 }
 
 export default class Timeline implements Component {
-  static readonly NAME:string = 'Timeline';
-  readonly name:string = Timeline.NAME;
+  static readonly NAME: string = 'Timeline';
+  readonly name: string = Timeline.NAME;
 
   constructor(
-    public steps:TimelineStep[]
+    public steps: TimelineStep[]
   ) { }
 
   time: number = 0;

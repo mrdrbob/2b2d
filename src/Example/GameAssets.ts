@@ -13,26 +13,26 @@ interface AsepriteAsset extends LoadableAsset {
   jsonPath: string
 }
 
-function loadSingles(assets:AssetsResource, ...data:LoadableAsset[]) {
+function loadSingles(assets: AssetsResource, ...data: LoadableAsset[]) {
   for (const item of data) {
     assets.add(TextureAsset.loadSingleSprite(item.handle, item.path));
   }
 }
 
-function loadLevels(assets:AssetsResource, ...data:LoadableAsset[]) {
+function loadLevels(assets: AssetsResource, ...data: LoadableAsset[]) {
   for (const item of data) {
     assets.add(LdktLevelsAsset.load(item.handle, item.path));
   }
 }
 
-function loadAseprites(assets:AssetsResource, ...data:AsepriteAsset[]) {
+function loadAseprites(assets: AssetsResource, ...data: AsepriteAsset[]) {
   for (const item of data) {
     assets.add(TextureAsset.loadSpriteWithAtlas(item.handle, item.path, item.jsonPath));
   }
 }
 
 
-function loadAudioClips(assets: AssetsResource, audio:AudioResource, ...data:LoadableAsset[]) {
+function loadAudioClips(assets: AssetsResource, audio: AudioResource, ...data: LoadableAsset[]) {
   for (const item of data) {
     assets.add(audio.load(item.handle, item.path));
   }
@@ -72,9 +72,9 @@ const GameAssets = {
     loadAseprites(assets, GameAssets.logo, GameAssets.characters, GameAssets.hud);
   },
 
-  loadAudio: (assets: AssetsResource, audio:AudioResource) => {
+  loadAudio: (assets: AssetsResource, audio: AudioResource) => {
     loadAudioClips(
-      assets, 
+      assets,
       audio,
       GameAssets.sound.died,
       GameAssets.sound.drop,
@@ -84,13 +84,13 @@ const GameAssets = {
       GameAssets.sound.menu,
     )
   },
-  
+
   isLoaded: (assets: AssetsResource) => {
     return assets.loaded([
       GameAssets.menu.handle,
-      GameAssets.died.bg.handle, 
-      GameAssets.died.guy.handle, 
-      GameAssets.died.message.handle, 
+      GameAssets.died.bg.handle,
+      GameAssets.died.guy.handle,
+      GameAssets.died.message.handle,
       GameAssets.win.handle,
       GameAssets.ldkt.handle,
       GameAssets.logo.handle,

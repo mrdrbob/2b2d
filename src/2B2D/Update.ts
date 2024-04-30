@@ -1,4 +1,3 @@
-import { Layer } from "./Assets/LevelsAsset";
 import Component from "./Components/Component";
 import Depth from "./Components/Depth";
 import Parent from "./Components/Parent";
@@ -23,7 +22,7 @@ export default class Update {
   constructor(public engine: Engine) { }
 
 
-  next(delta:number) {
+  next(delta: number) {
     this.delta = delta;
   }
 
@@ -57,9 +56,8 @@ export default class Update {
     }
   }
 
-  // TODO
   renderers = {
-    add: (create: CreateRenderer) => { 
+    add: (create: CreateRenderer) => {
       this.engine.commands.push({ type: 'add-renderer', create });
     },
 
@@ -69,7 +67,7 @@ export default class Update {
   }
 
   resolve = {
-    entity: (entity:Entity | Future<Entity>) => {
+    entity: (entity: Entity | Future<Entity>) => {
       if (typeof entity === 'number') {
         // A direct reference
         return entity;
@@ -77,17 +75,17 @@ export default class Update {
         return entity.get();
       }
     },
-    position: (entity: Entity, position: Position) : Vec2 => {
+    position: (entity: Entity, position: Position): Vec2 => {
       const parent = this.ecs.get(entity, Parent);
       if (!parent)
         return position.position;
-  
+
       let parentEntity = this.resolve.entity(parent.entity);
       if (!parentEntity) {
         console.warn(`Attempt to resovle an unresolvable entity reference. Child: ${entity}. Parent: ${parentEntity}`);
         return position.position;
       }
-  
+
       const parentPosition = this.ecs.get(parentEntity, Position);
       if (parentPosition) {
         return position.position.add(
@@ -96,58 +94,58 @@ export default class Update {
       }
       return position.position;
     },
-    visibility: (entity: Entity) : boolean => {
+    visibility: (entity: Entity): boolean => {
       const visibleComponent = this.ecs.get(entity, Visible);
       if (visibleComponent)
         return visibleComponent.visible;
-  
+
       const parent = this.ecs.get(entity, Parent);
       if (!parent)
         return true;
-  
+
       let parentEntity = this.resolve.entity(parent.entity);
       if (!parentEntity)
         return true;
-  
+
       return this.resolve.visibility(parentEntity);
     },
-    renderOrder: (entity: Entity) : string | undefined => {
+    renderOrder: (entity: Entity): string | undefined => {
       const component = this.ecs.get(entity, RenderOrder);
       if (component)
         return component.layer;
-  
+
       const parent = this.ecs.get(entity, Parent);
       if (!parent)
         return undefined;
-  
+
       let parentEntity = this.resolve.entity(parent.entity);
       if (!parentEntity)
         return undefined;
-  
+
       return this.resolve.renderOrder(parentEntity);
     },
-    depth: (entity: Entity) : number => {
+    depth: (entity: Entity): number => {
       const component = this.ecs.get(entity, Depth);
       if (component)
         return component.depth;
-  
+
       const parent = this.ecs.get(entity, Parent);
       if (!parent)
         return this.engine.rendering.defaultDepth;
-  
+
       let parentEntity = this.resolve.entity(parent.entity);
       if (!parentEntity)
         return this.engine.rendering.defaultDepth;
-  
+
       return this.resolve.depth(parentEntity);
     }
   }
 
   schedule = {
-    enter: (state:string) => {
+    enter: (state: string) => {
       this.engine.commands.push({ type: 'enter-state', state });
     },
-    exit: (state:string) => {
+    exit: (state: string) => {
       this.engine.commands.push({ type: 'exit-state', state });
     }
   }

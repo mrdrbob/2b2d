@@ -12,15 +12,15 @@ export default class TilemapBindGroup {
 
   instances = new Map<string, TilemapFrameInstance>();
   groupsToRender = new Map<string, TilemapFrameInstance[]>();
-  array:Float32Array;
+  array: Float32Array;
   buffer: GPUBuffer;
   needsUpdate: boolean = false;
 
-  count:number = 0;
+  count: number = 0;
   stride: number;
 
 
-  constructor(public device:GPUDevice) {
+  constructor(public device: GPUDevice) {
     this.stride = Math.ceil(INSTANCE_SIZE_BYTES / device.limits.minUniformBufferOffsetAlignment) * device.limits.minUniformBufferOffsetAlignment;
     this.array = new Float32Array(this.stride * MAX_TILEMAPS)
 
@@ -39,7 +39,7 @@ export default class TilemapBindGroup {
     });
   }
 
-  push(enitity:number, frame:number, layer:string, textureView: GPUTextureView, atlasView: GPUTextureView, position:Vec2, depth:number, size:Vec2, gridSize: number) {
+  push(enitity: number, frame: number, layer: string, textureView: GPUTextureView, atlasView: GPUTextureView, position: Vec2, depth: number, size: Vec2, gridSize: number) {
     const cacheId = `${enitity}:${frame}`;
     let group = this.instances.get(cacheId);
     let arrayRequiresUpdate = false;
@@ -51,24 +51,24 @@ export default class TilemapBindGroup {
         layout: this.layout,
         entries: [
           // Quad
-          { 
-            binding: 0, 
-            resource: { 
-              buffer: this.buffer, 
-              offset: 0, 
+          {
+            binding: 0,
+            resource: {
+              buffer: this.buffer,
+              offset: 0,
               size: INSTANCE_SIZE_BYTES * MAX_TILEMAPS
-            } 
+            }
           },
           { binding: 1, resource: atlasView }, // Atlas
           { binding: 2, resource: textureView }, // Source 
         ]
       });
-  
+
       group = new TilemapFrameInstance(position, size, gridSize, bindgroup, this.count);
       this.instances.set(cacheId, group);
 
       this.count += 1;
-  
+
       arrayRequiresUpdate = true;
     }
 
@@ -76,17 +76,17 @@ export default class TilemapBindGroup {
       this.array.set(
         [
           position.x, position.y,
-          size.x,     size.y,
+          size.x, size.y,
           depth, gridSize
-        ], 
+        ],
         group.count * INSTANCE_SIZE
       );
 
       this.device.queue.writeBuffer(
         this.buffer,
         group.count * this.stride,
-        this.array, 
-        group.count * INSTANCE_SIZE, 
+        this.array,
+        group.count * INSTANCE_SIZE,
         INSTANCE_SIZE
       );
 
@@ -115,14 +115,14 @@ export default class TilemapBindGroup {
 
 class TilemapFrameInstance {
   constructor(
-    public position: Vec2, 
-    public size: Vec2, 
+    public position: Vec2,
+    public size: Vec2,
     public gridSize: number,
     public group: GPUBindGroup,
     public count: number,
-  ) {  }
+  ) { }
 
-  hasChanged(pos: Vec2, depth:number, size: Vec2, gridSize:number) {
+  hasChanged(pos: Vec2, depth: number, size: Vec2, gridSize: number) {
     return pos.x != this.position.x || pos.y != this.position.y
       || size.x != this.size.x || size.y != this.size.y
       || depth != depth

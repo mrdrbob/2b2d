@@ -11,7 +11,7 @@ export default class JumpingState extends BasePlayerState {
   private static readonly Instance = new JumpingState(0.2 * 1000, true);
   private static readonly _Bounce = new JumpingState(0.1 * 1000, false);
 
-  static Jump(current:BasePlayerState) {
+  static Jump(current: BasePlayerState) {
     const instance = this.Instance;
     instance.player = current.player;
     instance.delta = current.delta;
@@ -19,7 +19,7 @@ export default class JumpingState extends BasePlayerState {
     return instance;
   }
 
-  static Bounce(current:BasePlayerState) {
+  static Bounce(current: BasePlayerState) {
     const instance = this._Bounce;
     instance.player = current.player;
     instance.delta = current.delta;
@@ -34,7 +34,7 @@ export default class JumpingState extends BasePlayerState {
   jumpTimeRemaining = 0;
 
   private constructor(
-    public jumpTime: number, 
+    public jumpTime: number,
     public makeSound: boolean
   ) { super(); }
 

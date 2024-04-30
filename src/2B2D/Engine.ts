@@ -61,8 +61,8 @@ export default class Engine {
 
     // Execute scheduled systems
     this.scheduler.execute(this.frame);
-    
-    // TODO: Render
+
+    // Render
     this.rendering.draw(this.frame);
 
     // Execute all fixed systems

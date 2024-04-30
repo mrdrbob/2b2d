@@ -4,8 +4,8 @@ import Vec2 from "../Math/Vec2";
 import Component from "./Component";
 
 export default class Sprite implements Component {
-  static readonly NAME:string = 'Sprite';
-  readonly name:string = Sprite.NAME;
+  static readonly NAME: string = 'Sprite';
+  readonly name: string = Sprite.NAME;
 
   constructor(
     public handle: Handle,

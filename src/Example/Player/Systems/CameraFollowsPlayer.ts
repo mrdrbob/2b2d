@@ -20,8 +20,8 @@ export default function CameraFollowsPlayer(update: Update) {
   if (!player)
     return;
 
-  const [ _c, cameraPos ] = camera.components;
-  const [ _p, playerPos ] = player.components;
+  const [_c, cameraPos] = camera.components;
+  const [_p, playerPos] = player.components;
 
   const gameState = update.resource(GameStateResource);
   const assets = update.assets();

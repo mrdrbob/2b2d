@@ -13,7 +13,7 @@ export default function HideOpenedCurtain(update: Update, signals: CurtainMoveme
   if (!query)
     return;
 
-  const [ _, visible, position ] = query.components;
+  const [_, visible, position] = query.components;
 
   visible.visible = false;
   position.position = Curtains.Top;

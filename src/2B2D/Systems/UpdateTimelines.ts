@@ -4,7 +4,7 @@ import Update from "../Update";
 export default function UpdateTimelines(update: Update) {
   const query = update.ecs.query(Timeline);
   for (const entity of query) {
-    const [ timeline ] = entity.components;
+    const [timeline] = entity.components;
 
     timeline.time += update.delta;
     const lastExpectedStep = timeline.steps.findLastIndex(x => x.time < timeline.time);

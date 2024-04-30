@@ -11,7 +11,7 @@ export default function HandleDeathTileTouch(update: Update, signals: CollisionT
 
     const gameState = update.resource(GameStateResource);
     gameState.health = 0;
-    
+
     update.despawn(hit.kineticBody.entity);
     update.signals.send(new PlayerDiedSignal('LevelPlugin', hit.kineticBody.position));
   }

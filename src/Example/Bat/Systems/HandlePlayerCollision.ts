@@ -15,7 +15,7 @@ import PlayerCollisionSignal from "../../Player/Signals/PlayerCollisionSignal";
 import BatCollisionTarget from "../BatCollisionTarget";
 import BatStompedSignal from "../Signals/BatStompedSignal";
 
-export default function HandlePlayerCollision(update: Update, signals:CollisionTargetHitSignal[]) {
+export default function HandlePlayerCollision(update: Update, signals: CollisionTargetHitSignal[]) {
   for (const hit of signals) {
     if (hit.sender != BatCollisionTarget)
       continue;

@@ -1,8 +1,8 @@
-import Asset from "./Asset";
+import { Handle } from "../Handle";
 import Vec2 from "../Math/Vec2";
 import { loadJson } from "../Util/Json";
 import { loadTexture } from "../Util/Textures";
-import { Handle } from "../Handle";
+import Asset from "./Asset";
 
 export interface AtlasFrame {
   frame: { x: number, y: number, w: number, h: number },
@@ -31,7 +31,7 @@ export default class TextureAsset {
   constructor(
     public handle: Handle,
     public texture: ImageBitmap,
-    public atlas: Atlas  
+    public atlas: Atlas
   ) { }
 
   static loadSingleSprite(handle: Handle, path: string) {
@@ -40,7 +40,7 @@ export default class TextureAsset {
       const atlas = generateSingleSpriteAtlas(new Vec2(texture.width, texture.height));
       return new TextureAsset(handle, texture, atlas);
     });
-  
+
     return Asset.from<TextureAsset>(handle, promise());
   }
 
@@ -50,7 +50,7 @@ export default class TextureAsset {
       const atlas = generateTiledSpriteAtlas(tileSize, tileCount, padding);
       return new TextureAsset(handle, texture, atlas);
     });
-  
+
     return Asset.from<TextureAsset>(handle, promise());
   }
 
@@ -58,10 +58,10 @@ export default class TextureAsset {
     const promise = (async () => {
       const texture = await loadTexture(spritePath);
       const atlas = await loadJson<Atlas>(atlasPath);
-  
+
       return new TextureAsset(handle, texture, atlas);
     });
-  
+
     return Asset.from<TextureAsset>(handle, promise());
   }
 }

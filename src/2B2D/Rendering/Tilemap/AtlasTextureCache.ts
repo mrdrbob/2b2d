@@ -3,9 +3,9 @@ import Vec2 from "../../Math/Vec2";
 export default class AtlasTextureCache {
   constructor(private device: GPUDevice) { }
 
-  cache = new Map<string, [ GPUTextureView, GPUTexture ]>();
+  cache = new Map<string, [GPUTextureView, GPUTexture]>();
 
-  ensure(id: string, size:Vec2, bitmap: Uint32Array): GPUTextureView {
+  ensure(id: string, size: Vec2, bitmap: Uint32Array): GPUTextureView {
     let view = this.cache.get(id);
     if (view)
       return view[0];
@@ -23,7 +23,7 @@ export default class AtlasTextureCache {
       { width: size.x, height: size.y }
     );
 
-    view = [ atlasTexture.createView(), atlasTexture ];
+    view = [atlasTexture.createView(), atlasTexture];
     this.cache.set(id, view);
     return view[0];
   }
@@ -32,7 +32,7 @@ export default class AtlasTextureCache {
     for (const view of this.cache.values()) {
       view[1].destroy();
     }
-    
+
     this.cache.clear();
   }
 }

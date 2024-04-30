@@ -6,19 +6,19 @@ import JumpingState from "./JumpingState";
 import WalkingState from "./WalkingState";
 
 export default class IdleState extends BasePlayerState {
-  private static readonly Instance = new IdleState();
+  public static readonly Instance = new IdleState();
 
-  static Next(current:BasePlayerState) {
+  static Next(current: BasePlayerState) {
     const instance = this.Instance;
     instance.player = current.player;
     instance.delta = current.delta;
     instance.input = current.input;
     return instance;
   }
-  
+
   updateImmediately = true;
 
-  private constructor() {  super(); }
+  private constructor() { super(); }
 
   enter(update: Update): void {
     this.player.animated.tag = 'Idle';

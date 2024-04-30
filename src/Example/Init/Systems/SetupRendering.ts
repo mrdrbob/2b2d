@@ -16,7 +16,7 @@ export default function SetupRendering(update: Update) {
   update.renderers.add(GradientRenderer.create);
   update.renderers.add(TilemapRenderer.create);
 
-  update.engine.rendering.renderOrder = [ Layers.over, Layers.curtains, Layers.logo ];
+  update.engine.rendering.renderOrder = [Layers.over, Layers.curtains, Layers.logo];
 
   const parent = update.spawn(
     Position.from(0, 0),

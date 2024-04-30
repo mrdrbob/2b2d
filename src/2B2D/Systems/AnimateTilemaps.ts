@@ -15,7 +15,7 @@ export default function AnimateTilemaps(update: Update) {
 
     animation.time += delta;
     while (animation.time > animation.rate) {
-      
+
       if (animation.totalFrames == undefined) {
         const assets = update.assets();
         const levels = assets.assume<LevelsAsset>(tilemap.handle)!;

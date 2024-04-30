@@ -1,8 +1,8 @@
 import Component from "./Component";
 
 export default class AnimatedTilemap implements Component {
-  static readonly NAME:string = 'AnimatedTilemap';
-  readonly name:string = AnimatedTilemap.NAME;
+  static readonly NAME: string = 'AnimatedTilemap';
+  readonly name: string = AnimatedTilemap.NAME;
 
   constructor(
     public rate: number

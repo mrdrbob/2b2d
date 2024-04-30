@@ -57,14 +57,14 @@ export default class GradientVertexBuffer {
         format: 'float32x2'
       });
     }
-  
+
     this.layout = {
       arrayStride: Float32Array.BYTES_PER_ELEMENT * VECS_PER_VERTEX * VALUES_PER_VEC2,
       attributes: attrs
     };
   }
 
-  pushGradient(layer:string, grad:Gradient, pos:Vec2, depth: number) {
+  pushGradient(layer: string, grad: Gradient, pos: Vec2, depth: number) {
     let batch = this.batches.get(layer);
     if (!batch) {
       batch = new Batch(this.device, layer);
@@ -74,42 +74,42 @@ export default class GradientVertexBuffer {
       [
         // Triangle 1
         WEST, SOUTH,
-        grad.sw.r, grad.nw.g, grad.sw.b, grad.sw.a, 
+        grad.sw.r, grad.nw.g, grad.sw.b, grad.sw.a,
         pos.x, pos.y,
         grad.size.x, grad.size.y,
         depth, 0,
 
         EAST, NORTH,
-        grad.ne.r, grad.ne.g, grad.ne.b, grad.ne.a, 
+        grad.ne.r, grad.ne.g, grad.ne.b, grad.ne.a,
         pos.x, pos.y,
         grad.size.x, grad.size.y,
         depth, 0,
 
         EAST, SOUTH,
-        grad.se.r, grad.se.g, grad.se.b, grad.se.a, 
+        grad.se.r, grad.se.g, grad.se.b, grad.se.a,
         pos.x, pos.y,
         grad.size.x, grad.size.y,
         depth, 0,
 
         // Triange 2
         WEST, SOUTH,
-        grad.sw.r, grad.sw.g, grad.sw.b, grad.sw.a, 
+        grad.sw.r, grad.sw.g, grad.sw.b, grad.sw.a,
         pos.x, pos.y,
         grad.size.x, grad.size.y,
         depth, 0,
 
         WEST, NORTH,
-        grad.nw.r, grad.nw.g, grad.nw.b, grad.nw.a, 
+        grad.nw.r, grad.nw.g, grad.nw.b, grad.nw.a,
         pos.x, pos.y,
         grad.size.x, grad.size.y,
         depth, 0,
 
         EAST, NORTH,
-        grad.ne.r, grad.ne.g, grad.ne.b, grad.ne.a, 
+        grad.ne.r, grad.ne.g, grad.ne.b, grad.ne.a,
         pos.x, pos.y,
         grad.size.x, grad.size.y,
         depth, 0,
-      ], 
+      ],
       batch.vertexCount()
     );
 

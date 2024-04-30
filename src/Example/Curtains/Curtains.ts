@@ -2,7 +2,6 @@ import SpriteTween from "../../2B2D/Components/SpriteTween";
 import Visible from "../../2B2D/Components/Visibility";
 import Vec2 from "../../2B2D/Math/Vec2";
 import Update from "../../2B2D/Update";
-import Depths from "../Depths";
 import CurtainController from "./Components/CurtainController";
 import CurtainMovementCompleteSignal from "./Signals/CurtainMovementCompleteSignal";
 

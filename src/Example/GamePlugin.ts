@@ -54,7 +54,7 @@ export default function GamePlugin(builder: Builder) {
 
     res.health = Config.MaxHealth;
     res.level = Config.StartLevelId;
-  
+
     update.schedule.enter(GameLoopState);
 
     Curtains.Open(update, 'Game');
@@ -64,7 +64,7 @@ export default function GamePlugin(builder: Builder) {
     const res = update.resource(GameStateResource);
 
     res.health = Config.MaxHealth;
-  
+
     update.schedule.enter(GameLoopState);
 
     Curtains.Open(update, 'Game');

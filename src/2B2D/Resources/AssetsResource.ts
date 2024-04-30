@@ -4,12 +4,12 @@ import UntypedFuture from "../Util/UntypedFuture";
 import Resource from "./Resource";
 
 export default class AssetsResource implements Resource {
-  static readonly NAME:string = 'AssetsResource';
-  readonly name:string = AssetsResource.NAME;
+  static readonly NAME: string = 'AssetsResource';
+  readonly name: string = AssetsResource.NAME;
 
   private readonly assets = new Map<Handle, UntypedFuture>();
 
-  add<T>(asset:Asset<T>) { this.assets.set(asset.handle, asset); }
+  add<T>(asset: Asset<T>) { this.assets.set(asset.handle, asset); }
 
   get<T>(handle: Handle) {
     const asset = this.assets.get(handle);

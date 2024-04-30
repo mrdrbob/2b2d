@@ -42,20 +42,24 @@ export default function SpawnLogo(update: Update) {
 
   update.spawn(
     new Timeline([
-      { time: 1000, action: (update) => { 
-        const logo = update.ecs.single(Logo, Animated);
-        if (!logo)
-          return;
-        const [ _, animated ] = logo.components;
-        animated.tag = 'Shine';
-      } },
-      { time: 1000 + len, action: (update) => { 
-        const logo = update.ecs.single(Logo, Animated);
-        if (!logo)
-          return;
-        const [ _, animated ] = logo.components;
-        animated.tag = 'Still';
-      } },
+      {
+        time: 1000, action: (update) => {
+          const logo = update.ecs.single(Logo, Animated);
+          if (!logo)
+            return;
+          const [_, animated] = logo.components;
+          animated.tag = 'Shine';
+        }
+      },
+      {
+        time: 1000 + len, action: (update) => {
+          const logo = update.ecs.single(Logo, Animated);
+          if (!logo)
+            return;
+          const [_, animated] = logo.components;
+          animated.tag = 'Still';
+        }
+      },
       {
         time: 1000 + len + 500, action: (update) => {
           update.signals.send(LogoCompleteSignal);

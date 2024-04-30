@@ -19,11 +19,11 @@ export default class Scheduler {
     this.systems.set('exiting', new Map<string, System[]>());
   }
 
-  enter(state:string) {
+  enter(state: string) {
     this.state.get('entering')!.add(state);
   }
 
-  exit(state:string) {
+  exit(state: string) {
     const existed = this.state.get('update')!.delete(state);
     if (existed) {
       this.state.get('exiting')!.add(state);

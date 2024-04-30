@@ -37,12 +37,11 @@ export default function SpawnBats(update: Update) {
 
     const builder = SpriteTween.build();
     if (targetsInstance) {
-      const points = targetsInstance.__value as Array<{ cx: number, cy: number}>;
+      const points = targetsInstance.__value as Array<{ cx: number, cy: number }>;
 
-      let pos  = startPosition;
+      let pos = startPosition;
       for (const point of points) {
         const nextPos = new Vec2(point.cx * gridSize, levelOffset.invert(point.cy * gridSize)).add(levelOffset.offset).add(halfGrid);
-        // TODO: Smarter time calculation
 
         const travelX = Math.abs(nextPos.x - pos.x);
         const travelY = Math.abs(nextPos.y - pos.y);
@@ -52,7 +51,7 @@ export default function SpawnBats(update: Update) {
 
         builder.andThen(500); // Do nothing for half a second
         builder.andThen(time, s => s.pos(nextPos));
-        
+
         pos = nextPos;
       }
 

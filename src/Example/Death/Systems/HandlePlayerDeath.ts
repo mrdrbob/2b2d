@@ -8,10 +8,12 @@ export default function HandlePlayerDeath(update: Update) {
   update.spawn(
     new Timeline([
       { time: 1000, action: (update) => Curtains.Close(update, 'Death') },
-      { time: 2000, action: (update) => {
-        update.schedule.exit(GameLoopState);
-        update.schedule.enter(DeathState);
-      } }
+      {
+        time: 2000, action: (update) => {
+          update.schedule.exit(GameLoopState);
+          update.schedule.enter(DeathState);
+        }
+      }
     ])
   );
 }

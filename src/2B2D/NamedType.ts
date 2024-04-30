@@ -1,6 +1,6 @@
 
 export default interface NamedType {
-  readonly name:string;
+  readonly name: string;
 }
 
 export interface NamedTypeClass<T extends NamedType = NamedType> {

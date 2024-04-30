@@ -3,9 +3,9 @@ import Update from "../../../2B2D/Update";
 import Config from "../../Config";
 import GameStateResource from "../../GameStateResource";
 import Player from "../Components/Player";
-import PlayerDiedSignal from "../Signals/PlayerDiedSignal";
 import PlayerHurtSignal from "../Signals/PlayerCollisionSignal";
 import PlayerDamagedSignal from "../Signals/PlayerDamagedSignal";
+import PlayerDiedSignal from "../Signals/PlayerDiedSignal";
 
 export default function HandlePain(update: Update, signals: PlayerHurtSignal[]) {
   if (signals.length == 0)
@@ -16,7 +16,7 @@ export default function HandlePain(update: Update, signals: PlayerHurtSignal[]) 
 
   if (player.invincibleTime > 0)
     return;
-  
+
   const gameState = update.resource(GameStateResource);
   gameState.health -= signal.damage;
 

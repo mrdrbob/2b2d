@@ -5,8 +5,8 @@
 // I provide two sets so you can generate random motion in
 // 2 dimensions without them being identical.
 const seeds = [
-  [ 0.7, 1.5, 2.3 ],
-  [ 2.1, 1.7, 1.3 ]
+  [0.7, 1.5, 2.3],
+  [2.1, 1.7, 1.3]
 ];
 
 // Pretty sure this is a real word. The sin sums
@@ -14,7 +14,7 @@ const seeds = [
 // So we divide by length to get a number between -1 and +1.
 const avergizers = seeds.map(x => 1 / x.length);
 
-function sum(agg:number, x:number) {
+function sum(agg: number, x: number) {
   return agg + x;
 }
 
@@ -24,7 +24,7 @@ function sum(agg:number, x:number) {
  * if you mix a few random sin waves and squint, it kind of looks like 
  * noise. And frankly it works fine for camera shake.
  */
-export default function getLameNoise(seedIndex:number, time:number) {
+export default function getLameNoise(seedIndex: number, time: number) {
   const index = seedIndex % seeds.length;
 
   return seeds[index].map(x => Math.sin(time * x)).reduce(sum) * avergizers[index];

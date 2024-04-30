@@ -12,7 +12,7 @@ export default function HandleFlagTileTouch(update: Update, signals: CollisionTa
     const player = update.ecs.single(Player);
     if (player)
       player.components[0].controlsEnabled = false;
-    
+
     update.despawn(hit.target.entity);
     update.signals.send(PlayerTouchedFlagSignal);
   }

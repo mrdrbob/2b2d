@@ -1,7 +1,5 @@
-import Depth from "../../Components/Depth";
 import Gradient from "../../Components/Gradient";
 import Position from "../../Components/Position";
-import RenderOrder from "../../Components/RenderOrder";
 import Update from "../../Update";
 import Renderer from "../Renderer";
 import RenderingSystem from "../RenderingSystem";
@@ -11,14 +9,14 @@ import GradientVertexBuffer from "./GradientVertexBuffer";
 const DEFAULT_LAYER = 'GRADIENT_DEFAULT_LAYER';
 
 export class GradientRenderer implements Renderer {
-  static readonly NAME:string = 'GradientRenderer';
+  static readonly NAME: string = 'GradientRenderer';
   readonly name: string = GradientRenderer.NAME;
   vertexBuffer: GradientVertexBuffer;
   pipeline: GPURenderPipeline;
 
-  static create(parent:RenderingSystem) { return new GradientRenderer(parent); }
+  static create(parent: RenderingSystem) { return new GradientRenderer(parent); }
 
-  constructor(public parent:RenderingSystem) {
+  constructor(public parent: RenderingSystem) {
     this.vertexBuffer = new GradientVertexBuffer(parent.device);
 
     const module = this.parent.device.createShaderModule({
@@ -39,7 +37,7 @@ export class GradientRenderer implements Renderer {
       vertex: {
         module: module,
         entryPoint: 'vs',
-        buffers: [ this.vertexBuffer.layout ]
+        buffers: [this.vertexBuffer.layout]
       },
       fragment: {
         module: module,
@@ -63,7 +61,7 @@ export class GradientRenderer implements Renderer {
       if (!visible)
         continue;
 
-      const [ gradient, position ] = entity.components;
+      const [gradient, position] = entity.components;
 
       const pos = update.resolve.position(entity.entity, position);
 
@@ -75,7 +73,7 @@ export class GradientRenderer implements Renderer {
     }
   }
 
-  draw(layer:string| undefined, passEncoder: GPURenderPassEncoder): void {
+  draw(layer: string | undefined, passEncoder: GPURenderPassEncoder): void {
     const batch = this.vertexBuffer.batches.get(layer || DEFAULT_LAYER);
     if (!batch || batch.count == 0)
       return;

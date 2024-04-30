@@ -6,7 +6,7 @@ export default class Dispatcher {
   handlers = new Map<string, Handler[]>();
 
   next(update: Update) {
-    for (const [ name, signals ] of this.signals) {
+    for (const [name, signals] of this.signals) {
       const handlers = this.handlers.get(name);
       if (!handlers)
         continue;

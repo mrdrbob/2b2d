@@ -2,7 +2,6 @@ import Asset from "../Assets/Asset";
 import { Handle } from "../Handle";
 import { System } from "../System";
 import Update from "../Update";
-import Future from "../Util/Future";
 import IndexCounter from "../Util/IndexCounter";
 import Resource from "./Resource";
 
@@ -38,8 +37,8 @@ interface PlayingAudio {
 
 
 export default class AudioResource implements Resource {
-  static readonly NAME:string = 'AudioResource';
-  readonly name:string = AudioResource.NAME;
+  static readonly NAME: string = 'AudioResource';
+  readonly name: string = AudioResource.NAME;
 
   private index = new IndexCounter();
   audioContext: AudioContext;
@@ -56,7 +55,7 @@ export default class AudioResource implements Resource {
     this.gainNode.connect(this.audioContext.destination);
   }
 
-  load(handle:Handle, path:string) {
+  load(handle: Handle, path: string) {
     const asset = new Asset<AudioBuffer>(handle);
     this.queue.push({
       command: { type: 'load', path, asset: asset },
@@ -66,15 +65,15 @@ export default class AudioResource implements Resource {
     return asset;
   }
 
-  play(handle:Handle, waitForReady:boolean = false, gain: number = 1, loop: boolean = false, offset: number | undefined = undefined, duration: number | undefined = undefined) {
+  play(handle: Handle, waitForReady: boolean = false, gain: number = 1, loop: boolean = false, offset: number | undefined = undefined, duration: number | undefined = undefined) {
     const id = this.index.next();
     this.queue.push({ id, waitForReady, command: { type: 'play', handle, gain, loop, offset, duration } });
     return id;
   }
 
-  fadeOut(soundId:number, time:number) {
+  fadeOut(soundId: number, time: number) {
     const playing = this.playingAudio.get(soundId);
-    
+
     if (!playing) {
       // It hasn't started, so just don't play it if it's queued
       this.queue = this.queue.filter(x => x.id != soundId);
@@ -87,9 +86,9 @@ export default class AudioResource implements Resource {
     this.playingAudio.delete(soundId);
   }
 
-  stop(soundId:number) {
+  stop(soundId: number) {
     const playing = this.playingAudio.get(soundId);
-    
+
     if (!playing) {
       // It hasn't started, so just don't play it if it's queued
       this.queue = this.queue.filter(x => x.id != soundId);
@@ -101,7 +100,7 @@ export default class AudioResource implements Resource {
     this.playingAudio.delete(soundId);
   }
 
-  private async _load(command:LoadAudio) {
+  private async _load(command: LoadAudio) {
     const res = await fetch(command.path);
     const blob = await res.blob();
     const arrayBuffer = await blob.arrayBuffer();
@@ -132,7 +131,7 @@ export default class AudioResource implements Resource {
 
     source.connect(gainNode);
     gainNode.connect(this.gainNode);
-    
+
     source.loop = command.loop;
 
     source.start(this.audioContext.currentTime, command.offset, command.duration);
@@ -142,7 +141,7 @@ export default class AudioResource implements Resource {
     return false;
   }
 
-  system() : System {
+  system(): System {
     return (_update) => {
       this.tick(_update);
     };

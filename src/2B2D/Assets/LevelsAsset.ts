@@ -11,7 +11,7 @@ export class Layer {
     public size: Vec2,
     public texture: Handle,
     public gridSize: number
-  ) {}
+  ) { }
   frames = new Array<LayerFrame>();
 }
 

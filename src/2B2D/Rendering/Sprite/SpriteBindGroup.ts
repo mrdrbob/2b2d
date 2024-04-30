@@ -6,7 +6,7 @@ export default class SpriteBindGroup {
   layout: GPUBindGroupLayout;
   batches = new Map<string, Map<string, SpriteBatch>>();
 
-  constructor(public device:GPUDevice) {
+  constructor(public device: GPUDevice) {
     this.layout = device.createBindGroupLayout({
       label: 'Sprite bindgroup layout',
       entries: [
@@ -16,7 +16,7 @@ export default class SpriteBindGroup {
     });
   }
 
-  batch(layer:string, sprite: Sprite, view: GPUTextureView) {
+  batch(layer: string, sprite: Sprite, view: GPUTextureView) {
     let layerBatch = this.batches.get(layer);
     if (!layerBatch) {
       layerBatch = new Map<string, SpriteBatch>();

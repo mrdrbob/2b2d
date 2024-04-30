@@ -1,11 +1,11 @@
-import Asset from "./Asset";
+import { Handle } from "../Handle";
 import AABB from "../Math/AABB";
 import Vec2 from "../Math/Vec2";
 import { resolvePath } from "../Util/FilePaths";
 import { loadJson } from "../Util/Json";
 import { loadTexture } from "../Util/Textures";
+import Asset from "./Asset";
 import { Layer, Level, LevelsAsset } from "./LevelsAsset";
-import { Handle } from "../Handle";
 
 export interface LdtkData {
   defs: {
@@ -46,8 +46,8 @@ export interface LdtkData {
       layerDefUid: number,
       intGridCsv: Array<number>,
       gridTiles: Array<{
-        px: [ number, number],
-        src: [ number,number ],
+        px: [number, number],
+        src: [number, number],
         t: number
       }>,
       entityInstances: Array<{
@@ -67,10 +67,10 @@ const INVISIBLE = 2147483647;
 
 export default class LdktLevelsAsset extends LevelsAsset {
   constructor(
-    public data:LdtkData
-  ) {  super(); }
+    public data: LdtkData
+  ) { super(); }
 
-  static async create(path:string) {
+  static async create(path: string) {
     const json = await loadJson<LdtkData>(path);
     const asset = new LdktLevelsAsset(json);
 
@@ -90,7 +90,7 @@ export default class LdktLevelsAsset extends LevelsAsset {
         levelData = new Level(Vec2.from(level.pxWid, level.pxHei));
         asset.levels.set(level.identifier, levelData);
       }
-      
+
       for (const layer of level.layerInstances) {
         const def = json.defs.layers.find(x => x.uid == layer.layerDefUid);
         if (!def || def.type !== 'Tiles')
@@ -106,7 +106,7 @@ export default class LdktLevelsAsset extends LevelsAsset {
 
         // Get the layer data (to hold frames)
         let layerData = levelData.layers.get(def.identifier);
-        
+
         // Create the layer information
         if (!layerData) {
           // Get the "size" based on tiles farthest from 0, 0
@@ -118,21 +118,21 @@ export default class LdktLevelsAsset extends LevelsAsset {
             layer.gridTiles.reduce((prev, current) => current.px[0] > prev ? current.px[0] : prev, 0),
             layer.gridTiles.reduce((prev, current) => current.px[1] > prev ? current.px[1] : prev, 0),
           ).scalarMultiply(gridSizeInverse).add(Vec2.from(1, 1));
-          
+
           layerData = new Layer(size, tileset.relPath as Handle, def.gridSize);
 
           levelData.layers.set(def.identifier, layerData);
         }
-        
+
         // Gather the frames from custom data.
         const frames = new Map<number, Vec2[]>();
         let frameCount = 1; // Everything has one frame even if it doesn't.
         for (const custom of tileset.customData) {
           const position = JSON.parse(custom.data) as Array<[number, number]>;
           // The offsets don't include frame 0, which will always be a 0,0 offset, so force that here.
-          const offets = [ Vec2.ZERO ].concat(position.map(x => Vec2.from(...x)));
+          const offets = [Vec2.ZERO].concat(position.map(x => Vec2.from(...x)));
           frames.set(custom.tileId, offets);
-          frameCount = Math.max(frameCount, offets.length); 
+          frameCount = Math.max(frameCount, offets.length);
         }
 
         // Iterate through all possible frames
@@ -141,13 +141,13 @@ export default class LdktLevelsAsset extends LevelsAsset {
           // visible tiles.
           const bitmap = new Uint32Array(layerData.size.x * layerData.size.y * 2);
           bitmap.fill(INVISIBLE);
-          
+
           for (const tile of layer.gridTiles) {
             // Location of tile in tilemap
             const px = Vec2.from(...tile.px).scalarMultiply(gridSizeInverse);
             // Source on texture
             let src = Vec2.from(...tile.src).scalarMultiply(gridSizeInverse);
-  
+
             // Apply animation offsets as necessary
             const animationOffset = frames.get(tile.t);
             if (animationOffset && frame < animationOffset.length) {
@@ -155,9 +155,9 @@ export default class LdktLevelsAsset extends LevelsAsset {
             }
 
             const offset = ((px.y * layerData.size.x) + px.x) * 2;
-            bitmap.set([ src.x, src.y ], offset);
+            bitmap.set([src.x, src.y], offset);
           }
-    
+
           // Now store the processed frame
           layerData.frames[frame] = {
             bitmap
@@ -174,13 +174,13 @@ export default class LdktLevelsAsset extends LevelsAsset {
     return Asset.from(handle, promise);
   }
 
-  getLevelOffset(levelName:string) {
+  getLevelOffset(levelName: string) {
     const level = this.data.levels.find(x => x.identifier == levelName)!;
     const offset = Vec2.from(level.pxWid, level.pxHei).scalarMultiply(-0.5);
-    return { offset, invert: (y:number) => { return level.pxHei - y; } };
+    return { offset, invert: (y: number) => { return level.pxHei - y; } };
   }
 
-  getEntities(levelName:string, layerName:string) {
+  getEntities(levelName: string, layerName: string) {
     const level = this.data.levels.find(x => x.identifier == levelName)!;
     const layerDef = this.data.defs.layers.find(x => x.identifier == layerName)!;
 
@@ -198,7 +198,7 @@ export default class LdktLevelsAsset extends LevelsAsset {
     return output;
   }
 
-  getIntGrid(levelName:string, layerName:string) {
+  getIntGrid(levelName: string, layerName: string) {
     const level = this.data.levels.find(x => x.identifier == levelName)!;
     const layerDef = this.data.defs.layers.find(x => x.identifier == layerName)!;
 
@@ -211,7 +211,7 @@ export default class LdktLevelsAsset extends LevelsAsset {
 
     // The AABB sizes are going to consistently be the half he px size of a grid cell.
     const aabbSize = Vec2.from(layerDef.gridSize, layerDef.gridSize).scalarMultiply(0.5);
-    
+
     const layerInstance = level.layerInstances.find(x => x.layerDefUid == layerDef.uid)!;
     const output = new Array<{ type: number, aabb: AABB }>();
     for (let i = 0; i < layerInstance.intGridCsv.length; i++) {

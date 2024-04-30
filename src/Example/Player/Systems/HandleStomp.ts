@@ -13,7 +13,7 @@ export default function HandleStomp(update: Update) {
   if (!query)
     return;
 
-  const [ _p, state, velocity ] = query.components;
+  const [_p, state, velocity] = query.components;
 
   const newState = JumpingState.Bounce(state.state as BasePlayerState);
   newState.prep(update);

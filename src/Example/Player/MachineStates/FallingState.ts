@@ -6,7 +6,7 @@ import IdleState from "./IdleState";
 export default class FallingState extends BasePlayerState {
   private static readonly Instance = new FallingState();
 
-  static Next(current:BasePlayerState) {
+  static Next(current: BasePlayerState) {
     const instance = this.Instance;
     instance.player = current.player;
     instance.delta = current.delta;

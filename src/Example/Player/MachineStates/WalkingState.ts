@@ -1,6 +1,6 @@
 import MachineState from "../../../2B2D/MachineState";
 import Update from "../../../2B2D/Update";
-import BasePlayerState from "./BasePlayerState"
+import BasePlayerState from "./BasePlayerState";
 import FallingState from "./FallingState";
 import IdleState from "./IdleState";
 import JumpingState from "./JumpingState";
@@ -8,7 +8,7 @@ import JumpingState from "./JumpingState";
 export default class WalkingState extends BasePlayerState {
   private static readonly Instance = new WalkingState();
 
-  static Next(current:BasePlayerState) {
+  static Next(current: BasePlayerState) {
     const instance = this.Instance;
     instance.player = current.player;
     instance.delta = current.delta;

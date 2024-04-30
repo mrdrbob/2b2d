@@ -8,12 +8,12 @@ import Update from "../Update";
 export default function DetectCollisionTargetHits(update: Update) {
   const players = update.ecs.query(KineticBody, Position);
   for (const player of players) {
-    const [ playerBody, playerPos ] = player.components;
+    const [playerBody, playerPos] = player.components;
     const playerResolvedPosition = update.resolve.position(player.entity, playerPos);
 
     const targets = update.ecs.query(CollisionTarget, Position);
     for (const target of targets) {
-      const [ collider, colPosition ] = target.components;
+      const [collider, colPosition] = target.components;
 
       if (collider.ticks > 0) {
         collider.ticks -= 1;

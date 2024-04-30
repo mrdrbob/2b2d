@@ -9,11 +9,11 @@ export interface CollisionEntity {
 }
 
 export default class CollisionTargetHitSignal implements Signal {
-  static readonly NAME:string = 'CollisionTargetHitSignal';
-  readonly name:string = CollisionTargetHitSignal.NAME;
+  static readonly NAME: string = 'CollisionTargetHitSignal';
+  readonly name: string = CollisionTargetHitSignal.NAME;
 
   constructor(
-    public sender:string,
+    public sender: string,
     public target: CollisionEntity,
     public kineticBody: CollisionEntity,
   ) { }

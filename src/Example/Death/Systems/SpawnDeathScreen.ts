@@ -18,9 +18,9 @@ import DeathState from "../States/DeathState";
 
 export default function SpawnDeathScreen(update: Update) {
   const camera = update.ecs.single(CameraParent, Position)!;
-  const [ _c, camPos ] = camera.components;
+  const [_c, camPos] = camera.components;
   camPos.position = Vec2.ZERO;
-  
+
   update.spawn(
     new Position(Vec2.ZERO),
     new Depth(Depths.BG),
@@ -68,10 +68,12 @@ export default function SpawnDeathScreen(update: Update) {
   update.spawn(
     new Timeline([
       { time: 3500, action: (update) => Curtains.Close(update, 'Final') },
-      { time: 4500, action: (update) => {
-        update.schedule.exit(DeathState);
-        update.signals.send(DeathScreenExitSignal);
-      } }
+      {
+        time: 4500, action: (update) => {
+          update.schedule.exit(DeathState);
+          update.signals.send(DeathScreenExitSignal);
+        }
+      }
     ])
   );
 }

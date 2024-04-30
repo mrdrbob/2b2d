@@ -1,15 +1,14 @@
 import { LevelsAsset } from "../../Assets/LevelsAsset";
 import Position from "../../Components/Position";
 import Tilemap from "../../Components/Tilemap";
+import Vec2 from "../../Math/Vec2";
 import Update from "../../Update";
+import GpuTextureCache from "../GpuTextureCache";
 import Renderer from "../Renderer";
 import RenderingSystem from "../RenderingSystem";
-import GpuTextureCache from "../GpuTextureCache";
 import AtlasTextureCache from "./AtlasTextureCache";
-import TilemapBindGroup from "./TilemapBindGroup";
 import wgsl from './Tilemap.wgsl?raw';
-import RenderOrder from "../../Components/RenderOrder";
-import Vec2 from "../../Math/Vec2";
+import TilemapBindGroup from "./TilemapBindGroup";
 
 const DEFAULT_LAYER = 'TILEMAP_DEFAULT_LAYER';
 

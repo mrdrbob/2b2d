@@ -7,8 +7,8 @@ export default class GlobalBindGroup {
   layout: GPUBindGroupLayout;
   group: GPUBindGroup;
 
-  private lastZoom:Vec2 = Vec2.ONE;
-  private lastCameraPosition:Vec2 = Vec2.ZERO;
+  private lastZoom: Vec2 = Vec2.ONE;
+  private lastCameraPosition: Vec2 = Vec2.ZERO;
 
   constructor(private device: GPUDevice) {
     this.sampler = device.createSampler({
@@ -20,13 +20,13 @@ export default class GlobalBindGroup {
       1, 1, // Zoom
       0, 0, // Camera position
     ]);
-  
+
     this.buffer = device.createBuffer({
       label: 'global uniform',
       size: this.values.byteLength,
       usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
     });
-  
+
     this.layout = device.createBindGroupLayout({
       label: 'Global bind group layout',
       entries: [
@@ -34,7 +34,7 @@ export default class GlobalBindGroup {
         { binding: 1, visibility: GPUShaderStage.FRAGMENT, sampler: {} }, // Sampler
       ]
     });
-  
+
     this.group = device.createBindGroup({
       label: 'Global bind group',
       layout: this.layout,
@@ -46,12 +46,12 @@ export default class GlobalBindGroup {
   }
 
   update(zoom: Vec2, cameraPosition: Vec2) {
-    const noChange = 
-      this.lastZoom.x == zoom.x && 
-      this.lastZoom.y == zoom.y && 
-      this.lastCameraPosition.x == cameraPosition.x && 
+    const noChange =
+      this.lastZoom.x == zoom.x &&
+      this.lastZoom.y == zoom.y &&
+      this.lastCameraPosition.x == cameraPosition.x &&
       this.lastCameraPosition.y == cameraPosition.y
-    ;
+      ;
 
     if (noChange) {
       return;
@@ -62,7 +62,7 @@ export default class GlobalBindGroup {
       cameraPosition.x, cameraPosition.y
     ], 0);
     this.device.queue.writeBuffer(this.buffer, 0, this.values);
-    
+
     this.lastZoom = zoom;
     this.lastCameraPosition = cameraPosition;
   }

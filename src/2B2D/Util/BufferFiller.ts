@@ -1,4 +1,3 @@
-import Vec2 from "../Math/Vec2";
 
 export default class BufferFiller {
   offset = 0;

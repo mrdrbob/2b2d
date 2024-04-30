@@ -1,7 +1,7 @@
 import UntypedFuture from "./UntypedFuture";
 
 export default class Future<T> implements UntypedFuture {
-  private value:T | undefined = undefined;
+  private value: T | undefined = undefined;
 
   complete(value: T) { this.value = value; }
 
@@ -9,7 +9,7 @@ export default class Future<T> implements UntypedFuture {
   get(): T | undefined { return this.value; }
   assume(): T { return this.value!; }
 
-  static create<T>(method:() => Promise<T>) {
+  static create<T>(method: () => Promise<T>) {
     const future = new Future<T>();
 
     method().then(res => {

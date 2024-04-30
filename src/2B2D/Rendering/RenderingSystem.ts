@@ -11,7 +11,7 @@ export default class RenderingSystem {
   quadBuffer: { layout: GPUVertexBufferLayout; buffer: GPUBuffer; };
   globalBindGroup: GlobalBindGroup;
   renderOrder: string[] = [];
-  defaultDepth:number = 0.5;
+  defaultDepth: number = 0.5;
 
   renderers = new Array<Renderer>();
   colorTagets: GPUColorTargetState[];
@@ -31,7 +31,7 @@ export default class RenderingSystem {
     this.quadBuffer = createQuadVertexBuffer(this.device);
     this.globalBindGroup = new GlobalBindGroup(this.device);
     this.colorTagets = createColorTargets(this.presentationFormat);
-    this.primitiveState =  { topology: 'triangle-list' };
+    this.primitiveState = { topology: 'triangle-list' };
     this.depthStencil = createDepthStencil(this.device, this.width, this.height);
   }
 

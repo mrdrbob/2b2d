@@ -1,27 +1,25 @@
+import TextureAsset from "../../Assets/TextureAsset";
 import Position from "../../Components/Position";
 import Sprite from "../../Components/Sprite";
 import Update from "../../Update";
+import GpuTextureCache from "../GpuTextureCache";
 import Renderer from "../Renderer";
 import RenderingSystem from "../RenderingSystem";
-import GpuTextureCache from "../GpuTextureCache";
 import wgsl from './Sprite.wgsl?raw';
 import SpriteBindGroup from "./SpriteBindGroup";
-import TextureAsset from "../../Assets/TextureAsset";
-import RenderOrder from "../../Components/RenderOrder";
-import Depth from "../../Components/Depth";
 
 const DEFAULT_LAYER = 'SPRITE_DEFAULT_LAYER';
 
 export default class SpriteRenderer implements Renderer {
-  static readonly NAME:string = 'SpriteRenderer';
+  static readonly NAME: string = 'SpriteRenderer';
   readonly name: string = SpriteRenderer.NAME;
   bindGroup: SpriteBindGroup;
   textureCache: GpuTextureCache;
   pipeline: GPURenderPipeline;
 
-  static create(parent:RenderingSystem) { return new SpriteRenderer(parent); }
+  static create(parent: RenderingSystem) { return new SpriteRenderer(parent); }
 
-  constructor(public parent:RenderingSystem) {
+  constructor(public parent: RenderingSystem) {
     this.textureCache = new GpuTextureCache(parent.device);
 
     const module = this.parent.device.createShaderModule({
@@ -45,7 +43,7 @@ export default class SpriteRenderer implements Renderer {
       vertex: {
         module: module,
         entryPoint: 'vs',
-        buffers: [ this.parent.quadBuffer.layout ]
+        buffers: [this.parent.quadBuffer.layout]
       },
       fragment: {
         module: module,
@@ -64,13 +62,13 @@ export default class SpriteRenderer implements Renderer {
     const query = update.ecs.query(Sprite, Position);
     if (query.length == 0)
       return;
-    
+
     for (const entity of query) {
       const visible = update.resolve.visibility(entity.entity);
       if (!visible)
         continue;
 
-      const [ sprite, position ] = entity.components;
+      const [sprite, position] = entity.components;
       const pos = update.resolve.position(entity.entity, position);
 
       const texture = assets.try<TextureAsset>(sprite.handle);
@@ -80,7 +78,7 @@ export default class SpriteRenderer implements Renderer {
       const frame = texture.atlas.frames[sprite.frame];
       if (!frame)
         continue;
-      
+
       const order = update.resolve.renderOrder(entity.entity) || DEFAULT_LAYER;
 
       const depth = update.resolve.depth(entity.entity);
@@ -91,7 +89,7 @@ export default class SpriteRenderer implements Renderer {
     }
   }
 
-  draw(layer:string | undefined, passEncoder: GPURenderPassEncoder): void {
+  draw(layer: string | undefined, passEncoder: GPURenderPassEncoder): void {
     const layerBatch = this.bindGroup.batches.get(layer || DEFAULT_LAYER);
     if (!layerBatch || layerBatch.size == 0)
       return;
@@ -100,7 +98,7 @@ export default class SpriteRenderer implements Renderer {
     passEncoder.setPipeline(this.pipeline);
     passEncoder.setBindGroup(0, this.parent.globalBindGroup.group);
     passEncoder.setVertexBuffer(0, this.parent.quadBuffer.buffer);
-    
+
     for (const batch of layerBatch.values()) {
       if (batch.count === 0)
         continue;

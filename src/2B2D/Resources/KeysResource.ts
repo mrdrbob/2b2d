@@ -1,6 +1,5 @@
 import { Direction } from "../Components/MappedInput";
 import { System } from "../System";
-import Update from "../Update";
 import Resource from "./Resource";
 
 export default class KeysResource implements Resource {
@@ -33,7 +32,7 @@ export default class KeysResource implements Resource {
     });
   }
 
-  system() : System {
+  system(): System {
     return (_update) => {
       if (!this.dirty) { return; }
       this.lastFrame = new Set<string>(this.thisFrame);
