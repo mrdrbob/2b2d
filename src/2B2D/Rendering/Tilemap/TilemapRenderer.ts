@@ -86,7 +86,7 @@ export default class TilemapRenderer implements Renderer {
         continue;
 
       const [tilemap, position] = entity.components;
-      const pos = update.resolve.position(entity.entity, position);
+      const pos = update.resolve.position(entity.entity, position).roundTens();
 
       const levels = assets.try<LevelsAsset>(tilemap.handle);
       if (!levels)

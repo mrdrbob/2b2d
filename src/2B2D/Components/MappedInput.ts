@@ -29,6 +29,9 @@ export default class MappedInput implements Component {
   static readonly NAME: string = 'MappedInput';
   readonly name: string = MappedInput.NAME;
 
+  /** Builds a MappedInput component. Provides a convenient(ish) interface for mapping 
+   * keyboard and gamepda controller inputs to actions (strings)
+  */
   static build(gampeadIndex: number, action: (builder: MappedInputBuilder) => void) {
     var builder = new MappedInputBuilder();
     action(builder);

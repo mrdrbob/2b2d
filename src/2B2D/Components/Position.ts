@@ -5,6 +5,7 @@ export default class Position implements Component {
   static readonly NAME: string = 'Position';
   readonly name = Position.NAME;
 
+  /** Represet's a position in 2D space */
   constructor(public position: Vec2) { }
 
   static from(...points: number[]) {

@@ -27,6 +27,7 @@ export interface Atlas {
   }
 }
 
+/** A texture used for a sprite or tilemap */
 export default class TextureAsset {
   constructor(
     public handle: Handle,
@@ -34,6 +35,7 @@ export default class TextureAsset {
     public atlas: Atlas
   ) { }
 
+  /** Used to load a texture that contains a single sprite (no atlas needed) */
   static loadSingleSprite(handle: Handle, path: string) {
     const promise = (async () => {
       const texture = await loadTexture(path);
@@ -44,6 +46,9 @@ export default class TextureAsset {
     return Asset.from<TextureAsset>(handle, promise());
   }
 
+  /** Loads a texture containing a tiled sprite, and generates an atlas for the tiled 
+   * sprites.
+   */
   static loadTiledSprite(handle: Handle, path: string, tileSize: Vec2, tileCount: Vec2, padding: Vec2) {
     const promise = (async () => {
       const texture = await loadTexture(path);
@@ -54,6 +59,9 @@ export default class TextureAsset {
     return Asset.from<TextureAsset>(handle, promise());
   }
 
+  /** Load's a texture that contains a number of sprites and has an atlas JSON file, such 
+   * as exported from Aseprite
+   */
   static loadSpriteWithAtlas(handle: Handle, spritePath: string, atlasPath: string) {
     const promise = (async () => {
       const texture = await loadTexture(spritePath);

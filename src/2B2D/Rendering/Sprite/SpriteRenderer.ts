@@ -69,7 +69,7 @@ export default class SpriteRenderer implements Renderer {
         continue;
 
       const [sprite, position] = entity.components;
-      const pos = update.resolve.position(entity.entity, position);
+      const pos = update.resolve.position(entity.entity, position).roundTens();
 
       const texture = assets.try<TextureAsset>(sprite.handle);
       if (!texture)

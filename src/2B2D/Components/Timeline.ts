@@ -10,6 +10,11 @@ export default class Timeline implements Component {
   static readonly NAME: string = 'Timeline';
   readonly name: string = Timeline.NAME;
 
+  /** Creates a series of events to fire in sequence. Each step 
+   * executes at a given time (roughly). Steps are NOT relative, but 
+   * must be ordered correctly. Will despawn itself at the end of the 
+   * list.
+   */
   constructor(
     public steps: TimelineStep[]
   ) { }

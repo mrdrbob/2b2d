@@ -5,5 +5,6 @@ export default class Velocity implements Component {
   static readonly NAME: string = 'Velocity';
   readonly name: string = Velocity.NAME;
 
+  /** Represents an entity's velocity in 2D space */
   constructor(public velocity: Vec2) { }
 }

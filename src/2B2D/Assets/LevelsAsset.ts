@@ -22,6 +22,7 @@ export class Level {
   layers = new Map<string, Layer>();
 }
 
+/** Represents levels that can be rendered as a Tilemap */
 export class LevelsAsset {
   levels = new Map<string, Level>();
   textures = new Map<string, ImageBitmap>();

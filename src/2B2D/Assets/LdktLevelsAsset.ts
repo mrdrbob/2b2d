@@ -65,6 +65,9 @@ export interface LdtkData {
 
 const INVISIBLE = 2147483647;
 
+/** A LevelAsset that is specific to LDTK levels. Has utility methods for spawning
+ * entities and intGrid entities
+ */
 export default class LdktLevelsAsset extends LevelsAsset {
   constructor(
     public data: LdtkData

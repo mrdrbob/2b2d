@@ -7,6 +7,7 @@ export default class Sprite implements Component {
   static readonly NAME: string = 'Sprite';
   readonly name: string = Sprite.NAME;
 
+  /** A sprite. Can be paired with `Animated` to make an animated sprite. */
   constructor(
     public handle: Handle,
     public frame: string = '0',

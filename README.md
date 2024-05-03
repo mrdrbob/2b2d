@@ -8,10 +8,10 @@ Some features of the engine:
 
 * Purely ECS-driven.
 * Works (somewhat) well with LDtk and Aseprite.
-* Supports TypeScript and browsers with WebGPU support.
-* Basic gamepad / input mapping support
+* Written in TypeScript and runs in browsers with WebGPU support.
+* Includes basic supports for gamepads / input mapping.
 * Has a limited, rudimentary AABB-based physics system—just about enough to support a Mario-style platformer game.
-* Self-contained, no runtime dependencies.
+* Self-contained--no runtime dependencies.
 * MIT Licensed.
 
 ## Example Game
@@ -229,3 +229,4 @@ Depth is handled by a depth stencil on the GPU. For fully opaque/transparent obj
 
 * Special thanks to [Nhawdge](https://github.com/Nhawdge) for coming up with the 2B2D name. Quote: "cause there are two b's in your first name. AND TWO DS IN YOUR LAST NAME. I'M GENIUS"
 * Graphic assets used in the example game (`platform-bg-tiles.png`, `platform-characters.png`, and `platform-tiles.png`) are from the `Pixel Platformer` asset collection by [Kenny](https://www.kenney.nl/). License: [Creative Commons Zero, CC0](http://creativecommons.org/publicdomain/zero/1.0/).
+* This excellent [TojiCode blog post on tilemaps](https://blog.tojicode.com/2012/07/sprite-tile-maps-on-gpu.html) was instrumental in creating my tilemap implementation. Also this [series on WebGPU best practices](https://toji.dev/webgpu-best-practices/) is fantastic.

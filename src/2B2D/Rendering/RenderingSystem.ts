@@ -41,7 +41,7 @@ export default class RenderingSystem {
       return;
 
     const [camera, position] = query.components;
-    const pos = update.resolve.position(query.entity, position);
+    const pos = update.resolve.position(query.entity, position).roundTens();
     this.globalBindGroup.update(camera.zoom, pos);
 
     const commandEncoder = this.device.createCommandEncoder();

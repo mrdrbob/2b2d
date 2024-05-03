@@ -88,6 +88,10 @@ export default class SpriteTween implements Component {
   static readonly NAME: string = 'SriteTween';
   readonly name: string = SpriteTween.NAME;
 
+  /** Constructs a SpriteTween, which can animate several properties of a 
+   * sprite over time and over several steps. Generally best to use the 
+   * `SpriteTween.build()` helper to construct tweens.
+   */
   constructor(
     public steps: Step[],
     public entity?: Future<Entity> | Entity,
@@ -97,6 +101,12 @@ export default class SpriteTween implements Component {
 
   time: number = 0;
 
+  /** Constructs a SpriteTween. Builds a series of steps, each relative to the previous
+   * step. Can track another entity, or tween the entity to which it is attached. Can optionally
+   * send a signal on completion. Can also indefinitely loop.
+   * NOTE: If the tween doesn't loop, the entity the `SpriteTween` component is attached to
+   * will be despawned at the end of the animation.
+   */
   static build(step?: (builder: TweenStepItemBuilder) => void) {
     const builder = new TweenStepItemBuilder({ time: 0, color: undefined, position: undefined, scale: undefined, radians: undefined });
     if (step)
