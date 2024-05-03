@@ -18,7 +18,7 @@ Some features of the engine:
 
 Included in this repo is an example game (in the `Example` folder).
 
-![Screenshot of the 2B2D example game](docs/screen-shot.png?raw=true)
+![Screenshot of the 2B2D example game](docs/game.gif?raw=true)
 
 You can also play on [Itch.io](https://mrdrbob.itch.io/2b2d-example-game).
 
