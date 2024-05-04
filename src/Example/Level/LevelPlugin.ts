@@ -1,16 +1,15 @@
 import Builder from "../../2B2D/Builder";
-import CollisionTargetHit from "../../2B2D/Signals/CollisionTargetHit";
-import States from "../States";
-import HandleDeathTileTileCollisions from "./Systems/HandleDeathTileTileCollisions";
-import HandleFlagTileCollisions from "./Systems/HandleFlagTileCollisions";
+import CollisionTargetHitSignal from "../../2B2D/Signals/CollisionTargetHitSignal";
+import PlayerTouchedFlagSignal from "../Player/Signals/PlayerTouchedFlagSignal";
+import GameLoopState from "../States/GameLoopState";
+import HandleDeathTileTouch from "./Systems/HandleDeathTileTouch";
+import HandleFlagTileTouch from "./Systems/HandleFlagTileTouch";
 import SpawnLevel from "./Systems/SpawnLevel";
-
-export const DeathTileTarget = 'DeathTileTarget';
-export const FlagTileTarget = 'FlagTileTarget';
+import TransitionToNextLevel from "./Systems/TransitionToNextLevel";
 
 export default function LevelPlugin(builder: Builder) {
-  builder.handleFromTyped<CollisionTargetHit>(CollisionTargetHit.NAME, DeathTileTarget, HandleDeathTileTileCollisions);
-  builder.handleFromTyped<CollisionTargetHit>(CollisionTargetHit.NAME, FlagTileTarget, HandleFlagTileCollisions);
-
-  builder.enter(States.Gameloop, SpawnLevel);
+  builder.schedule.enter(GameLoopState, SpawnLevel);
+  builder.signals.handle(CollisionTargetHitSignal, HandleDeathTileTouch);
+  builder.signals.handle(CollisionTargetHitSignal, HandleFlagTileTouch);
+  builder.signals.handle(PlayerTouchedFlagSignal, TransitionToNextLevel);
 }

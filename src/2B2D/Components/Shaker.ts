@@ -1,14 +1,17 @@
-import Component from "../Component";
+import Component from "./Component";
 
 export default class Shaker implements Component {
-  static readonly NAME:string = 'Shaker';
-  readonly name:string = Shaker.NAME;
+  static readonly NAME: string = 'Shaker';
+  readonly name: string = Shaker.NAME;
 
-  constructor(public shakeTime:number, public strength:number, public speed:number = 1) {}
+  /** A component that can shake something over time. Shake strength reduces over time.
+   * Call `shake()` on the component to reset the shake timer.
+   */
+  constructor(public shakeTime: number, public strength: number, public speed: number = 1) { }
 
-  timeRemaining:number = 0;
+  timeRemaining: number = 0;
 
-  offset:number = 1;
+  offset: number = 1;
 
   shake() {
     this.offset += Math.random() * 13;

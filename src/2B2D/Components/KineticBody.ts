@@ -1,5 +1,5 @@
-import Component from "../Component";
 import Vec2 from "../Math/Vec2";
+import Component from "./Component";
 
 export default class KineticBody implements Component {
   static readonly NAME: string = 'KineticBody';
@@ -10,5 +10,5 @@ export default class KineticBody implements Component {
    */
   constructor(public size: Vec2) { }
 
-  isGrounded: boolean = false;
+  isGrounded = false;
 }

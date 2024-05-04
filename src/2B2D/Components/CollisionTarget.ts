@@ -1,5 +1,5 @@
-import Component from "../Component";
 import Vec2 from "../Math/Vec2";
+import Component from "./Component";
 
 export default class CollisionTarget implements Component {
   static readonly NAME: string = 'CollisionTarget';
@@ -9,7 +9,7 @@ export default class CollisionTarget implements Component {
    * The cooldown, in frames, is from when the next collision can be detected. Because this sends a signal, and 
    * the signal takes a frame to process, a cooldown helps de-bounce collision detection.
   */
-  constructor(public type: string, public size: Vec2, public cooldown: number = 2) { }
+  constructor(public target: string, public size: Vec2, public cooldown: number = 2) { }
 
   ticks: number = 0;
 

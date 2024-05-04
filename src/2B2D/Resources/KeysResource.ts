@@ -1,9 +1,8 @@
 import { Direction } from "../Components/MappedInput";
-import Resource from "../Resource";
-import Ticker from "../Ticker";
-import Update from "../Update";
+import { System } from "../System";
+import Resource from "./Resource";
 
-export default class KeysResource implements Resource, Ticker {
+export default class KeysResource implements Resource {
   static readonly NAME: string = 'KeysResource';
   readonly name = KeysResource.NAME;
 
@@ -33,10 +32,12 @@ export default class KeysResource implements Resource, Ticker {
     });
   }
 
-  tick(_update: Update) {
-    if (!this.dirty) { return; }
-    this.lastFrame = new Set<string>(this.thisFrame);
-    this.dirty = false;
+  system(): System {
+    return (_update) => {
+      if (!this.dirty) { return; }
+      this.lastFrame = new Set<string>(this.thisFrame);
+      this.dirty = false;
+    };
   }
 
   isKeyDown(key: string) {

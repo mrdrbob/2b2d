@@ -1,196 +1,102 @@
-import loadArrayBufferAsset from "../2B2D/Assets/ArrayBufferAsset";
-import loadJsonAsset from "../2B2D/Assets/JsonAsset";
-import LdtkData from "../2B2D/Assets/LdtkData";
-import loadSpriteAtlasAsset, { generateSingleSpriteAtlas, generateTiledSpriteAtlas } from "../2B2D/Assets/SpriteAtlasAsset";
-import loadTextureAsset from "../2B2D/Assets/TextureAsset";
-import createTilemapFromLdtkJson from "../2B2D/Assets/TilemapData";
-import Vec2 from "../2B2D/Math/Vec2";
+import LdktLevelsAsset from "../2B2D/Assets/LdktLevelsAsset";
+import TextureAsset from "../2B2D/Assets/TextureAsset";
+import { Handle } from "../2B2D/Handle";
 import AssetsResource from "../2B2D/Resources/AssetsResource";
 import AudioResource from "../2B2D/Resources/AudioResource";
 
+interface LoadableAsset {
+  handle: Handle,
+  path: string
+}
+
+interface AsepriteAsset extends LoadableAsset {
+  jsonPath: string
+}
+
+function loadSingles(assets: AssetsResource, ...data: LoadableAsset[]) {
+  for (const item of data) {
+    assets.add(TextureAsset.loadSingleSprite(item.handle, item.path));
+  }
+}
+
+function loadLevels(assets: AssetsResource, ...data: LoadableAsset[]) {
+  for (const item of data) {
+    assets.add(LdktLevelsAsset.load(item.handle, item.path));
+  }
+}
+
+function loadAseprites(assets: AssetsResource, ...data: AsepriteAsset[]) {
+  for (const item of data) {
+    assets.add(TextureAsset.loadSpriteWithAtlas(item.handle, item.path, item.jsonPath));
+  }
+}
+
+
+function loadAudioClips(assets: AssetsResource, audio: AudioResource, ...data: LoadableAsset[]) {
+  for (const item of data) {
+    assets.add(audio.load(item.handle, item.path));
+  }
+}
+
+
 const GameAssets = {
-  Menu: {
-    Texture: {
-      Handle: 'menu-texture',
-      Load: () => loadTextureAsset(GameAssets.Menu.Texture.Handle, 'assets/main-menu.png')
-    },
-    Atlas: {
-      Handle: 'menu-atlas',
-      Generate: () => generateSingleSpriteAtlas(GameAssets.Menu.Atlas.Handle, new Vec2(200, 150))
-    },
-    Music: {
-      Handle: 'menu-music',
-      Load: () => loadArrayBufferAsset(GameAssets.Menu.Music.Handle, 'assets/menu.opus')
-    }
+  // Single PNG assets
+  menu: { handle: 'menu' as Handle, path: 'assets/main-menu.png' },
+  died: {
+    bg: { handle: 'death-bg' as Handle, path: 'assets/dead-bg.png' },
+    guy: { handle: 'death-guy' as Handle, path: 'assets/dead-guy.png' },
+    message: { handle: 'death-message' as Handle, path: 'assets/you-died.png' }
   },
-  Characters: {
-    Texture: {
-      Handle: 'char-texture',
-      Load: () => loadTextureAsset(GameAssets.Characters.Texture.Handle, 'assets/characters.png')
-    },
-    Atlas: {
-      Handle: 'char-atlas',
-      Load: () => loadSpriteAtlasAsset(GameAssets.Characters.Atlas.Handle, 'assets/characters.json')
-    }
-  },
-  LevelData: {
-    LdtkData: {
-      Handle: 'ldtk-data',
-      Load: () => loadJsonAsset<LdtkData>(GameAssets.LevelData.LdtkData.Handle, 'assets/platform.ldtk')
-    },
-    // The "background" are the cloud tiles that are sized differently from the normal tiles.
-    Background: {
-      Texture: {
-        Handle: 'level-bg-texture',
-        Load: () => loadTextureAsset(GameAssets.LevelData.Background.Texture.Handle, 'assets/platform-bg-tiles.png'),
-      },
-      Tilemap: {
-        Handle: (id: number) => `level-bg-layer-${id}`
-      }
-    },
-    // "Tiles" make up the platforms AND foreground tiles.
-    Tiles: {
-      Texture: {
-        Handle: 'level-tiles-texture',
-        Load: () => loadTextureAsset(GameAssets.LevelData.Tiles.Texture.Handle, 'assets/platform-tiles.png')
-      },
-      Atlas: {
-        Handle: 'level-tiles-atlas',
-        Generate: () => generateTiledSpriteAtlas(GameAssets.LevelData.Tiles.Atlas.Handle, new Vec2(18, 18), new Vec2(20, 9), new Vec2(0, 0))
-      },
-      Tilemap: {
-        Handle: (level: number, frame: number) => `level-tiles-tilemap-${level}-${frame}`
-      }
-    },
-    Foreground: {
-      Texture: {
-        JustUseTheTileTexture: () => { throw new Error('You should not call this.'); }
-      },
-      Tilemap: {
-        Handle: (id: number) => `level-fg-layer-${id}`
-      }
-    }
+  win: { handle: 'win' as Handle, path: 'assets/you-win.png' },
 
+  // Levels
+  ldkt: { handle: 'ldtk' as Handle, path: 'assets/platform.ldtk' },
+
+  // Aseprite assets
+  logo: { handle: 'logo' as Handle, path: 'assets/2b2d.png', jsonPath: 'assets/2b2d.json' },
+  characters: { handle: 'characters' as Handle, path: 'assets/characters.png', jsonPath: 'assets/characters.json' },
+  hud: { handle: 'hud' as Handle, path: 'assets/hud.png', jsonPath: 'assets/hud.json' },
+
+  sound: {
+    died: { handle: 'sound-died' as Handle, path: 'assets/died.opus' },
+    drop: { handle: 'sound-drop' as Handle, path: 'assets/drop.opus' },
+    flag: { handle: 'sound-flag' as Handle, path: 'assets/flag.opus' },
+    hurt: { handle: 'sound-hurt' as Handle, path: 'assets/hurt.opus' },
+    jump: { handle: 'sound-jump' as Handle, path: 'assets/jump.opus' },
+    menu: { handle: 'sound-menu' as Handle, path: 'assets/menu.opus' },
   },
-  Death: {
-    BG: {
-      Texture: {
-        Handle: 'death-bg',
-        Load: () => loadTextureAsset(GameAssets.Death.BG.Texture.Handle, 'assets/dead-bg.png')
-      },
-      Atlas: {
-        Handle: 'death-bg-atlas',
-        Generate: () => generateSingleSpriteAtlas(GameAssets.Death.BG.Atlas.Handle, new Vec2(200, 150))
-      }
-    },
-    Guy: {
-      Texture: {
-        Handle: 'death-guy',
-        Load: () => loadTextureAsset(GameAssets.Death.Guy.Texture.Handle, 'assets/dead-guy.png')
-      },
-      Atlas: {
-        Handle: 'death-guy-atlas',
-        Generate: () => generateSingleSpriteAtlas(GameAssets.Death.Guy.Atlas.Handle, new Vec2(24, 24))
-      }
-    },
-    Message: {
-      Texture: {
-        Handle: 'death-message',
-        Load: () => loadTextureAsset(GameAssets.Death.Message.Texture.Handle, 'assets/you-died.png')
-      },
-      Atlas: {
-        Handle: 'death-message-atlas',
-        Generate: () => generateSingleSpriteAtlas(GameAssets.Death.Message.Atlas.Handle, new Vec2(106, 21))
-      }
-    }
+
+  load: (assets: AssetsResource) => {
+    loadSingles(assets, GameAssets.menu, GameAssets.died.bg, GameAssets.died.guy, GameAssets.died.message, GameAssets.win);
+    loadLevels(assets, GameAssets.ldkt);
+    loadAseprites(assets, GameAssets.logo, GameAssets.characters, GameAssets.hud);
   },
-  WinScreen: {
-    Texture: {
-      Handle: 'win-screen',
-      Load: () => loadTextureAsset(GameAssets.WinScreen.Texture.Handle, 'assets/you-win.png')
-    },
-    Atlas: {
-      Handle: 'win-screen-atlas',
-      Generate: () => generateSingleSpriteAtlas(GameAssets.WinScreen.Atlas.Handle, new Vec2(200, 150))
-    }
+
+  loadAudio: (assets: AssetsResource, audio: AudioResource) => {
+    loadAudioClips(
+      assets,
+      audio,
+      GameAssets.sound.died,
+      GameAssets.sound.drop,
+      GameAssets.sound.flag,
+      GameAssets.sound.hurt,
+      GameAssets.sound.jump,
+      GameAssets.sound.menu,
+    )
   },
-  Sounds: {
-    Jump: {
-      Handle: 'jump-audio',
-      Load: () => loadArrayBufferAsset(GameAssets.Sounds.Jump.Handle, 'assets/jump.opus')
-    },
-    Hurt: {
-      Handle: 'hurt-audio',
-      Load: () => loadArrayBufferAsset(GameAssets.Sounds.Hurt.Handle, 'assets/hurt.opus')
-    },
-    Died: {
-      Handle: 'died-audio',
-      Load: () => loadArrayBufferAsset(GameAssets.Sounds.Died.Handle, 'assets/died.opus')
-    },
-    Flag: {
-      Handle: 'flag-audio',
-      Load: () => loadArrayBufferAsset(GameAssets.Sounds.Flag.Handle, 'assets/flag.opus')
-    },
-    Drop: {
-      Handle: 'drop-audio',
-      Load: () => loadArrayBufferAsset(GameAssets.Sounds.Drop.Handle, 'assets/drop.opus')
-    }
-  },
-  Init: (assets: AssetsResource) => {
-    assets.add(GameAssets.Menu.Texture.Load());
-    assets.add(GameAssets.Menu.Atlas.Generate());
-    assets.add(GameAssets.Menu.Music.Load());
-    assets.add(GameAssets.Characters.Texture.Load());
-    assets.add(GameAssets.Characters.Atlas.Load());
-    assets.add(GameAssets.LevelData.LdtkData.Load());
-    assets.add(GameAssets.LevelData.Background.Texture.Load());
-    assets.add(GameAssets.LevelData.Tiles.Texture.Load());
-    assets.add(GameAssets.LevelData.Tiles.Atlas.Generate());
-    assets.add(GameAssets.Death.BG.Texture.Load());
-    assets.add(GameAssets.Death.BG.Atlas.Generate());
-    assets.add(GameAssets.Death.Guy.Texture.Load());
-    assets.add(GameAssets.Death.Guy.Atlas.Generate());
-    assets.add(GameAssets.Death.Message.Texture.Load());
-    assets.add(GameAssets.Death.Message.Atlas.Generate());
-    assets.add(GameAssets.WinScreen.Texture.Load());
-    assets.add(GameAssets.WinScreen.Atlas.Generate());
-    assets.add(GameAssets.Sounds.Jump.Load());
-    assets.add(GameAssets.Sounds.Hurt.Load());
-    assets.add(GameAssets.Sounds.Died.Load());
-    assets.add(GameAssets.Sounds.Flag.Load());
-    assets.add(GameAssets.Sounds.Drop.Load());
-  },
-  IsLoaded: (assets: AssetsResource) => {
+
+  isLoaded: (assets: AssetsResource) => {
     return assets.loaded([
-      GameAssets.Menu.Texture.Handle,
-      GameAssets.Menu.Music.Handle,
-      GameAssets.Menu.Atlas.Handle,
-      GameAssets.Characters.Texture.Handle,
-      GameAssets.Characters.Atlas.Handle,
-      GameAssets.LevelData.LdtkData.Handle,
-      GameAssets.LevelData.Background.Texture.Handle,
-      GameAssets.LevelData.Tiles.Texture.Handle,
-      GameAssets.Sounds.Jump.Handle,
-      GameAssets.Sounds.Hurt.Handle,
-      GameAssets.Sounds.Died.Handle,
-      GameAssets.Sounds.Flag.Handle,
-      GameAssets.Sounds.Drop.Handle,
+      GameAssets.menu.handle,
+      GameAssets.died.bg.handle,
+      GameAssets.died.guy.handle,
+      GameAssets.died.message.handle,
+      GameAssets.win.handle,
+      GameAssets.ldkt.handle,
+      GameAssets.logo.handle,
+      GameAssets.characters.handle,
+      GameAssets.hud.handle,
     ]);
-  },
-  GenerateTilemaps: (assets: AssetsResource) => {
-    const ldtk = assets.assume<LdtkData>(GameAssets.LevelData.LdtkData.Handle);
-
-    for (let i = 0; i < ldtk.levels.length; i++) {
-      // Background tiles
-      assets.add(createTilemapFromLdtkJson(GameAssets.LevelData.Background.Tilemap.Handle(i), ldtk, `Level_${i}`, 'Background', 0));
-
-      // Platform tiles (both frames)
-      assets.add(createTilemapFromLdtkJson(GameAssets.LevelData.Tiles.Tilemap.Handle(i, 0), ldtk, `Level_${i}`, 'Tiles', 0));
-      assets.add(createTilemapFromLdtkJson(GameAssets.LevelData.Tiles.Tilemap.Handle(i, 1), ldtk, `Level_${i}`, 'Tiles', 1));
-
-      // Foreground layer
-      assets.add(createTilemapFromLdtkJson(GameAssets.LevelData.Foreground.Tilemap.Handle(i), ldtk, `Level_${i}`, 'Foreground', 0));
-    }
   }
 };
 

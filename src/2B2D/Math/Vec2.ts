@@ -22,4 +22,16 @@ export default class Vec2 {
   max(other: Vec2) { return new Vec2(Math.max(this.x, other.x), Math.max(this.y, other.y)); }
 
   min(other: Vec2) { return new Vec2(Math.min(this.x, other.x), Math.min(this.y, other.y)); }
+  floor() { return new Vec2(Math.floor(this.x), Math.floor(this.y)); }
+
+  /** Rounds to the nearest tenths place. Helps reduce rounding errors still allowing
+   * some smooth sub-pixel movement
+   */
+  roundTens() { return new Vec2(Math.round(this.x * 10) * 0.1, Math.round(this.y * 10) * 0.1); }
+
+  static from(...numbers: number[]) {
+    const x = numbers.length > 0 ? numbers[0] : 0;
+    const y = numbers.length > 1 ? numbers[1] : 0;
+    return new Vec2(x, y);
+  }
 }

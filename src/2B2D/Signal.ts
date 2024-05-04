@@ -5,4 +5,6 @@ export default interface Signal {
   sender: string | undefined
 }
 
-export type SignalHandler = (update: Update, signals: Signal[]) => void;
+export type Handler = (update: Update, signals: Signal[]) => void;
+
+export type TypedHandler<T extends Signal> = (update: Update, signals: T[]) => void;

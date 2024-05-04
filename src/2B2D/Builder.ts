@@ -1,39 +1,43 @@
 import { Command } from "./Command";
+import Component from "./Components/Component";
 import Engine from "./Engine";
-import { Layer } from "./Layer";
-import Resource from "./Resource";
+import { NamedTypeClass } from "./NamedType";
+import RenderingSystem from "./Rendering/RenderingSystem";
 import AssetsResource from "./Resources/AssetsResource";
 import AudioResource from "./Resources/AudioResource";
 import KeysResource from "./Resources/KeysResource";
-import { SignalHandler } from "./Signal";
-import { State } from "./State";
-import { Schedule, System } from "./System";
+import Resource from "./Resources/Resource";
+import { Schedule } from "./Schedule";
+import Scheduler from "./Scheduler";
+import Signal, { Handler, TypedHandler } from "./Signal";
+import { System } from "./System";
 import AnimateSprites from "./Systems/AnimateSprites";
 import AnimateTilemaps from "./Systems/AnimateTilemaps";
 import ShakeShakers from "./Systems/ShakeShakers";
+import UpdateSpriteTweens from "./Systems/UpdateSpriteTweens";
 import UpdateStateMachines from "./Systems/UpdateStateMachines";
-import UpdateTimers from "./Systems/UpdateTimers";
-import UpdateTweenChains from "./Systems/UpdateTweenChains";
-import Update from "./Update";
+import UpdateTimelines from "./Systems/UpdateTimelines";
 
 export default class Builder {
-  private engine = new Engine();
-  private commands = new Array<Command>();
+  constructor(public engine: Engine) { }
 
-  // I dunno. It just looks nicer. Like I'm adding a plugin
-  // to the builder, even though the plugin is just a function.
-  /**
-   * Adds a plugin to the existing builder
-   */
+  static async create(width: number, height: number) {
+    const adapter = await navigator.gpu?.requestAdapter();
+    const device = await adapter?.requestDevice()!;
+
+    const rendering = new RenderingSystem(device, width, height);
+    const engine = new Engine(rendering);
+    return new Builder(engine);
+  }
+
+  /** Executes the `plugin` to add it to the engine. */
   plugin(plugin: (builder: Builder) => void) {
     plugin(this);
     return this;
   }
 
-  /** Schdule a system for a particular schedule and state. Generally, use `enter`, `exit`, or `update`
-   * methods instead. */
-  schedule(schedule: Schedule, state: State, system: System) {
-    const systemsInSchedule = this.engine.systems.get(schedule)!;
+  private _schedule(schedule: Schedule, state: string, system: System) {
+    const systemsInSchedule = this.engine.scheduler.systems.get(schedule)!;
     const systemsInState = systemsInSchedule.get(state);
     if (systemsInState) {
       systemsInState.push(system);
@@ -43,135 +47,115 @@ export default class Builder {
     return this;
   }
 
-  /** Schedules `system` to run once when entering `state` */
-  enter(state: State, system: System) { return this.schedule('entering', state, system); }
+  schedule = {
+    /** Schedules `system` to run once when entering `state` */
+    enter: (state: string, system: System) => { return this._schedule('entering', state, system); },
 
-  /** Schedules `system` to run every frame during the update phase of `state` */
-  exit(state: State, system: System) { return this.schedule('exiting', state, system); }
+    /** Schedules `system` to run every frame during the update phase of `state` */
+    exit: (state: string, system: System) => { return this._schedule('exiting', state, system); },
 
-  /** Schedules `system` to run once when exiting `state` */
-  update(state: State, system: System) { return this.schedule('update', state, system); }
+    /** Schedules `system` to run once when exiting `state` */
+    update: (state: string, system: System) => { return this._schedule('update', state, system); },
 
-  /** Schedules `system` to every frame through the entire game lifecycle */
-  always(system: System) { return this.schedule('update', Engine.ALWAYS_STATE, system); }
+    /** Schedules `system` to every frame through the entire game lifecycle */
+    always: (system: System) => { return this._schedule('update', Scheduler.ALWAYS_STATE, system); },
 
-  /** Despawns any entities with `tag` when `state` exits. */
-  cleanup(state: State, tag: string) { return this.schedule('exiting', state, (u: Update) => { u.cleanUpTag(tag); }); }
-
-  /** Registers a `handler` for a given `signal` */
-  handle(signal: string, handler: SignalHandler) {
-    let handlers = this.engine.handlers.get(signal);
-    if (!handlers) {
-      handlers = new Array<SignalHandler>();
-      this.engine.handlers.set(signal, handlers);
+    /** Despawns any entities with `tag` when `state` exits. */
+    cleanup: (state: string, component: NamedTypeClass<Component>) => {
+      return this._schedule('exiting', state, (update) => {
+        const query = update.ecs.query(component);
+        for (const item of query) {
+          update.despawn(item.entity);
+        }
+      });
     }
-    handlers.push(handler);
-    return this;
   }
 
-  /** Registers a `handler` that will only respond to `signal` events from a given `sender`, and 
-   * will assume the signal is singular (will not handle multiple signals, only the first)
-   */
-  handleFrom(signal: string, sender: string, handler: (update: Update) => void) {
-    this.handle(signal, (update, signals) => {
-      if (signals.length === 0)
-        return;
-      if (signals[0].sender !== sender)
-        return;
-      handler(update);
-    });
+  signals = {
+    /** Registers a `handler` for a given `signal` */
+    handle: <T extends Signal>(signal: NamedTypeClass<T> | string, handler: Handler | TypedHandler<T>) => {
+      let signalName: string;
+
+      if (typeof signal === 'string') {
+        signalName = signal;
+      } else {
+        signalName = signal.NAME;
+      }
+
+      let handlers = this.engine.dispatcher.handlers.get(signalName);
+      if (!handlers) {
+        handlers = new Array<Handler>();
+        this.engine.dispatcher.handlers.set(signalName, handlers);
+      }
+
+      handlers.push(handler as Handler);
+      return this;
+    }
   }
 
-  /** Registers a `handler` that will only respond to `signal` events from a given `sender`, and 
-   * will assume the signal is singular (will not handle multiple signals, only the first). Will
-   * send the signal typed as T for convenience
-   */
-  handleFromTyped<T>(signal: string, sender: string, handler: (update: Update, signal: T) => void) {
-    this.handle(signal, (update, signals) => {
-      if (signals.length === 0)
-        return;
-      if (signals[0].sender !== sender)
-        return;
-      handler(update, signals[0] as T);
-    });
-  }
-
-  /** Adds a `resource` to the engine */
+  /** Registers a resource for use during game execution */
   resource(resource: Resource) {
     this.engine.resources.set(resource.name, resource);
-    return this;
-  }
-
-  /** Adds a `layer` to the engine. Layers are added in order, from 
-   * back first, to front last
-   */
-  layer(layer: Layer) {
-    this.engine.layers.push(layer);
-    return this;
   }
 
   /** Adds a command to be executed prior to the first frame. Useful for
    * entering the first state, adding rendering systems, etc.
    */
   command(command: Command) {
-    this.commands.push(command);
+    this.engine.commands.push(command);
     return this;
   }
-
 
   /** Set a state to be active (entered) when the engine first boots up. Can
    * be called multiple times for multiple states
    */
-  startState(state:State) {
+  startState(state: string) {
     this.command({ type: 'enter-state', state });
   }
 
-  /**
-   * Builds an engine, ready to run.
-   * @param skipDefaults If true, no default systems or resources will be added to the engine instance.
-   * @returns an instance of the engine
+  /** Finishes intializing an `Engine`.
+   * If you don't want default resources and systems, pass 
+   * `false` for `skipDefaults`.
    */
   async finish(skipDefaults?: boolean) {
     if (!skipDefaults) {
       // Default systems
-      this.always(AnimateSprites);
-      this.always(AnimateTilemaps);
-      this.always(UpdateTimers);
-      this.always(UpdateTweenChains);
-      this.always(UpdateStateMachines);
-      this.always(ShakeShakers);
+      this.schedule.always(UpdateSpriteTweens);
+      this.schedule.always(AnimateSprites);
+      this.schedule.always(UpdateTimelines);
+      this.schedule.always(UpdateStateMachines);
+      this.schedule.always(AnimateTilemaps);
+      this.schedule.always(ShakeShakers);
 
       // Default commands
-      this.commands.push({
+      this.engine.commands.push({
         type: 'add-resource',
         resource: new AssetsResource()
       });
 
-      const audioResource = new AudioResource();
-      this.commands.push({
-        type: 'add-resource',
-        resource: audioResource
-      });
-      this.commands.push({
-        type: 'add-ticker',
-        ticker: audioResource
-      });
-
       const keysResource = new KeysResource();
-      this.commands.push({
+      this.engine.commands.push({
         type: 'add-resource',
         resource: keysResource
       });
-      this.commands.push({
-        type: 'add-ticker',
-        ticker: keysResource
+      this.engine.commands.push({
+        type: 'add-fixed-system',
+        system: keysResource.system()
+      });
+      const audioResource = new AudioResource();
+      this.engine.commands.push({
+        type: 'add-resource',
+        resource: audioResource
+      });
+      this.engine.commands.push({
+        type: 'add-fixed-system',
+        system: audioResource.system()
       });
     }
 
-    this.engine.processCommands(this.commands);
-
-    await this.engine.rendering.init();
+    this.engine.commands.execute(this.engine);
 
     return this.engine;
   }
+
 }

@@ -3,33 +3,33 @@ import Position from "../Components/Position";
 import StaticBody from "../Components/StaticBody";
 import Velocity from "../Components/Velocity";
 import Weight from "../Components/Weight";
+import AABB from "../Math/AABB";
 import Vec2 from "../Math/Vec2";
 import Update from "../Update";
-import AABB from "../Utils/AABB";
 
 const COLLISION_BIAS = 0.1;
 
-export default function ApplyAabbPhysics(update: Update) {
-  const weightQuery = update.query([Velocity.NAME, Weight.NAME]);
-  const delta = update.delta();
+export default function ApplyAaabbPhysics(update: Update) {
+  const weightQuery = update.ecs.query(Velocity, Weight);
+  const delta = update.delta;
 
   for (const entity of weightQuery) {
-    const [vel, weight] = entity.components as [Velocity, Weight];
-    vel.velocity = new Vec2(vel.velocity.x, vel.velocity.y + weight.gravity);
+    const [vel, weight] = entity.components;
+    vel.velocity = new Vec2(vel.velocity.x, vel.velocity.y + (weight.gravity * delta));
   }
 
-  const kineticsQuery = update.query([Position.NAME, Velocity.NAME, KineticBody.NAME]);
-  const staticBodyQuery = update.query([Position.NAME, StaticBody.NAME]);
+  const kineticsQuery = update.ecs.query(Position, Velocity, KineticBody);
+  const staticBodyQuery = update.ecs.query(Position, StaticBody);
 
   for (const kineticEntity of kineticsQuery) {
-    const [kinPos, kinVel, kineticBody] = kineticEntity.components as [Position, Velocity, KineticBody];
-    const kinBody = new AABB(kinPos.pos, kineticBody.size);
+    const [kinPos, kinVel, kineticBody] = kineticEntity.components;
+    const kinBody = new AABB(kinPos.position, kineticBody.size);
     let isGrounded = false;
 
     // Create all the AABB static body representations
     let /* the */ bodies /* hit the floor */ = staticBodyQuery.map(staticEntity => {
       const [staticPos, staticBody] = staticEntity.components as [Position, StaticBody];
-      const statBody = new AABB(staticPos.pos, staticBody.size.add(kinBody.size));
+      const statBody = new AABB(staticPos.position, staticBody.size.add(kinBody.size));
       return { entity: staticEntity.entity, body: statBody };
     });
 
@@ -72,7 +72,7 @@ export default function ApplyAabbPhysics(update: Update) {
     // Apply transformation
     kinBody.pos = kinBody.pos.add(ray);
     kinVel.velocity = ray.scalarMultiply(1 / delta);
-    kinPos.pos = kinBody.pos;
+    kinPos.position = kinBody.pos;
     kineticBody.isGrounded = isGrounded;
   }
 }
