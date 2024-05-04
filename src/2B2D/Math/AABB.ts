@@ -1,6 +1,7 @@
 import Vec2 from "./Vec2";
 
 
+/** Axis-aligned boundary box -- Basically unrotated rectangles, used for AABB collisions calculations */
 export default class AABB {
   public static readonly NEAR: number = -1; // Negative direction
   public static readonly FAR: number = 1; // Positive direction

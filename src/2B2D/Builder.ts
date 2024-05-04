@@ -30,6 +30,7 @@ export default class Builder {
     return new Builder(engine);
   }
 
+  /** Executes the `plugin` to add it to the engine. */
   plugin(plugin: (builder: Builder) => void) {
     plugin(this);
     return this;
@@ -92,6 +93,7 @@ export default class Builder {
     }
   }
 
+  /** Registers a resource for use during game execution */
   resource(resource: Resource) {
     this.engine.resources.set(resource.name, resource);
   }
@@ -111,6 +113,10 @@ export default class Builder {
     this.command({ type: 'enter-state', state });
   }
 
+  /** Finishes intializing an `Engine`.
+   * If you don't want default resources and systems, pass 
+   * `false` for `skipDefaults`.
+   */
   async finish(skipDefaults?: boolean) {
     if (!skipDefaults) {
       // Default systems
@@ -148,8 +154,6 @@ export default class Builder {
     }
 
     this.engine.commands.execute(this.engine);
-
-    // await this.engine.rendering.init();
 
     return this.engine;
   }
