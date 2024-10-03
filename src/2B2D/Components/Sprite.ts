@@ -15,4 +15,8 @@ export default class Sprite implements Component {
     public color: Color = Color.White(1),
     public radians: number = 0
   ) { }
+
+  public repeat: Vec2 = Vec2.ONE;
+
+  public withRepeat(rep:Vec2) {  this.repeat = rep; return this; }
 }

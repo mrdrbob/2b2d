@@ -4,7 +4,7 @@ import Vec2 from "../../Math/Vec2";
 import SpriteBindGroup from "./SpriteBindGroup";
 
 const MAX_SPRITES_PER_BATCH = 1024;
-const VECS_PER_SPRITE = 8; // pos, size, rg, ba, scale, atlasPos, rot, depth
+const VECS_PER_SPRITE = 9; // pos, size, rg, ba, scale, atlasPos, rot, depth, repeat
 const FLOATS_PER_VEC2 = 2;
 
 export default class SpriteBatch {
@@ -41,7 +41,8 @@ export default class SpriteBatch {
       sprite.scale.x, sprite.scale.y,
       frame.frame.x, frame.frame.y,
       Math.cos(sprite.radians), Math.sin(sprite.radians),
-      depth, 0
+      depth, 0,
+      sprite.repeat.x, sprite.repeat.y
     ], this.valueCount());
 
     this.count += 1;
