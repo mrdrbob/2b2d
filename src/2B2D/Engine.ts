@@ -8,6 +8,8 @@ import Update from "./Update";
 import World from "./World";
 
 export default class Engine {
+  fixedStepMs = 1 / 60 * 1000;
+
   world = new World();
 
   scheduler = new Scheduler();
@@ -16,11 +18,12 @@ export default class Engine {
 
   dispatcher = new Dispatcher();
 
-  fixed = new Array<System>();
+  post = new Array<System>();
 
   commands = new CommandProcessor();
 
   private frame = new Update(this);
+  private fixedTimeAccumlation = 0;
 
   // Execution
   lastTick = 0;
@@ -59,14 +62,22 @@ export default class Engine {
     // Trigger signal handlers
     this.dispatcher.next(this.frame);
 
-    // Execute scheduled systems
-    this.scheduler.execute(this.frame);
+    // Execute any fixed systems
+    while (this.fixedTimeAccumlation >= this.fixedStepMs) {
+      this.frame.delta = this.fixedStepMs;
+      this.scheduler.execute(this.frame, true);
+      this.frame.delta = delta;
+      this.fixedTimeAccumlation -= this.fixedStepMs;
+    }
+
+    // Execute non-fixed scheduled systems
+    this.scheduler.execute(this.frame, false);
 
     // Render
     this.rendering.draw(this.frame);
 
-    // Execute all fixed systems
-    for (const system of this.fixed) {
+    // Execute all post-frame systems
+    for (const system of this.post) {
       system(this.frame);
     }
 
@@ -75,5 +86,7 @@ export default class Engine {
 
     // Process queued commands
     this.commands.execute(this);
+
+    this.fixedTimeAccumlation += delta;
   }
 }

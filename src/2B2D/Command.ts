@@ -15,7 +15,7 @@ export type Command =
   AddRendererCommand |
   RemoveRendererCommand |
   AddResource |
-  AddFixedSystem;
+  AddPostFrameSystem;
 
 export type SpawnEntityCommand = {
   type: 'spawn',
@@ -58,7 +58,7 @@ export type AddResource = {
   resource: Resource
 }
 
-export type AddFixedSystem = {
-  type: 'add-fixed-system',
+export type AddPostFrameSystem = {
+  type: 'add-post-system',
   system: System
 }

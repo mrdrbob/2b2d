@@ -43,8 +43,8 @@ export default function GamePlugin(builder: Builder) {
 
   // Some 2B2D built-in systems are disabled by default. They aren't needed
   // during menus and such, so only enable them during the gameloop state.
-  builder.schedule.update(GameLoopState, ApplyAaabbPhysics);
-  builder.schedule.update(GameLoopState, DetectCollisionTargetHits);
+  builder.schedule.update(GameLoopState, { fixed: ApplyAaabbPhysics });
+  builder.schedule.update(GameLoopState, { fixed: DetectCollisionTargetHits });
 
   builder.schedule.cleanup(GameLoopState, GameStateCleanup);
 
