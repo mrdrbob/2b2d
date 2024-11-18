@@ -1,12 +1,12 @@
 import { Schedule } from "./Schedule";
-import { System } from "./System";
+import { FixedSystem, System } from "./System";
 import Update from "./Update";
 
 export default class Scheduler {
   public static readonly ALWAYS_STATE = 'Always';
   public static readonly SCHEDULE_EXECUTION_ORDER: Schedule[] = ['entering', 'update', 'exiting'];
   public state = new Map<Schedule, Set<string>>();
-  public systems = new Map<Schedule, Map<string, System[]>>();
+  public systems = new Map<Schedule, Map<string, Array<System | FixedSystem>>>();
 
 
   constructor() {
@@ -14,9 +14,9 @@ export default class Scheduler {
     this.state.set('entering', new Set<string>());
     this.state.set('exiting', new Set<string>());
 
-    this.systems.set('update', new Map<string, System[]>());
-    this.systems.set('entering', new Map<string, System[]>());
-    this.systems.set('exiting', new Map<string, System[]>());
+    this.systems.set('update', new Map<string, Array<System | FixedSystem>>());
+    this.systems.set('entering', new Map<string, Array<System | FixedSystem>>());
+    this.systems.set('exiting', new Map<string, Array<System | FixedSystem>>());
   }
 
   enter(state: string) {
@@ -30,7 +30,7 @@ export default class Scheduler {
     }
   }
 
-  execute(update: Update) {
+  execute(update: Update, fixed: boolean) {
     for (const schedule of Scheduler.SCHEDULE_EXECUTION_ORDER) {
       const systemsInSchdule = this.systems.get(schedule)!;
 
@@ -39,7 +39,10 @@ export default class Scheduler {
         if (!systems || systems.length == 0)
           continue;
         for (const sys of systems) {
-          sys(update);
+          if (!fixed && typeof(sys) == 'function')
+            sys(update);
+          else if (fixed && typeof(sys) != 'function')
+            sys.fixed(update);
         }
       }
     }

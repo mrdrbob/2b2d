@@ -10,7 +10,7 @@ import Resource from "./Resources/Resource";
 import { Schedule } from "./Schedule";
 import Scheduler from "./Scheduler";
 import Signal, { Handler, TypedHandler } from "./Signal";
-import { System } from "./System";
+import { FixedSystem, System } from "./System";
 import AnimateSprites from "./Systems/AnimateSprites";
 import AnimateTilemaps from "./Systems/AnimateTilemaps";
 import ShakeShakers from "./Systems/ShakeShakers";
@@ -36,7 +36,7 @@ export default class Builder {
     return this;
   }
 
-  private _schedule(schedule: Schedule, state: string, system: System) {
+  private _schedule(schedule: Schedule, state: string, system: System | FixedSystem) {
     const systemsInSchedule = this.engine.scheduler.systems.get(schedule)!;
     const systemsInState = systemsInSchedule.get(state);
     if (systemsInState) {
@@ -49,16 +49,16 @@ export default class Builder {
 
   schedule = {
     /** Schedules `system` to run once when entering `state` */
-    enter: (state: string, system: System) => { return this._schedule('entering', state, system); },
+    enter: (state: string, system: System | FixedSystem) => { return this._schedule('entering', state, system); },
 
     /** Schedules `system` to run every frame during the update phase of `state` */
-    exit: (state: string, system: System) => { return this._schedule('exiting', state, system); },
+    exit: (state: string, system: System | FixedSystem) => { return this._schedule('exiting', state, system); },
 
     /** Schedules `system` to run once when exiting `state` */
-    update: (state: string, system: System) => { return this._schedule('update', state, system); },
+    update: (state: string, system: System | FixedSystem) => { return this._schedule('update', state, system); },
 
     /** Schedules `system` to every frame through the entire game lifecycle */
-    always: (system: System) => { return this._schedule('update', Scheduler.ALWAYS_STATE, system); },
+    always: (system: System | FixedSystem) => { return this._schedule('update', Scheduler.ALWAYS_STATE, system); },
 
     /** Despawns any entities with `tag` when `state` exits. */
     cleanup: (state: string, component: NamedTypeClass<Component>) => {
@@ -123,7 +123,7 @@ export default class Builder {
       this.schedule.always(UpdateSpriteTweens);
       this.schedule.always(AnimateSprites);
       this.schedule.always(UpdateTimelines);
-      this.schedule.always(UpdateStateMachines);
+      this.schedule.always({ fixed: UpdateStateMachines });
       this.schedule.always(AnimateTilemaps);
       this.schedule.always(ShakeShakers);
 
@@ -158,4 +158,7 @@ export default class Builder {
     return this.engine;
   }
 
+  setFixedStepTimeMs(timeMs: number) {
+    this.engine.fixedStepMs = timeMs;
+  }
 }

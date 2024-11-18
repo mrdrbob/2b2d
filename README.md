@@ -74,6 +74,19 @@ The `LoadAssets` system begins to load the logo texture. It executes one frame w
 
 The `AwaitLoaded` system checks to see if the logo is loaded every frame during the `InitState` state (except the enter and exit frames). Once the texture is loaded, it exits the `InitState` and sends a `LoadedSignal` signal.
 
+**Fixed Systems** - Fixed Systems are regular systems that are restricted to run on a (somewhat) fixed framerate (60fps by default). You can override the default fps. All fixed systems run at the same fps and will all run in the same frame(s). For example:
+
+```
+  // Override the default fixed timestep of 60fps to 30fps
+  builder.setFixedStepTimeMs(1 / 30 * 1000);
+
+  // Schedule these two systems to run in the fixed timestep at 30fps
+  builder.schedule.update(GameLoopState, { fixed: ApplyAaabbPhysics });
+  builder.schedule.update(GameLoopState, { fixed: DetectCollisionTargetHits });
+```
+
+Physics updates are often run as fixed systems. At this time, 2B2D does not directly support interpolating rendering between physics updates.
+
 **Signals** - Signals are events. They can either be a class that implements the `Signal` interface, or just a string if there is no data to convey. For example:
 
 ```
