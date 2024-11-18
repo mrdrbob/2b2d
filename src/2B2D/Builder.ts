@@ -139,7 +139,7 @@ export default class Builder {
         resource: keysResource
       });
       this.engine.commands.push({
-        type: 'add-fixed-system',
+        type: 'add-post-system',
         system: keysResource.system()
       });
       const audioResource = new AudioResource();
@@ -148,7 +148,7 @@ export default class Builder {
         resource: audioResource
       });
       this.engine.commands.push({
-        type: 'add-fixed-system',
+        type: 'add-post-system',
         system: audioResource.system()
       });
     }

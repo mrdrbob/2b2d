@@ -16,7 +16,7 @@ export default class Engine {
 
   dispatcher = new Dispatcher();
 
-  fixed = new Array<System>();
+  post = new Array<System>();
 
   commands = new CommandProcessor();
 
@@ -65,8 +65,8 @@ export default class Engine {
     // Render
     this.rendering.draw(this.frame);
 
-    // Execute all fixed systems
-    for (const system of this.fixed) {
+    // Execute all post-frame systems
+    for (const system of this.post) {
       system(this.frame);
     }
 

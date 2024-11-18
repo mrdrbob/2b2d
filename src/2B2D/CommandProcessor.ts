@@ -46,8 +46,8 @@ export default class CommandProcessor {
         case 'add-resource':
           engine.resources.set(command.resource.name, command.resource);
           break;
-        case 'add-fixed-system':
-          engine.fixed.push(command.system);
+        case 'add-post-system':
+          engine.post.push(command.system);
           break;
       }
     }
